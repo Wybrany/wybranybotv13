@@ -7,4 +7,8 @@ if(!discord_token) {console.log(`No "TOKEN" was submitted as a discord token. No
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS]});
 
+client.on("messageCreate", message => {
+    
+})
+
 client.login(process.env.TOKEN);
