@@ -23,6 +23,44 @@ export default class implements Command {
     }
 }
 
+//Helper functions
+
+const getCommands = (commands: Collection<string, Command>, member: GuildMember) => {
+    return commands
+        .filter(command => 
+               (command?.permission ? member?.permissions.has(command.permission) : true)
+            || (command.developerMode === true && member.id !== ownerId)
+            || (command.ownerOnly === true && member.id !== ownerId)
+            )
+}
+
+const filterCommandsByCategory = (commands: Collection<string, Command>, categories: string[]) => {
+
+    const filteredCommands: CategoryCommands[] = []
+
+    for(const category of categories){
+        const filter = commands.filter(c => c.category.toLowerCase() === category.toLowerCase());
+        if(!filter.size) continue;
+        filteredCommands.push({category: category, commands: filter})
+    }
+    return filteredCommands;
+}
+
+const getChunkBorders = (commands: CategoryCommands[]): string => {
+    let text = "";
+
+    for(const chunk of commands){
+        const category = `${chunk.category.toUpperCase()}`
+        const categoryBorder = `${Array(10).fill("-").join("")}${category}${Array(15 - category.length).fill("-").join("")}`
+        const parsedCommand = chunk.commands.map(c => `\`- ${c.name}${Array(categoryBorder.length - c.name.length - 2).fill('\xa0').join("")}\``).join("\n");
+        if(!parsedCommand) continue;
+        text += `\`${categoryBorder}\`\n${parsedCommand}\n`
+    }
+    return text;
+}
+
+//Main functions
+
 function getAllCommands(client: Modified_Client, message: Message){
 
     const title = `Available commands for: **${message.author.tag}**`;
@@ -34,47 +72,9 @@ function getAllCommands(client: Modified_Client, message: Message){
         .setTitle(title)
         .setTimestamp();
 
-    const getCommands = (commands: Collection<string, Command>, member: GuildMember) => {
-        return commands
-            .filter(command => 
-                   (command?.permission ? member?.permissions.has(command.permission) : true)
-                || (command.developerMode === true && member.id !== ownerId)
-                || (command.ownerOnly === true && member.id !== ownerId)
-                )
-    }
-
     const getAvailableCommands = member ? getCommands(client.commands, member) : null;
+    const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
 
-    const filterCommandsByCategory = (commands: Collection<string, Command>) => {
-
-        const filteredCommands: CategoryCommands[] = []
-
-        for(const category of categories){
-            const filter = commands.filter(c => c.category.toLowerCase() === category.toLowerCase());
-            if(!filter.size) continue;
-            filteredCommands.push({category: category, commands: filter})
-        }
-        return filteredCommands;
-    }
-
-    const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands) : null;
-
-    const getChunkBorders = (commands: CategoryCommands[]): string => {
-        let text = "";
-
-        for(const chunk of commands){
-            const category = `${chunk.category.toUpperCase()}`
-            const categoryBorder = `${Array(10).fill("-").join("")}${category}${Array(15 - category.length).fill("-").join("")}`
-            //const correctionFactor = 14;
-            //const whitespaceLength = ((title.length / 2) - (categoryBorder.length / 2) + correctionFactor);
-            //const whitespace = `${Array(whitespaceLength).fill('\xa0').join("")}`
-            const parsedCommand = chunk.commands.map(c => `\`- ${c.name}${Array(categoryBorder.length - c.name.length - 2).fill('\xa0').join("")}\``).join("\n");
-            if(!parsedCommand) continue;
-            text += `\`${categoryBorder}\`\n${parsedCommand}\n`
-            //allCommandsEmbed.addField(`**${chunk.category.toUpperCase()}**`, `${parsedCommand}`);
-        }
-        return text;
-    }
     let info = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands) : "No commands are available for you...\n\n";
 
     info += `\nUse _help <command> to see more information.`
