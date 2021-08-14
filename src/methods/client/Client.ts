@@ -1,29 +1,19 @@
 import { Client, Collection, Intents, Message } from "discord.js";
-
-interface Command {
-    name: string;
-    aliases: string[];
-    category: string;
-    description: string;
-    permission?: string;
-    usage: string;
-    ownerOnly?: boolean;
-    developerMode?: boolean
-    nsfw?: boolean;
-    channelWhitelist?: string[];
-
-    run: (client: Client, message: Message , args?: string[]) => void;
-}
+import { Command } from "src/interfaces/client.interface";
 
 export default class extends Client {
 
     public commands: Collection<string, Command>;
-    public aliases: Collection<string, string>
+    public aliases: Collection<string, string>;
+    public categories: string[] | null;
 
     constructor(){
-        super({intents: [Intents.FLAGS.GUILDS]});
+        super({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
+
+        //Here I use my global variables.
+
         this.commands = new Collection();
         this.aliases = new Collection();
+        this.categories = null;
     }
-    //Here I use my global variables.
 }

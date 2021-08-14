@@ -1,27 +1,20 @@
+import { Command } from "src/interfaces/client.interface";
 import Client from "../client/Client";
 import { readdirSync } from "fs";
-import ascii from "ascii-table";
+//Fix declaration for this module later.
+//import ascii from "ascii-table";
 
-const table = new ascii().setHeading("File", "Status");
-
-module.exports = (client: Client) => {
-    readdirSync("./commands/").forEach(dir => {
-        const commands = readdirSync(`./commands/${dir}`).filter(f => f.endsWith(".js"));
-        for(let file of commands){
-
-            const pull = require(`../commands/${dir}/${file}`);
-
-            if (pull.name){
-                client.commands.set(pull.name, pull);
-                table.addRow(`${file}`, '✅');
-            } else {
-                table.addRow(`${file}`, '❌');
-                continue;
-            }
-            if(pull.aliases && Array.isArray(pull.aliases)) 
-                pull.aliases.forEach(alias => client.aliases.set(alias, pull.name));
+export const Commands = (client: Client, base_path: string) => {
+    readdirSync(`./${base_path}/commands/`).forEach(async dir => {
+        const commands = readdirSync(`./${base_path}/commands/${dir}`).filter(f => f.endsWith(".js") || f.endsWith(".ts"));
+        for(const file of commands){
+            if(!file) return;
+            const pull = await import(`../../commands/${dir}/${file}`);
+            const command: Command = new pull.default();
+            if(command.name) 
+                client.commands.set(command.name, command);
+            if(Array.isArray(command.aliases) && command.aliases && command.aliases.length) 
+                command.aliases.forEach(alias => client.aliases.set(alias, command.name));
         }
     });
-
-    console.log(table.toString());
 }
