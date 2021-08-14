@@ -1,11 +1,10 @@
-import("dotenv").then(() => config());
-
+import dotenv from "dotenv";
 import { Client, Intents, Permissions } from "discord.js";
-import { config } from "dotenv";
 import { chmod, readdirSync, readFileSync } from "fs";
 import Modified_Client from "./methods/client/Client";
 import { Commands } from "./methods/commandhandler/Command";
 
+dotenv.config();
 const discord_token = process.env.TOKEN as string;
 const base_path = process.env.BASE_PATH as string;
 const prefix = process.env.PREFIX as string;

@@ -26,7 +26,7 @@ export default class implements Command {
         try{
             const fetched = await message.channel.messages.fetch({limit: amount});
             if(!fetched.size) {
-                message.reply("I can't read any messages for some unknown reason. Please try again later.");
+                message.reply({content: "I can't read any messages for some unknown reason. Please try again later."});
                 return;
             }
             const timeStamps = fetched.map(m => (message.createdTimestamp - m.createdTimestamp));
@@ -40,9 +40,9 @@ export default class implements Command {
             if(amount === newAmount){
                 amount--;
                 const messageReply = amount === 1 ? `Cleared ${amount} message!` : `Cleared ${amount} messages!` 
-                message.reply(messageReply)
+                message.reply({content: messageReply, allowedMentions: {repliedUser: false}})
             }
-            else message.reply(`I can't bulkdelete messages that are older than 14 days old. ${newAmount === 1 ? `` : `I could however delete ${newAmount -= 1 } messages` }`)
+            else message.reply({content: `I can't bulkdelete messages that are older than 14 days old. ${newAmount === 1 ? `` : `I could however delete ${newAmount -= 1 } messages` }`})
             return;
         } catch(e){
             message.reply(`Clear error: ${e}`);
