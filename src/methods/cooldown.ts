@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 
 const delayFunction = async (time_ms: number) => new Promise(promise => setTimeout(promise, time_ms));
-const maxCommands = 2;
+const maxCommands = parseInt(process.env.MAX_COMMANDS as string, 10) as number || 2;
 
 export class Guild_used_command_recently{
     public guildid: string;
@@ -31,7 +31,7 @@ export class Guild_used_command_recently{
     async send_warning_message(message: Message){
         if(!this.sent_warning_message){
             this.sent_warning_message = true;
-            return message.reply({content: `You are on cooldown. You may only use 2 commands per 10 sec. Rechargerate is at 1 command per 5 sec.`});
+            return message.reply({content: `You are on cooldown. You may only use ${maxCommands} commands per 10 sec. Rechargerate is at 1 command per 5 sec.`});
         }
     }
     async start_timer(){
