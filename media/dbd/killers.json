@@ -1,0 +1,993 @@
+{
+    "killer_list": [
+        {
+            "name": "The Trapper",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "addons": [
+                "RED Bloody coil",
+                "RED Iridescent Stone",
+                "PURPLE Fastening Tools",
+                "PURPLE Honing Stone",
+                "PURPLE Oily Coil",
+                "PURPLE Stitched Bag",
+                "GREEN Rusted Jaws",
+                "GREEN Secondary Coil",
+                "GREEN Setting Tools",
+                "GREEN Tar Bottle",
+                "GREEN Wax Brick",
+                "YELLOW 4-Coil Spring Kit",
+                "YELLOW Logwood Dye",
+                "YELLOW Serrated Jaws",
+                "YELLOW Trap Setters",
+                "YELLOW Trapper Bag",
+                "BROWN Padded Jaws",
+                "BROWN Strong Coil Spring",
+                "BROWN Trapper Gloves",
+                "BROWN Trapper Sack"
+            ],
+            "perks": [
+                {
+                    "name": "Unerving Presence",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Brutal Strength",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Agitation",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Wraith",
+            "aliases": ["Bingbong"],
+            "type": "Standard",
+            "original": true,
+            "addons": [
+                "RED All Seeing - Spirit",
+                "RED Coxcombed Clapper",
+                "PURPLE All Seeing - Blood",
+                "PURPLE Shadow Dance - Blood",
+                "PURPLE Swift Hunt - Blood",
+                "PURPLE Windstorm - Blood",
+                "GREEN Blind Warrior - White",
+                "GREEN Blink - White",
+                "GREEN Shadow Dance - White",
+                "GREEN Swift Hunt - White",
+                "GREEN Windstorm - White",
+                "YELLOW Blind Warrior - Mud",
+                "YELLOW Swift Hunt - Mud",
+                "YELLOW Windstorm - Mud",
+                "YELLOW Blink - Mud",
+                "YELLOW Bond clapper",
+                "BROWN The Beast - Soot",
+                "BROWN The Ghost - Soot",
+                "BROWN The Hound - Soot",
+                "BROWN The Serpent - Soot"
+            ],
+            "perks": [
+                {
+                    "name": "Predator",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Bloodhound",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Shadowborn",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Hillbilly",
+            "aliases": ["Billy"],
+            "type": "Standard",
+            "original": true,
+            "addons": [
+                "RED Iridescent Brick",
+                "RED Apex Muffler",
+                "Purple LoPro Chains",
+                "Purple Pighouse Gloves",
+                "Purple Spiked Boots",
+                "Purple Tuned Carburettor",
+                "GREEN Black Grease",
+                "GREEN Doom Engravings",
+                "GREEN Leafy Mash",
+                "GREEN Low Kickback Chains",
+                "GREEN Mother's Helpers",
+                "YELLOW Big Buckle",
+                "YELLOW Death Engravings",
+                "YELLOW Off-brand Motor Oil",
+                "YELLOW Punctured Mufflers",
+                "YELLOW Dad's Boots",
+                "BROWN Speed Limiter",
+                "BROWN Heavy Clutch",
+                "BROWN Junkyard Air Filter",
+                "BROWN Steel Toe Boots"
+            ],
+            "perks": [
+                {
+                    "name": "Enduring",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Lightborn",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Tinkerer",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Nurse",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "addons": [
+                "RED Matchbox",
+                "RED Torn Bookmark",
+                "PURPLE Bad Mans Last Breath",
+                "PURPLE Campbells Last Breath",
+                "PURPLE Jenners Last Breath",
+                "PURPLE Kavanaghs Last Breath",
+                "GREEN Anxious Gasp",
+                "GREEN Ataxic Respiration",
+                "GREEN Fragile Wheeze",
+                "GREEN Heavy Panting",
+                "GREEN Spasmodic Breath",
+                "YELLOW Bad Man Keepsake",
+                "YELLOW Catatonic Boys Treasure",
+                "YELLOW Dark Cincture",
+                "YELLOW Dull Bracelet",
+                "YELLOW Pocket Watch",
+                "BROWN Metal Spoon",
+                "BROWN Plaid Flannel",
+                "BROWN White Nit Comb",
+                "BROWN Wooden Horse"
+            ],
+            "perks": [
+                {
+                    "name": "Stridor",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Thanatophobia",
+                    "aliases": ["Trannyphobia"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "A Nurse's Calling",
+                    "aliases": ["Nurses"],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Shape",
+            "aliases": ["Myers", "Michael Myers"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Fragrant Tuft Of Hair",
+                "RED Judiths Tombstone",
+                "PURPLE Lock Of Hair",
+                "PURPLE Scratched Mirror",
+                "PURPLE Tombstone Piece",
+                "PURPLE Vanity Mirror",
+                "GREEN Hair Bow",
+                "GREEN J Myers Memorial",
+                "GREEN Jewelry Box",
+                "GREEN Judiths Journal",
+                "GREEN Mirror Shard",
+                "YELLOW Dead Rabbit",
+                "YELLOW Glass Fragment",
+                "YELLOW Hair Brush",
+                "YELLOW Jewelry",
+                "YELLOW Memorial Flower",
+                "BROWN Reflective Fragment",
+                "BROWN Blond Hair",
+                "BROWN Boyfriends Memo",
+                "BROWN Tacky Earrings"
+            ],
+            "perks": [
+                {
+                    "name": "Save the Best for Last",
+                    "aliases": ["STBFL"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Play with Your Food",
+                    "aliases": ["PWYF"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Dying Light",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Hag",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Mint Rag",
+                "RED Waterlogged Shoe",
+                "PURPLE Disfigured Ear",
+                "PURPLE Grandmas Heart",
+                "PURPLE Rusty Shackles",
+                "PURPLE Scarred Hand",
+                "GREEN Bloodied Mud",
+                "GREEN Cracked Turtle Egg",
+                "GREEN Dried Cicada",
+                "GREEN Swamp Orchid Necklet",
+                "GREEN Willow Wreath",
+                "YELLOW Bloodied Water",
+                "YELLOW Cypress Necklet",
+                "YELLOW Dragonfly Wings",
+                "YELLOW Half Eggshell",
+                "YELLOW Pussy Willow Catkins",
+                "BROWN Bog Water",
+                "BROWN Dead Fly Mud",
+                "BROWN Powdered Eggshell",
+                "BROWN Rope Necklet"
+            ],
+            "perks": [
+                {
+                    "name": "Hex: The Third Seal",
+                    "aliases": ["Third-seal", "ThirdSeal", "Third Seal"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Ruin",
+                    "aliases": ["Ruin"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Devour Hope",
+                    "aliases": ["Devour"],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Doctor",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Iridescent King",
+                "PURPLE Calm - Carters Notes",
+                "PURPLE Discipline - Carters Notes",
+                "PURPLE Obedience - Carters Notes",
+                "PURPLE Order - Carters Notes",
+                "PURPLE Restraint - Carters Notes",
+                "GREEN Discipline - Class III",
+                "GREEN Restraint - Class III",
+                "GREEN High Stimulus Electrode",
+                "YELLOW Calm - Class II",
+                "YELLOW Discipline - Class II",
+                "YELLOW Order - Class II",
+                "YELLOW Restraint - Class II",
+                "YELLOW Interview Tape",
+                "YELLOW Polished Electrode",
+                "YELLOW Scrapped Tape",
+                "BROWN Calm - Class I",
+                "BROWN Order - Class I",
+                "BROWN Maple Knight",
+                "BROWN Mouldy Electrode"
+            ],
+            "perks": [
+                {
+                    "name": "Overwhelming Presence",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Monitor & Abuse",
+                    "aliases": ["Monitor"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Overcharge",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Huntress",
+            "aliases": ["Cuntress"],
+            "type": "Standard",
+            "original": true,
+            "addons": [
+                "RED Iridescent Head",
+                "PURPLE Begrimed Head",
+                "PURPLE Glowing Concoction",
+                "PURPLE Infantry Belt",
+                "GREEN Flower Babushka",
+                "GREEN Pungent Phial",
+                "GREEN Rusty Head",
+                "GREEN Venomous Concoction",
+                "GREEN Yew Seed Concoction",
+                "YELLOW Deerskin Gloves",
+                "YELLOW Fine Stone",
+                "YELLOW Leather Loop",
+                "YELLOW Manna Grass Briad",
+                "YELLOW Oak Haft",
+                "YELLOW Shiny Pin",
+                "YELLOW Yew Seed Brew",
+                "BROWN Amanita Toxin",
+                "BROWN Bandaged Haft",
+                "BROWN Berus Toxin",
+                "BROWN Coarse Stone"
+            ],
+            "perks": [
+                {
+                    "name": "Beast of Prey",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Territorial Imperative",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Huntress Lullaby",
+                    "aliases": ["Lullaby"],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Cannibal",
+            "aliases": ["Leatherface", "Bubba"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "PURPLE Award-winning Chilli",
+                "PURPLE Begrimed Chains",
+                "GREEN Carburettor Tuning Guide",
+                "GREEN Light Chassis",
+                "GREEN Rusted Chains",
+                "GREEN The Beasts Marks",
+                "GREEN The Grease",
+                "YELLOW Chilli",
+                "YELLOW Depth Gauge Rake",
+                "YELLOW Grisly Chains",
+                "YELLOW Homemade Muffler",
+                "YELLOW Knife Scratches",
+                "YELLOW Long Guide Bar",
+                "YELLOW Primer Bulb",
+                "YELLOW Shop Lubricant",
+                "YELLOW Speed Limiter",
+                "BROWN Chainsaw File",
+                "BROWN Spark Plug",
+                "BROWN Vegetable Oil"
+            ],
+            "perks": [
+                {
+                    "name": "Knock Out",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Barbecue & Chilli",
+                    "aliases": ["Barbecue"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Fanklin's Demise",
+                    "aliases": ["Franklins"],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Nightmare",
+            "aliases": ["Freddy", "Freddy Krueger"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Black Box",
+                "RED Red Paint Brush",
+                "PURPLE Z Block",
+                "PURPLE Class Photo",
+                "PURPLE Swing Chains",
+                "PURPLE Pill Bottle",
+                "GREEN Blue Dress",
+                "GREEN Jump Rope",
+                "GREEN Nancys Masterpiece",
+                "GREEN Paint Thinner",
+                "GREEN Unicorn Block",
+                "YELLOW Cat Block",
+                "YELLOW Green Dress",
+                "YELLOW Nancys Sketch",
+                "YELLOW Outdoor Rope",
+                "YELLOW Prototype Claws",
+                "BROWN Garden Rake",
+                "BROWN Kids Drawing",
+                "BROWN Sheep Block",
+                "BROWN Wool Shirt"
+            ],
+            "perks": [
+                {
+                    "name": "Fire Up",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Remember Me",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Blood Warden",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Pig",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Amandas Letter",
+                "RED Rules Set No 2",
+                "PURPLE Amandas Secret",
+                "PURPLE Crate of Gears",
+                "PURPLE Jigsaws Sketch",
+                "PURPLE Tampered Timer",
+                "GREEN Bag of Gears",
+                "GREEN Interlocking Razor",
+                "GREEN Jigsaws Annotated Plan",
+                "GREEN Rusty Attachments",
+                "GREEN Slow-Release Toxin",
+                "YELLOW Face Mask",
+                "YELLOW Last Will",
+                "YELLOW Razor Wires",
+                "YELLOW Utility Blades",
+                "YELLOW Video Tape",
+                "BROWN Combat Straps",
+                "BROWN Johns Medical File",
+                "BROWN Shattered Syringe",
+                "BROWN Workshop Grease"
+            ],
+            "perks": [
+                {
+                    "name": "Handman's Trick",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Surveillance",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Make Your Choice",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Clown",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Redheads Pinky Finger",
+                "RED Tattoos Middle Finger",
+                "PURPLE Cheap Gin Bottle",
+                "PURPLE Cigar Box",
+                "PURPLE Ether 15 Vol%",
+                "PURPLE Garish Make-up Kit",
+                "GREEN  Bottle of Chloroform",
+                "GREEN Ether 10 Vol%",
+                "GREEN Flask of Bleach",
+                "GREEN Sulphuric Acid Vial",
+                "GREEN VHS Porn",
+                "YELLOW  Kerosense Can",
+                "YELLOW Solvent Jug",
+                "YELLOW Starling Feather",
+                "YELLOW Sticky Soda Bottle",
+                "YELLOW Thick Cork Stopper",
+                "BROWN Ether 5 Vol%",
+                "BROWN Fingerless Parade Gloves",
+                "BROWN Robin Feather",
+                "BROWN Smelly Inner Soles"
+            ],
+            "perks": [
+                {
+                    "name": "Bamboozle",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Coulrophobia",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Pop Goes the Weasel",
+                    "aliases": ["Pop"],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Spirit",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Fathers Glasses",
+                "RED Mother-Daughter Ring",
+                "PURPLE Dried Cherry Blossom",
+                "PURPLE Prayer Beads Bracelet",
+                "PURPLE Wakizashi Saya",
+                "PURPLE Yakuyoke Amulet",
+                "GREEN Bloody Hair Brooch",
+                "GREEN Dirty Uwabaki",
+                "GREEN Katana Tsuba",
+                "GREEN Katsumori Tailsman",
+                "GREEN Rusty Flute",
+                "YELLOW Juniper Bonsai",
+                "YELLOW Kaiun Tailsman",
+                "YELLOW Muddy Sports Day Cap",
+                "YELLOW Rins Broken Watch",
+                "YELLOW White Hair Ribbon",
+                "BROWN Gifted Bamboo Comb",
+                "BROWN Origami Crane",
+                "BROWN Shiawase Amulet",
+                "BROWN Zōri"
+            ],
+            "perks": [
+                {
+                    "name": "Spirit Fury",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Hex: Haunted Ground",
+                    "aliases": ["Haunted", "Haunted Ground", "Haunted-ground", "HauntedGround"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Rancor",
+                    "aliases" : [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Legion",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Fuming Mix Tape",
+                "RED Iridescent Button",
+                "PURPLE Cold Dirt",
+                "PURPLE Filthy Blade",
+                "PURPLE Franks Mix Tape",
+                "PURPLE Stab Wounds Study",
+                "GREEN Joeys Mix Tape",
+                "GREEN Nasty Blade",
+                "GREEN Stolen Sketch Book",
+                "GREEN Susies Mix Tape",
+                "GREEN The Legion Pin",
+                "YELLOW Defaced Smiley Pin",
+                "YELLOW Etched Ruler",
+                "YELLOW Julies Mix Tape",
+                "YELLOW Mural Sketch",
+                "YELLOW Never-Sleep Pills",
+                "BROWN Friendship Bracelet",
+                "BROWN Mischief List",
+                "BROWN Scratched Ruler",
+                "BROWN Smiley Face Pin"
+            ],
+            "perks": [
+                {
+                    "name": "Discordance",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Mad Grit",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Iron Maiden",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Plague",
+            "aliases": ["Spyhoran"],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Black Incense",
+                "RED Iridescent Seal",
+                "PURPLE Devotees Amulet",
+                "PURPLE Severed Toe",
+                "PURPLE Vile Emetic",
+                "PURPLE Worship Tablet",
+                "GREEN Ashen Apple",
+                "GREEN Exorcism Amulet",
+                "GREEN Incensed Ointment",
+                "GREEN Infected Emetic",
+                "GREEN Rubbing Oil",
+                "YELLOW Blessed Apple",
+                "YELLOW Emetic Potion",
+                "YELLOW Haematite Seal",
+                "YELLOW Potent Tincture",
+                "YELLOW Prophylactic Amulet",
+                "BROWN Healing Salve",
+                "BROWN Limestone Seal",
+                "BROWN Olibanum Incense",
+                "BROWN Prayer Tablet Fragment"
+            ],
+            "perks": [
+                {
+                    "name": "Corrupt Intervention",
+                    "aliases": ["Corrupt"],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Infectious Fright",
+                    "aliases": ["Infectious"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Dark Devotion",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Ghostface",
+            "aliases": ["Scream"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Outdoor Security Camera",
+                "RED Ghost Face Caught on Tape",
+                "PURPLE Drivers License",
+                "PURPLE Drop-Leg Knife Sheath",
+                "PURPLE Night Vision Monocular",
+                "PURPLE Victims Detailed Routine",
+                "GREEN Chewed Pen",
+                "GREEN Knife Belt Clip",
+                "GREEN Lasting Perfume",
+                "GREEN Lether Knife Sheath",
+                "GREEN Olsens Wallet",
+                "YELLOW Marked Map",
+                "YELLOW Olsens Adress Book",
+                "YELLOW Olsens Journal",
+                "YELLOW Reusable Cinch Straps",
+                "YELLOW Telephoto Lens",
+                "BROWN Cheap Cologne",
+                "BROWN Headlines Cut-outs",
+                "BROWN Walleyes Matchbook",
+                "BROWN Philly"
+            ],
+            "perks": [
+                {
+                    "name": "I'm All Ears",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Thrilling Tremors",
+                    "aliases": ["Tremors"],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Furtive Chase",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Demogorgon",
+            "aliases": ["Demo", "Doggo", "Dog"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Red Moss",
+                "RED Leprose Lichen",
+                "PURPLE Unknown Egg",
+                "PURPLE Upside Down Resin",
+                "PURPLE Vermilion Webcap",
+                "PURPLE Lifeguard Whistle",
+                "GREEN Deer Lung",
+                "GREEN Violet Waxcap",
+                "GREEN Brass Case Lighter",
+                "GREEN Throny Vines",
+                "GREEN Elvens Soda",
+                "YELLOW Barbs Glasses",
+                "YELLOW Mews Guts",
+                "YELLOW Rotten Green Tripe",
+                "YELLOW Viscous Webbing",
+                "YELLOW Sticky Lining",
+                "BROWN Rat Tail",
+                "BROWN Rat Liver",
+                "BROWN Black Heart",
+                "BROWN Rotten Pumpkin"
+            ],
+            "perks": [
+                {
+                    "name": "Surge",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Mindbreaker",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Cruel Limits",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Oni",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Iridecent Family Crest",
+                "RED Renjiros Bloody Glove",
+                "PURPLE Akitos Crutch",
+                "PURPLE Lion Fang",
+                "PURPLE Splintered Hull",
+                "PURPLE Tear Soaked Tenugui",
+                "GREEN Kanai-Anzen Talisman",
+                "GREEN Scalped Topknot",
+                "GREEN Shattered Wakizashi",
+                "GREEN Wooden Oni Mask",
+                "GREEN Yamaoka Sashimono",
+                "YELLOW Bloody Sash",
+                "YELLOW Childs Wooden Sword",
+                "YELLOW Chipped Saihai",
+                "YELLOW Ink Lion",
+                "YELLOW Polished Maedate",
+                "BROWN Blackened Toenail",
+                "BROWN Cracked Sakazuki",
+                "BROWN Rotting Rope",
+                "BROWN Yakuyoke Talisman"
+            ],
+            "perks": [
+                {
+                    "name": "Zanshin Tactics",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Blood Echo",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Nemesis",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },       
+        {
+            "name": "The Deathslinger",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "addons": [
+                "RED Hellshire Iron",
+                "RED Iridescent Coin",
+                "PURPLE Barbed Write",
+                "PURPLE Bayshore's Cigar",
+                "PURPLE Gold Creek Whiskey",
+                "PURPLE Prison chain",
+                "GREEN Bayshore's Gold Tooth",
+                "GREEN Honey Locust Thorn",
+                "GREEN Tin Oil Can",
+                "GREEN Wanted Poster",
+                "GREEN Warden's Keys",
+                "YELLOW Chewing Tobacco",
+                "YELLOW Jaw Smasher",
+                "YELLOW Marshal's Badge",
+                "YELLOW Poison Oak Leaves",
+                "YELLOW Rusted Spike",
+                "BROWN Modified Ammo Belt",
+                "BROWN Rickety Chain",
+                "BROWN Snake Oil",
+                "BROWN Spit Polish Rag"
+            ],
+            "perks": [
+                {
+                    "name": "Gearhead",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Dead Man's Switch",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Retribution",
+                    "aliases": ["Retribution"],
+                    "color": "PURPLE"
+                }
+            ]
+        },        
+        {
+            "name": "The Executioner",
+            "aliases": ["Pyramid-head", "Pyramid head", "Pyramidhead"],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Iridescent Seal of Metatron",
+                "RED Obsidian Goblet",
+                "PURPLE Crimson Ceremony Book",
+                "PURPLE Lost memories Book",
+                "PURPLE Rust-Coloured Egg",
+                "PURPLE Scarlet Egg",
+                "GREEN Burning Man Painting",
+                "GREEN Mannequin Foot",
+                "GREEN Misty Day, Remains of Judgement",
+                "GREEN Tablet of the Oppressor",
+                "GREEN Valtiel Sect Photograph",
+                "YELLOW Cinderella Music Box" ,
+                "YELLOW Forgotten Videotape",
+                "YELLOW Leopard-Print Fabric",
+                "YELLOW Spearhead",
+                "YELLOW Wax Doll",
+                "BROWN Black Strap",
+                "BROWN Copper Ring",
+                "BROWN Dead Butterfly",
+                "BROWN Lead Ring"
+            ],
+            "perks": [
+                {
+                    "name": "Forced Penance",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Trail of Torment",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Deathbound",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Blight",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Compound Thirty-Three",
+                "RED Iridescent Blight Tag",
+                "PURPLE Alchemist's Ring",
+                "PURPLE Soul Chemical",
+                "PURPLE Summoning Stone",
+                "PURPLE Vigo's Journal",
+                "GREEN Adrenaline Vial",
+                "GREEN Blighted Crow",
+                "GREEN Compound Twenty-One",
+                "GREEN Rose Tonic",
+                "GREEN Umbra Salts",
+                "YELLOW Blighted Rat" ,
+                "YELLOW Canker Thorn",
+                "YELLOW Plague Bile",
+                "YELLOW Pustula Dust",
+                "YELLOW Shredded Notes",
+                "BROWN Chipped Monocle",
+                "BROWN Compound Seven",
+                "BROWN Foxglove",
+                "BROWN Placebo Tablet"
+            ],
+            "perks": [
+                {
+                    "name": "Dragon's Grip",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Blood Favour",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Hex: Undying",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "The Twins",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "addons": [
+                "RED Iridescent Pendant",
+                "RED Silencing Cloth",
+                "PURPLE Drop of Perfume",
+                "PURPLE Forest Stew",
+                "PURPLE Spinning Top",
+                "PURPLE Victor's Soldier",
+                "GREEN Madeleine's Scarf",
+                "GREEN Rusted Needle",
+                "GREEN Sewer Sludge",
+                "GREEN Stale Biscuit",
+                "GREEN Weighty Rattle",
+                "YELLOW Baby Teeth" ,
+                "YELLOW Bloody Black Hood",
+                "YELLOW Cat's Eye",
+                "YELLOW Ceremonial Candelabrum",
+                "YELLOW Madeleine's Glove",
+                "BROWN Cat Figurine",
+                "BROWN Soured Milk",
+                "BROWN Tiny Fingernail",
+                "BROWN Toy Sword"
+            ],
+            "perks": [
+                {
+                    "name": "Hoarder",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Oppression",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Coup de Grâce",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        }
+    ]
+}

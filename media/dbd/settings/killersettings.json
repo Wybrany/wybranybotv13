@@ -1,0 +1,43 @@
+{
+    "Killer_settings": {
+
+        "killeraddons": true,
+        "killerperks": true,
+        "mapoffering": true,
+
+        "Killer_exceptions": {
+            "dlckiller": true,
+            "standardkiller": true,
+            "originalkiller": true,
+
+            "manual_killer_exceptions": [
+                {
+                    
+                }
+            ]
+
+        },
+
+        "Killer_perk_exceptions": {
+            "dlcteachables": true,
+            "standardteachables": true,
+            "originalteachables": true,
+            "standardperks": true,
+            "perklimit": 4,
+
+            "manual_perk_exceptions": [
+                {
+                    
+                }
+            ]
+        },
+
+        "killer_offering_exceptions": {
+            "manual_offering_exceptions": [
+                {
+
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "map_offerings": [
+        {
+            "name": "MacMillan's Phalanx Bone",
+            "aliases": ["The MacMillan Estate", "MacMillan", "Estate"]
+        },
+        {
+            "name": "Azarov's Key",
+            "aliases": ["Autohaven", "Pallet Haven", "Pallethaven", "Palletheaven", "Pallet Heaven"]
+        },
+        {
+            "name": "Heart Locket",
+            "aliases": ["Cold wind farm", "Coldwindfarm", "Coldwind Farm"]
+        },
+        {
+            "name": "Charred Wedding Photograph",
+            "aliases": ["Crotus Prenn Asylum", "Asylum"]
+        },
+        {
+            "name": "Strode Realty Key",
+            "aliases": ["Haddonfield"]
+        },
+        {
+            "name": "Grandmas Cookbook",
+            "aliases": ["Swamp", "Backwater", "Backwater Swamp"]
+        },
+        {
+            "name": "Shattered Glasses",
+            "aliases": ["Lerys Memorial Institute", "Lery's", "Lerys"]
+        },
+        {
+            "name": "The Last Mask",
+            "aliases": ["Red forest"]
+        },
+        {
+            "name": "The Pied Piper",
+            "aliases": ["Springwood", "Badham Preschool", "Badham", "Preschool"]
+        },
+        {
+            "name": "Jigsaw Piece",
+            "aliases": ["The game", "game"]
+        },
+        {
+            "name": "Yamaoka Family Crest",
+            "aliases": ["Yamaoka Estate", "Yamaoka"]
+        },
+        {
+            "name": "Damaged Photo",
+            "aliases": ["Ormond"]
+        },
+        {
+            "name": "Hawkins National Laboratory ID",
+            "aliases": ["Hawkins National Laboratory"]
+        },
+        {
+            "name": "Dusty Noose",
+            "aliases": ["Grave of Glenvale", "cowboy"]
+        },
+        {
+            "name": "Mary's letter",
+            "aliases": ["Midwitch Elementary School", "Midwitch", "Silent Hill"]
+        },
+        {
+            "name": "Sacrificial Ward",
+            "aliases": [""]
+        }
+    ]
+}

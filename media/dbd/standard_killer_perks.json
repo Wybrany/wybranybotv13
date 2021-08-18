@@ -1,0 +1,75 @@
+{
+    "standard_killer_perks": [
+        {
+            "name": "Bitter Murmur",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Deerstalker",
+            "aliases": [""],
+            "color": "GREEN"
+            
+        },
+        {
+            "name": "Distressing",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Hex: No One Escapes Death",
+            "aliases": ["NOED"],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Hex: Thrill of the Hunt",
+            "aliases": ["Thrill"],
+            "color": "GREEN"
+            
+        },
+        {
+            "name": "Insidious",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Iron Grasp",
+            "aliases": [""],
+            "color": "GREEN"
+            
+        },
+        {
+            "name": "Monstrous Shrine",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Sloppy Butcher",
+            "aliases": ["Sloppy"],
+            "color": "GREEN"
+            
+        },
+        {
+            "name": "Spies from the Shadows",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Unrelenting",
+            "aliases": [""],
+            "color": "PURPLE"
+            
+        },
+        {
+            "name": "Whispers",
+            "aliases": [""],
+            "color": "PURPLE"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "Survivor_settings": {
+        "items": true,
+        "itemaddons": true,
+        "survivorperks": true,
+        "mapoffering": true,
+
+        "Survivor_exceptions": {
+            "dlcsurvivor": true,
+            "standardsurvivor": true,
+            "originalsurvivor": true,
+
+            "manual_survivor_exceptions": [
+                {
+
+                }
+            ]
+        },
+
+        "Survivor_perk_exceptions": {
+            "dlcteachables": true,
+            "standardteachables": true,
+            "originalteachables": true,
+            "standardperks": true,
+            "perklimit": 4,
+
+            "manual_perk_exceptions": [
+                {
+                    
+                }
+            ]
+        }
+    }
+}

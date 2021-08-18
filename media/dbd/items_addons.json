@@ -1,0 +1,438 @@
+{
+    "item_list": [
+        {
+            "name": "YELLOW Chinese Firecracker",
+            "aliases": [""],
+            "type": "Firecracker",
+            "addons": [
+                "none",
+                "none"
+            ]
+        },
+        {
+            "name": "YELLOW Winter Party Starter",
+            "aliases": [""],
+            "type": "Firecracker",
+            "addons": [
+                "none",
+                "none"
+            ]
+        },
+        {
+            "name": "YELLOW Third Year Party Starter",
+            "aliases": [""],
+            "type": "Firecracker",
+            "addons": [
+                "none",
+                "none"
+            ]
+        },
+        {
+            "name": "YELLOW Flashlight",
+            "aliases": [""],
+            "type": "Flashlight",
+            "addons": [
+                "RED Odd Bulb",
+                "PURPLE High-End Sapphire Lens",
+                "GREEN Intense Halogen",
+                "GREEN Long Life Battery",
+                "YELLOW Focus Lens",
+                "YELLOW Heavy Duty Battery",
+                "YELLOW Low Amp Filament",
+                "YELLOW Rubber Grip",
+                "YELLOW TIR Optic",
+                "BROWN Battery",
+                "BROWN Leather Grip",
+                "BROWN Power Bulb",
+                "BROWN Wide lens"
+            ]
+        },
+        {
+            "name": "GREEN Sports Flashlight",
+            "aliases": [""],
+            "type": "Flashlight",
+            "addons": [
+                "RED Odd Bulb",
+                "PURPLE High-End Sapphire Lens",
+                "GREEN Intense Halogen",
+                "GREEN Long Life Battery",
+                "YELLOW Focus Lens",
+                "YELLOW Heavy Duty Battery",
+                "YELLOW Low Amp Filament",
+                "YELLOW Rubber Grip",
+                "YELLOW TIR Optic",
+                "BROWN Battery",
+                "BROWN Leather Grip",
+                "BROWN Power Bulb",
+                "BROWN Wide lens"
+            ]
+        },
+        {
+            "name": "PURPLE Utility Flashlight",
+            "aliases": [""],
+            "type": "Flashlight",
+            "addons": [
+                "RED Odd Bulb",
+                "PURPLE High-End Sapphire Lens",
+                "GREEN Intense Halogen",
+                "GREEN Long Life Battery",
+                "YELLOW Focus Lens",
+                "YELLOW Heavy Duty Battery",
+                "YELLOW Low Amp Filament",
+                "YELLOW Rubber Grip",
+                "YELLOW TIR Optic",
+                "BROWN Battery",
+                "BROWN Leather Grip",
+                "BROWN Power Bulb",
+                "BROWN Wide lens"
+            ]
+        },
+        {
+            "name": "YELLOW Will O' Wisp",
+            "aliases": [""],
+            "type": "Flashlight",
+            "addons": [
+                "RED Odd Bulb",
+                "PURPLE High-End Sapphire Lens",
+                "GREEN Intense Halogen",
+                "GREEN Long Life Battery",
+                "YELLOW Focus Lens",
+                "YELLOW Heavy Duty Battery",
+                "YELLOW Low Amp Filament",
+                "YELLOW Rubber Grip",
+                "YELLOW TIR Optic",
+                "BROWN Battery",
+                "BROWN Leather Grip",
+                "BROWN Power Bulb",
+                "BROWN Wide lens"
+            ]
+        },
+        {
+            "name": "YELLOW Anniversary Flashlight",
+            "aliases": [""],
+            "type": "Flashlight",
+            "addons": [
+                "RED Odd Bulb",
+                "PURPLE High-End Sapphire Lens",
+                "GREEN Intense Halogen",
+                "GREEN Long Life Battery",
+                "YELLOW Focus Lens",
+                "YELLOW Heavy Duty Battery",
+                "YELLOW Low Amp Filament",
+                "YELLOW Rubber Grip",
+                "YELLOW TIR Optic",
+                "BROWN Battery",
+                "BROWN Leather Grip",
+                "BROWN Power Bulb",
+                "BROWN Wide lens"
+            ]
+        },
+        {
+            "name": "GREEN Broken Key",
+            "aliases": [""],
+            "type": "Key",
+            "addons": [
+                "PURPLE Unique Wedding Ring",
+                "PURPLE Blood Amber",
+                "PURPLE Milky Glass",
+                "PURPLE Weaved Ring",
+                "GREEN Gold Token",
+                "YELLOW Eroded Token",
+                "YELLOW Prayer Beads",
+                "YELLOW Scratched Pearl",
+                "BROWN Prayer Rope"
+            ]
+        },
+        {
+            "name": "PURPLE Dull Key",
+            "aliases": [""],
+            "type": "Key",
+            "addons": [
+                "PURPLE Unique Wedding Ring",
+                "PURPLE Blood Amber",
+                "PURPLE Milky Glass",
+                "PURPLE Weaved Ring",
+                "GREEN Gold Token",
+                "YELLOW Eroded Token",
+                "YELLOW Prayer Beads",
+                "YELLOW Scratched Pearl",
+                "BROWN Prayer Rope"
+            ]
+        },
+        {
+            "name": "RED Skeleton Key",
+            "aliases": [""],
+            "type": "Key",
+            "addons": [
+                "PURPLE Unique Wedding Ring",
+                "PURPLE Blood Amber",
+                "PURPLE Milky Glass",
+                "PURPLE Weaved Ring",
+                "GREEN Gold Token",
+                "YELLOW Eroded Token",
+                "YELLOW Prayer Beads",
+                "YELLOW Scratched Pearl",
+                "BROWN Prayer Rope"
+            ]
+        },
+        {
+            "name": "GREEN Map",
+            "aliases": [""],
+            "type": "Map",
+            "addons": [
+                "PURPLE Crystal Bead",
+                "GREEN Black Silk Cord",
+                "GREEN Odd Stamp",
+                "YELLOW Glass Bead",
+                "YELLOW Red Twine",
+                "YELLOW Retardant Jelly",
+                "YELLOW Unusual Stamp",
+                "YELLOW Yellow Wire",
+                "BROWN Map Addendum"
+            ]
+        },
+        {
+            "name": "RED Rainbow Map",
+            "aliases": [""],
+            "type": "Map",
+            "addons": [
+                "PURPLE Crystal Bead",
+                "GREEN Black Silk Cord",
+                "GREEN Odd Stamp",
+                "YELLOW Glass Bead",
+                "YELLOW Red Twine",
+                "YELLOW Retardant Jelly",
+                "YELLOW Unusual Stamp",
+                "YELLOW Yellow Wire",
+                "BROWN Map Addendum"
+            ]
+        },
+        {
+            "name": "BROWN Camping Aid Kit",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "YELLOW First Aid Kit",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "GREEN Emergency Med-Kit",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "PURPLE Ranger Med-Kit",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "YELLOW All Hallows' Eve Lunchbox",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "YELLOW Anniversary Med-Kit",
+            "aliases": [""],
+            "type": "Medkit",
+            "addons": [
+                "RED Anti-Haemorrhagic Syringe",
+                "PURPLE Styptic Agent",
+                "GREEN Abdominal Dressing",
+                "GREEN Gel Dressings",
+                "GREEN Surgical Suture",
+                "YELLOW Gauze Roll",
+                "YELLOW Medical Scissors",
+                "YELLOW Needle & Thread",
+                "YELLOW Self Adherent Wrap",
+                "YELLOW Sponge",
+                "BROWN Bandages",
+                "BROWN Butterfly Tape",
+                "BROWN Rubber Gloves"
+            ]
+        },
+        {
+            "name": "BROWN Worn-Out Tools",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        },        {
+            "name": "YELLOW Toolbox",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        },        
+        {
+            "name": "GREEN Mechanics Toolbox",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        },
+        {
+            "name": "GREEN Commodious Toolbox",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        },
+        {
+            "name": "PURPLE Engineers Toolbox",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        },
+        {
+            "name": "PURPLE Alexs Toolbox",
+            "aliases": [""],
+            "type": "Toolbox",
+            "addons": [
+                "RED Brand New Part",
+                "GREEN Grip Wrench",
+                "GREEN Hacksaw",
+                "YELLOW Cutting Wire",
+                "YELLOW Protective Gloves",
+                "YELLOW Socket Swivels",
+                "YELLOW Spring Clamp",
+                "YELLOW Wire Spool",
+                "BROWN Clean Rag",
+                "BROWN Instructions",
+                "BROWN Scraps"
+            ]
+        }
+    ]
+}

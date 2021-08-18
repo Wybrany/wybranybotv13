@@ -1,0 +1,74 @@
+{
+    "standard_survivor_perks": [
+        {
+            "name": "Dark Sense",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Deja Vu",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Hope",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Kindred",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Lightweight",
+            "aliases": [""],
+            "color": "GREEN"
+        },
+        {
+            "name": "No One Left Behind",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Plunderers Instinct",
+            "aliases": [""],
+            "color": "GREEN"
+        },
+        {
+            "name": "Premonition",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Resiliance",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "Slippery Meat",
+            "aliases": [""],
+            "color": "GREEN"
+        },
+        {
+            "name": "Small Game",
+            "aliases": [""],
+            "color": "GREEN"
+        },
+        {
+            "name": "Spine Chill",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "This Is Not Happening",
+            "aliases": [""],
+            "color": "PURPLE"
+        },
+        {
+            "name": "We'll Make It",
+            "aliases": [""],
+            "color": "PURPLE"
+        }
+    ]
+}

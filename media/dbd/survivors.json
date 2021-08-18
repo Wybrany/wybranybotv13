@@ -1,0 +1,557 @@
+{
+    "survivor_list": [
+        {
+            "name": "Dwight Fairfield",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Bond",
+                    "aliases": [""],
+                    "color": "Green"
+                },
+                {
+                    "name": "Leader",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Prove Thyself",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Meg Thomas",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Quick & Quiet",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Sprint Burst",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Adrenaline",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Claudette Morel",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Empathy",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Botany Knowledge",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Self-Care",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Jake Park",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Iron Will",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Calm Spirit",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Saboteur",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Nea Karlsson",
+            "aliases": [""],
+            "type": "Standard",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Balanced Landing",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Urban Evasion",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Streetwise",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Laurie Strode",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Sole Survivor",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Object of Obsession",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Decisive Strike",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Ace Visconti",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Open-Handed",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Up the Ante",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Ace in the Hole",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Bill Overbeck",
+            "aliases": [""],
+            "type": "Standard",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Left Behind",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Borrowed Time",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Unbreakable",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Feng Min",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Technician",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Lithe",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Alert",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "David King",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "We're Gonna Live Forever",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Dead Hard",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "No Mither",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Quentin Smith",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Wake Up!",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Pharmacy",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Vigil",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "David Tapp",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Tenactiy",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Detective's Hunch",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Stake Out",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Kate Denson",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Dance With Me",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Windows of Opportunity",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Boil Over",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Adam Francis",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Diversion",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Deliverance",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Autodidact",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Jeff Johansen",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Breakdown",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Aftercare",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Distortion",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Jane Romero",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Solidarity",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Poised",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Head On",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Ash Williams",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Flip-Flop",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Buckle Up",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Mettle of Man",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Nancy Wheeler",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Better Together",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Fixated",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Inner Strength",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Steve Harrington",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Babysitter",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Camaraderie",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Second Wind",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Yui Kimura",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Lucky Break",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Any Means Necessary",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Breakout",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Zarina Kassir",
+            "aliases": [""],
+            "type": "DLC",
+            "original": true,
+            "perks": [
+                {
+                    "name": "Off the Record",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Red Herring",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "For the People",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Cheryl Mason",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Soul Guard",
+                    "aliases": [""],
+                    "color": "GREEN"
+                },
+                {
+                    "name": "Blood Pact",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Repressed Alliance",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Felix Richter",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Visionary",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Desperate Measures",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Built to Last",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        },
+        {
+            "name": "Elodie Rakoto",
+            "aliases": [""],
+            "type": "DLC",
+            "original": false,
+            "perks": [
+                {
+                    "name": "Appraisal",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Deception",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                },
+                {
+                    "name": "Power Struggle",
+                    "aliases": [""],
+                    "color": "PURPLE"
+                }
+            ]
+        }
+
+    ]
+}
