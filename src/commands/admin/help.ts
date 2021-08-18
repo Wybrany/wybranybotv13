@@ -1,4 +1,4 @@
-import { Message, Permissions, MessageEmbed, Collection, GuildMember, PermissionResolvable } from "discord.js";
+import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 
@@ -14,6 +14,7 @@ export default class implements Command {
     aliases = [];
     category = "admin";
     description = "Returns all available commands, depending on permission, to the user. Alternatively, returning description/usage of a specific command.";
+    permission = Permissions.FLAGS.SEND_MESSAGES;
     usage = "help [command]";
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {

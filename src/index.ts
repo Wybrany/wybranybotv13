@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
-import { Client, Intents, Permissions } from "discord.js";
-import { chmod, readdirSync, readFileSync } from "fs";
+import { readdirSync } from "fs";
 import Modified_Client from "./methods/client/Client";
-import { Commands } from "./methods/commandhandler/Command";
+import { Load_Commands } from "./methods/commandhandler/Command";
+import { loadfiledata } from "./methods/backup";
+import { Guild_used_command_recently } from "./methods/cooldown"; 
 
 dotenv.config();
 const discord_token = process.env.TOKEN as string;
@@ -14,16 +15,18 @@ if(!discord_token || !base_path) {console.log(`No "TOKEN" was submitted as a dis
 
 const client = new Modified_Client();
 client.categories = readdirSync(`./${base_path}/commands`);
-Commands(client, base_path);
+Load_Commands(client, base_path);
 
-client.on("ready", () => {
+client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
     client.user?.setActivity({type: "WATCHING", name: "dedu"});
+    await loadfiledata(client);
 })
 
 client.on("messageCreate", message => {
-    if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT") return;
-    if(!message.content.startsWith(prefix)) return console.log("Not here either")
+    if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
+    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
+    if(!message.content.startsWith(guildprefix)) return console.log("Not here either")
 
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;
@@ -31,9 +34,7 @@ client.on("messageCreate", message => {
 
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
     if (!command) return;
-
-    console.log(command)
-
+    
     const channelWhiteList = command.channelWhitelist?.length ? command.channelWhitelist.includes(message.channel.name) : null;
     if(channelWhiteList !== null && channelWhiteList === false){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
@@ -58,7 +59,7 @@ client.on("messageCreate", message => {
     }*/
 
     if(message.author.id === OwnerId) return command.run(client, message, args);
-    if(!message.member.permissions.has(command?.permission || Permissions.FLAGS.SEND_MESSAGES)) {
+    if(!message.member.permissions.has(command.permission)){
         message.reply({content: `You don't have permission to use this command.`});
         return;
     }
@@ -71,9 +72,20 @@ client.on("messageCreate", message => {
         return;
     }
 
-    //Maybe add command cooldown class here later.
+    //Handling cooldown logic
+
+    if(!client.guildUsedCommandRecently.has(message.guild.id)) 
+    client.guildUsedCommandRecently.set(message.guild.id, new Guild_used_command_recently(message.guild.id));
+
+    const usedCommandRecently = client.guildUsedCommandRecently.get(message.guild.id);
+    if(!usedCommandRecently) return console.warn(`Usedcommandrencelty does not exist for this guild ${message.guild.id} for some reason`);
+    if(usedCommandRecently.is_on_cooldown()) return usedCommandRecently.send_warning_message(message);
+    else usedCommandRecently.change_warning_message(false);
+
+    if(!usedCommandRecently.timer_started) usedCommandRecently.start_timer();
+    else usedCommandRecently.sub_commandremaining();
 
     command.run(client, message, args);
 })
 
-client.login(process.env.TOKEN);
+client.login(discord_token);

@@ -3,3 +3,5 @@ node_modules
 dist
 backup
 media
+src/commands/dbd
+src/commands/fun

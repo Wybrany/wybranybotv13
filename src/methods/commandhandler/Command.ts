@@ -4,7 +4,7 @@ import { readdirSync } from "fs";
 //Fix declaration for this module later.
 //import ascii from "ascii-table";
 
-export const Commands = (client: Client, base_path: string) => {
+export const Load_Commands = (client: Client, base_path: string) => {
     readdirSync(`./${base_path}/commands/`).forEach(async dir => {
         const commands = readdirSync(`./${base_path}/commands/${dir}`).filter(f => f.endsWith(".js") || f.endsWith(".ts"));
         for(const file of commands){

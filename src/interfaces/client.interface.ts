@@ -6,7 +6,7 @@ export interface Command {
     aliases: string[];
     category: string;
     description: string;
-    permission?: PermissionResolvable;
+    permission: PermissionResolvable;
     usage: string;
     ownerOnly?: boolean;
     developerMode?: boolean
