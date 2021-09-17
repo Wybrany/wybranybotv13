@@ -3,7 +3,9 @@ import { readdirSync } from "fs";
 import Modified_Client from "./methods/client/Client";
 import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
-import { Guild_used_command_recently } from "./methods/cooldown"; 
+import { Guild_used_command_recently } from "./methods/cooldown";
+import { checkForMention } from "./methods/checkForMention";
+import { GuildChannel, GuildChannelManager } from "discord.js";
 
 dotenv.config();
 const discord_token = process.env.TOKEN as string;
@@ -21,12 +23,23 @@ client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
     client.user?.setActivity({type: "WATCHING", name: "dedu"});
     await loadfiledata(client);
+
+    /*const gayboiis = "456094195187449868";
+
+    const guild = client.guilds.cache.get(gayboiis);
+    if(guild){
+        const channels = [...guild.channels.cache.filter(c => c.type === "GUILD_TEXT").values()];
+        for(const channel of channels){
+            if(channel.type !== "GUILD_TEXT") continue;
+            await channel.send({content: ''});
+        }
+    }*/
 })
 
 client.on("messageCreate", message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
-    if(!message.content.startsWith(guildprefix)) return console.log("Not here either")
+    if(!message.content.startsWith(guildprefix)) checkForMention(message, client, guildprefix);
 
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;

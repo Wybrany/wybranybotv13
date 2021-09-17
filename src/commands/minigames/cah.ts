@@ -1,7 +1,9 @@
+//@ts-nocheck
+
 import { Message, MessageEmbed, Collection, GuildMember, Permissions, GuildChannel, ThreadChannel, TextChannel, Guild, Role, GuildChannelManager, GuildChannelCreateOptions, PermissionOverwrites, GuildChannelResolvable, CategoryChannelResolvable, CategoryChannel, OverwriteResolvable } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { ChannelConstructor, Pack, Packname, PlayerConstructor } from "src/interfaces/cah.interface";
+import { AvailablePack, AvailablePacks, BlackCard, ChannelConstructor, Deck, Game, Pack, Packname, PlayerConstructor } from "src/interfaces/cah.interface";
 import { existsSync, readFileSync } from "fs";
 import { shuffle } from "../../methods/shuffle";
 
@@ -16,9 +18,10 @@ export default class implements Command{
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
+        return;
         if(!message.guild) return;
         const [] = args;
-
+        
         const cahparent = message.guild.channels.cache.find(c => c.name.toLowerCase() === "cah" && c.type === "GUILD_CATEGORY");
         const gamelobbychannel = message.guild.channels.cache.find(c => c.name.toLowerCase() === 'gamelobby' && c.type === "GUILD_VOICE");
 
@@ -28,16 +31,20 @@ export default class implements Command{
         
         const members = [...gamelobbychannel.members.values()];
         if(members.length <= 1) return message.reply(`Please join Gamelobby to play! You need a minimum of 2 players to play.`);
+        //Kolla till guildsettings senare.
         //const settings = client.cahsettings.get(message.guild.id);
         //const cardSets = settings.packs.length ? settings.packs : setSelector(10);
+        const cardSets = setSelector(10);
+        if(!cardSets || cardSets.length) return message.reply(`Something went wrong... Please try again later.`);
+        
         //Borde göra en check så man kollar att man har t.ex över 1000 whitecards och 200 blackcards så korten aldrig tar slut
-        //const deck = loadDeck(cardSets);
-        let blackCard = "";
+        const deck = loadDeck(cardSets);
+        let blackCard: BlackCard;
         let czar = true;
         let czarid = "";
-        //const randomBlackCard = shuffle(deck.deckblackcards.length, 1);
-        //const memberChannels = [];
-        /*for(const value of members){
+        const randomBlackCard = <number>shuffle(deck.deckblackcards.length, 1);
+        const memberChannels = [];
+        for(const value of members){
             const member = message.guild.members.cache.get(value.user.id);
             if(!member) continue;
             const permissionsOverwrites: OverwriteResolvable[] = [
@@ -65,28 +72,28 @@ export default class implements Command{
                 permissionOverwrites: permissionsOverwrites
             }
 
-            const randomWhiteCards = shuffle(deck.deckwhitecards.length, 10);
+            const randomWhiteCards = <number[]>shuffle(deck.deckwhitecards.length, 10);
             const playerHand = deck.deckwhitecards.filter((c, i) => randomWhiteCards.includes(i));
             deck.deckwhitecards = deck.deckwhitecards.filter((c, i) => !randomWhiteCards.includes(i));
             
             if(czar){
                 czar = false;
                 czarid = member.id;
-                blackCard = deck.deckblackcards.filter((c, i) => randomBlackCard.includes(i));
-                deck.deckblackcards = deck.deckblackcards.filter((c, i) => !randomBlackCard.includes(i));
+                blackCard = deck.deckblackcards.splice(randomBlackCard, 1)[0];
             }
             const waitMessage = await newTextChannel.send(`<@${value.user.id}>, PLEASE WAIT WHILE GAME IS SETTING UP`);
-            const newPlayerConstructor = new playerConstructor(member.id, newChannelConstructor, 0, playerHand, undefined, undefined, waitMessage);
-            client.players.set(member.id, newPlayerConstructor);
+            //Move playerConstructor to class
+            //const newPlayerConstructor = new playerConstructor(member.id, newChannelConstructor, 0, playerHand, undefined, undefined, waitMessage);
+            //client.players.set(member.id, newPlayerConstructor);
         }
 
-        const game = {
+        /* Move all these to class.
+        const game: Game = {
             currentcardzar: czarid,
-            blackcard: blackCard[0],
+            blackcard: blackCard,
             deck: deck,
             gamestarted: false,
-            gamestate: undefined,
-            playerselect: []
+            gamestate: "SETUP"
         }
 
         client.cahgame.set(message.guild.id, game);
@@ -104,19 +111,22 @@ export default class implements Command{
         }
         client.cahgame.get(message.guild.id).gamestarted = true;
         client.cahgame.get(message.guild.id).gamestate = "SELECT";
-        console.log(deck.deckwhitecards.length);*/
+        console.log(deck.deckwhitecards.length);
+        */
     }
 }
 
-function setSelector(ranNum: number){
-    const packNames: Packname = existsSync("./cards_against_humanity/official/packs.json") ? JSON.parse(readFileSync("./cards_against_humanity/official/packs.json", "utf-8")) : {};
-    if(!Object.entries(packNames).length) return console.log(`No packNames`);
+function setSelector(ranNum: number): string[] | null{
+    const packNames: AvailablePacks = existsSync("./cards_against_humanity/official/packs.json") ? JSON.parse(readFileSync("./cards_against_humanity/official/packs.json", "utf-8")) : {};
+    if(!Object.entries(packNames).length) return null;
     const { packs } = packNames;
-    const shuffledNumbers = shuffle(packs.length, ranNum);
-    return packs.filter((p, i) => shuffledNumbers.includes(i)).map(p => p.id);
+    const shuffledNumbers = <number[]>shuffle(packs.length, ranNum);
+    return packs
+        .filter((p, i: number) => shuffledNumbers.includes(i))
+        .map((p: AvailablePack) => p.id);
 }
 
-function loadDeck(setnames = []){
+function loadDeck(setnames: string[] = []): Deck{
     const packnames = [];
     const blackcards =[];//{content: "This is a test card", pick: 3, draw: 1}];
     const whitecards = [];

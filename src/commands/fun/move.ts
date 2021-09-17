@@ -28,7 +28,7 @@ export default class implements Command {
 
         const AvailableChannels = [...message.guild.channels.cache.filter(c => c.type === "GUILD_VOICE" && c.id !== inChannel.id).values()];
         const Moves = !amount ? 4 : amount === "1" ? 2 : parseInt(amount, 10) - 1;
-        const RanChannels = await shuffle(AvailableChannels.length, Moves);
+        const RanChannels = await <number[]>shuffle(AvailableChannels.length, Moves);
 
         if(Moves && AvailableChannels.length){
             for(const channel of RanChannels){
