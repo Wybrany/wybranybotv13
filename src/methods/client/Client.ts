@@ -3,6 +3,7 @@ import { Command } from "src/interfaces/client.interface";
 import { Guildsettings } from "src/interfaces/guildsettings.interface";
 import { Cooldown } from "src/interfaces/cooldown.interface";
 import { Game } from "src/interfaces/cah.interface";
+import { Vote } from "src/interfaces/vote.interface";
 
 export default class extends Client {
 
@@ -16,6 +17,8 @@ export default class extends Client {
     public cahsettings: Map<string, {}>;
     public cahgame: Map<string, Game>;
     public cahlog: string[];
+
+    public currentVote: Map<string, Vote>
 
     constructor(){
         super({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
@@ -34,5 +37,8 @@ export default class extends Client {
         this.cahsettings = new Map();
         this.cahgame = new Map();
         this.cahlog = [];
+
+        //Votecommands
+        this.currentVote = new Map();
     }
 }

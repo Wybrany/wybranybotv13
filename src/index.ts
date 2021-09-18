@@ -5,7 +5,7 @@ import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
-import { GuildChannel, GuildChannelManager } from "discord.js";
+import { GuildChannel, GuildChannelManager, GuildMember } from "discord.js";
 
 dotenv.config();
 const discord_token = process.env.TOKEN as string;
@@ -34,9 +34,30 @@ client.on("ready", async () => {
             await channel.send({content: ''});
         }
     }*/
-})
+});
 
-client.on("messageCreate", message => {
+client.on('interactionCreate', async interaction => {
+    //Should split up the code here later and check for different commands that utilizes different buttons.
+    //Eg. with customid that I split up with command-buttonname-id, where id could either be guild or member.
+	if (!interaction.isButton()) return;
+	const { user, customId } = interaction;
+    if(client.currentVote.has(user.id) || !client.currentVote.size) return;
+    const [ type, id ] = customId.split("-");
+    if(!client.currentVote.has(id)) return;
+    const currentVote = client.currentVote.get(id);
+
+    const member = interaction.guild?.members.cache.get(user.id);
+    if(!member) return;
+    const answer = type === "buttonNo" ? "NO" : "YES";
+    const getVote = currentVote?.getVote(member);
+    if(!getVote) currentVote?.addVote(member, answer);
+    else if(getVote.vote !== answer) currentVote?.updateVote(member, answer);
+    
+    await interaction.deferUpdate();
+});
+
+
+client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
     if(!message.content.startsWith(guildprefix)) checkForMention(message, client, guildprefix);

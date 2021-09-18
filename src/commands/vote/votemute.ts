@@ -1,6 +1,8 @@
 import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
+import { Vote } from "../../interfaces/vote.interface";
+import { Vote_Class } from "../../methods/vote/vote";
 
 export default class implements Command{
     name = "votemute";
@@ -11,9 +13,11 @@ export default class implements Command{
     permission = Permissions.FLAGS.ADMINISTRATOR;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-
+        
         const [ target, time ] = args;
         if(!message.guild) return message.reply({content: 'Something went wrong. Please try again later.'});
+        if(!message.guild.members.cache.get(message.author.id)?.voice.channel)
+            return message.reply({content: 'You must be in a voicechannel to use this command.'});
 
         const mention = message.mentions.users.first() || message.guild.members.cache.get(target) || null;
         if(!mention) return message.reply({content: "You need to tag a member or provide an id."});
@@ -21,20 +25,35 @@ export default class implements Command{
         const member = message.guild.members.cache.get(mention.id);
         if(!member) return message.reply({content: `That user isn't in this server`});
 
-        //const inChannel = member.voice.channel;
-        //if(!inChannel) return message.reply({content: "User must be in a voicechannel."});
+        if(client.currentVote.size && client.currentVote.has(member.id)) return message.reply({content: `**${member.user.tag}** already has a pending vote.`});
+
+        const inChannel = member.voice.channel;
+        if(!inChannel) return message.reply({content: "User must be in a voicechannel."});
+
+        const members = [...inChannel.members.values()].filter(m => m.id !== member.id);
 
         const embed = new MessageEmbed()
-            .setTitle(`Voting to mute ${member.nickname}.`)
-            .setDescription(``)
-            .setTimestamp()
+            .setTitle(`Voting to mute ${member.user.tag}.`)
+            .setThumbnail(member.user.displayAvatarURL())
+            .setDescription(`Vote "YES" or "NO" if you want to mute this user.\n\n0/${members.length} has voted.`)
+            .setTimestamp();
 
-        const buttonYes = new MessageButton();
-        const buttonNo = new MessageButton();
+        const buttonYes = new MessageButton()
+            .setCustomId(`buttonYes-${member.user.id}`)
+            .setLabel("Yes")
+            .setStyle("SUCCESS");
+
+        const buttonNo = new MessageButton()
+            .setCustomId(`buttonNo-${member.user.id}`)
+            .setLabel("No")
+            .setStyle("DANGER");
 
         const interaction = new MessageActionRow()
             .addComponents(buttonYes, buttonNo);
-        
-        message.channel.send({embeds: [embed], components: [interaction]});
+
+        const newMessage = await message.channel.send({embeds: [embed], components: [interaction]});
+        const newVote = new Vote_Class(member, members, newMessage, embed, buttonYes, buttonNo, interaction);
+        client.currentVote.set(member.id, newVote);
+        client.currentVote.get(member.id)?.startTimer();
     }
 }
