@@ -4,6 +4,7 @@ import { Guildsettings } from "src/interfaces/guildsettings.interface";
 import { Cooldown } from "src/interfaces/cooldown.interface";
 import { Game } from "src/interfaces/cah.interface";
 import { Vote } from "src/interfaces/vote.interface";
+import { MusicConstructorInterface } from "src/interfaces/music.interface";
 
 export default class extends Client {
 
@@ -17,6 +18,8 @@ export default class extends Client {
     public cahsettings: Map<string, {}>;
     public cahgame: Map<string, Game>;
     public cahlog: string[];
+
+    public music: Map<string, MusicConstructorInterface>
 
     public currentVote: Map<string, Vote>
 
@@ -37,6 +40,9 @@ export default class extends Client {
         this.cahsettings = new Map();
         this.cahgame = new Map();
         this.cahlog = [];
+
+        //Musiccommand
+        this.music = new Map();
 
         //Votecommands
         this.currentVote = new Map();

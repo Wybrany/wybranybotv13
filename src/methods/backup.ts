@@ -16,7 +16,8 @@ export const savefiledata = (client: Modified_Client, guildid: string) => {
         const settings = client.guildsettings.get(guildid);
         const newData = {
             guildid: guildid,
-            prefix: settings?.prefix ?? null
+            prefix: settings?.prefix ?? null,
+            musicChannel: settings?.musicChannel ?? null
         }
         const filePath = join(guildFolderPath, "guilddata.json");
         writeFileSync(filePath, JSON.stringify(newData, null, "\t"));
@@ -34,11 +35,12 @@ export const loadfiledata = (client: Modified_Client) => {
         const finalPath = join(backupPath, guildid, "guilddata.json");
         if(!existsSync(finalPath)) return console.warn(`Missing file while loading => ${finalPath}`);
         const data: Guildsettings = JSON.parse(readFileSync(finalPath, "utf-8"));
-        const { prefix = `${process.env.PREFIX as string}` } = data;
+        const { prefix = `${process.env.PREFIX as string}`, musicChannel = null } = data;
         const newData = {
              guildid,
              prefix
         }
+        if(musicChannel !== null) Object.assign(newData, {musicChannel});
         client.guildsettings.set(guildid, newData);
     }
     console.log(`Successfully loaded some guilddata.`);

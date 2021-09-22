@@ -1,6 +1,7 @@
 import { ColorResolvable, GuildManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { promisify } from "util";
 import { Vote, CurrentVotes } from "../../interfaces/vote.interface";
+import Modified_Client from "../client/Client";
 
 const wait = promisify(setTimeout);
 
@@ -61,8 +62,8 @@ export class Vote_Class implements Vote {
         const vote: CurrentVotes | undefined = this.currentVotes.find(vote => vote.member.id === member.id);
         return vote ?? null;
     }
-    startTimer(){
-        this.timer = setTimeout(() => this.checkVotes(this.currentVotes), this.timerLength);
+    startTimer(client: Modified_Client){
+        this.timer = setTimeout(() => this.checkVotes(client), this.timerLength);
     }
     stopTimer(){
         clearTimeout(this.timer);
@@ -77,10 +78,11 @@ export class Vote_Class implements Vote {
         guildMember.voice.setMute(true, "Voted by other guildmembers");
         this.updateEmbed("SUCCESS")
     }
-    checkVotes(currentVotes: CurrentVotes[]){
-        const yesVotes = currentVotes.filter(vote => vote.vote === "YES");
-        if(yesVotes.length > (Math.floor(currentVotes.length / 2))) this.muteMember(this.target);
-        else this.updateEmbed("FAILED")
+    checkVotes(client: Modified_Client){
+        const yesVotes = this.currentVotes.filter(vote => vote.vote === "YES");
+        if(yesVotes.length > (Math.floor(this.currentVotes.length / 2))) this.muteMember(this.target);
+        else this.updateEmbed("FAILED");
+        client.currentVote.delete(this.target.id);
     }
     updateEmbed(type: "FAILED" | "SUCCESS" | "VOTE"){
         switch(type){

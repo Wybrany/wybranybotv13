@@ -10,7 +10,7 @@ export default class implements Command{
     category = "vote";
     description = "Create a poll where you can vote to mute someone.";
     usage = "votemute <@mention>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = Permissions.FLAGS.SEND_MESSAGES;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
@@ -54,6 +54,6 @@ export default class implements Command{
         const newMessage = await message.channel.send({embeds: [embed], components: [interaction]});
         const newVote = new Vote_Class(member, members, newMessage, embed, buttonYes, buttonNo, interaction);
         client.currentVote.set(member.id, newVote);
-        client.currentVote.get(member.id)?.startTimer();
+        client.currentVote.get(member.id)?.startTimer(client);
     }
 }

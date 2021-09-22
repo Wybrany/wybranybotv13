@@ -23,7 +23,7 @@ client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
     client.user?.setActivity({type: "WATCHING", name: "dedu"});
     await loadfiledata(client);
-
+    
     /*const gayboiis = "456094195187449868";
 
     const guild = client.guilds.cache.get(gayboiis);

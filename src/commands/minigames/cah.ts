@@ -1,5 +1,4 @@
 //@ts-nocheck
-
 import { Message, MessageEmbed, Collection, GuildMember, Permissions, GuildChannel, ThreadChannel, TextChannel, Guild, Role, GuildChannelManager, GuildChannelCreateOptions, PermissionOverwrites, GuildChannelResolvable, CategoryChannelResolvable, CategoryChannel, OverwriteResolvable } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
@@ -18,8 +17,14 @@ export default class implements Command{
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
+        if(!message.guild) return message.reply({content: 'Something went wrong. Please try again later.'});
+        if(!message.member?.voice.channel) return message.reply({content: `You need to be in a voicechannel to use this command.`});
+        if(client.cahgame.has(message.guild.id)) return message.reply({content: 'A game is already running.'});
+
+        
+
         return;
-        if(!message.guild) return;
+        /*if(!message.guild) return;
         const [] = args;
         
         const cahparent = message.guild.channels.cache.find(c => c.name.toLowerCase() === "cah" && c.type === "GUILD_CATEGORY");
@@ -85,7 +90,7 @@ export default class implements Command{
             //Move playerConstructor to class
             //const newPlayerConstructor = new playerConstructor(member.id, newChannelConstructor, 0, playerHand, undefined, undefined, waitMessage);
             //client.players.set(member.id, newPlayerConstructor);
-        }
+        }*/
 
         /* Move all these to class.
         const game: Game = {
