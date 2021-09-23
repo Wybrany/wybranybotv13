@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, TextChannel } from "discord.js";
+import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, TextChannel, MessageSelectMenu } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { MusicChannel } from "../../interfaces/music.interface";
@@ -8,7 +8,7 @@ export default class implements Command{
     name = "music";
     aliases = [];
     category = "music";
-    description = "The channel this command is triggered on will become your music channel.";
+    description = "The channel this command is used on will become your music channel.";
     usage = "music";
     permission = Permissions.FLAGS.ADMINISTRATOR;
 
@@ -27,39 +27,78 @@ export default class implements Command{
             if(prevMessage) prevMessage.delete();
         }
         const musicEmbed = new MessageEmbed()
-            .setTitle("Something")
-            .setDescription("Hello world")
+            .setTitle(`Idle - Not playing anything`)
+            .setDescription(`
+                Use ${guildSettings?.prefix ?? process.env.PREFIX}help music to display all available commands.
+                
+                To play something, use the play command as usual! The buttons below will help you navigate through songs easier.
+                
+                You can pause/resume, skip and stop the bot. You can also toggle Loop and shuffle with the buttons! 
+                
+                The Song Queue will show up songs queued up to 25 songs. If you select any of the songs in the queue, you will play that song! Do note that the current song will be skipped.
+            
+                If the buttons are not to your liking, you can always use the usual commands.
+            `)
             .setColor("BLUE")
-            .setFooter("Some text")
+            .setFooter(``)
             .setTimestamp()
         
-        const playButton = new MessageButton()
-            .setCustomId(`button-play-${message.guild.id}`)
-            .setLabel("Play")
-            .setStyle("PRIMARY");
-
-        const pauseButton = new MessageButton()
-            .setCustomId(`button-pause-${message.guild.id}`)
+        const playPauseButton = new MessageButton()
+            .setCustomId(`buttonPlayPause-${message.guild.id}`)
             .setLabel("Pause")
-            .setStyle("PRIMARY");
+            .setStyle("PRIMARY")
+            .setEmoji("⏯️")
 
         const skipButton = new MessageButton()
-            .setCustomId(`button-skip-${message.guild.id}`)
+            .setCustomId(`buttonSkip-${message.guild.id}`)
             .setLabel("Skip")
-            .setStyle("PRIMARY");
+            .setStyle("PRIMARY")
+            .setEmoji("⏭️")
 
-        const interaction = new MessageActionRow()
-            .addComponents(playButton, pauseButton, skipButton);
+        const stopButton = new MessageButton()
+            .setCustomId(`buttonStop-${message.guild.id}`)
+            .setLabel("Stop")
+            .setStyle("PRIMARY")
+            .setEmoji("⏹️")
         
-        const newMessage = await message.channel.send({embeds: [musicEmbed], components: [interaction]});
+        const loopButton = new MessageButton()
+            .setCustomId(`buttonLoop-${message.guild.id}`)
+            .setLabel(`Loop`)
+            .setStyle("DANGER")
+            .setEmoji("🔄")
+
+        const shuffleButton = new MessageButton()
+            .setCustomId(`buttonShuffle-${message.guild.id}`)
+            .setLabel(`Shuffle`)
+            .setStyle("DANGER")
+            .setEmoji("🔀")
+
+        const firstButtons = new MessageActionRow()
+            .addComponents(playPauseButton, stopButton, skipButton, loopButton, shuffleButton);
+
+        const selectButton = new MessageSelectMenu()
+            .setCustomId(`selectSongQueue-${message.guild.id}`)
+            .setPlaceholder("Song Queue")
+            .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
+            .setDisabled()
+
+        const songQueue = new MessageActionRow()
+            .addComponents(selectButton)
+        
+        const newMessage = await message.channel.send({embeds: [musicEmbed], components: [firstButtons, songQueue]});
         const musicChannel: MusicChannel = {
             guildid: message.guild.id,
             channelid: message.channel.id,
             embedid: newMessage.id,
             buttons: {
-                playbutton: <string>playButton.customId, 
-                pausebutton: <string>pauseButton.customId,
-                skipbutton: <string>skipButton.customId
+                playpausebutton: <string>playPauseButton.customId, 
+                skipbutton: <string>skipButton.customId,
+                stopbutton: <string>stopButton.customId,
+                loopbutton: <string>loopButton.customId,
+                shufflebutton: <string>shuffleButton.customId
+            },
+            songqueue: {
+                songqueue: <string>selectButton.customId
             }
         }
 

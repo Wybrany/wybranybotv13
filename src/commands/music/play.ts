@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, Permissions, VoiceChannel } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
@@ -26,15 +26,24 @@ export default class implements Command{
         if(!message.member?.voice.channel) 
             return deleteMessage(`You need to be in a voicechannel to use this command.`, message, 5000);
         
+        const permissions = message.member.voice.channel.permissionsFor(client?.user ?? "");
+        if(!permissions?.has("CONNECT") || !permissions.has("SPEAK"))
+            return deleteMessage(`I need permissions to join and speak in your voicechannel.`, message, 5000);
+
         if(client.guildsettings.get(message.guild.id)?.musicChannel?.channelid !== message.channel.id)
             return deleteMessage(`You can only use this command at <#${client.guildsettings.get(message.guild.id)?.musicChannel?.channelid}>`, message, 5000)
 
         if(!search) return deleteMessage(`You need to give me something to search for.`, message);
 
         const song = await getSongInfo(search, message.author.id);
-        if(!song) return deleteMessage(`I could not find any results for **${search}**`, message, 5000);
-        
+        if(!song) return deleteMessage(`I could not find any results for **${search}**`, message);
 
-        
+        if(!client.music.has(message.guild.id)) client.music.set(message.guild.id, new MusicConstructor(message.guild));
+        const currentPlayer = client.music.get(message.guild.id);
+        if(!currentPlayer)
+            return deleteMessage(`Something went wrong. Please try again later.`, message, 5000);
+        if(!currentPlayer.get_current_channel()) currentPlayer.set_current_channel(<VoiceChannel>message.member.voice.channel);
+
+        currentPlayer?.add_queue(song);
     }
 }

@@ -1,16 +1,23 @@
-import { Guild } from "discord.js";
+import { Guild, VoiceChannel } from "discord.js";
 
 export interface MusicChannel {
     guildid: string;
     channelid: string;
     embedid: string;
     buttons: EmbedButtons;
+    songqueue: SelectSongQueue;
+}
+
+export interface SelectSongQueue{
+    songqueue: string;
 }
 
 export interface EmbedButtons {
-    playbutton: string;
-    pausebutton: string;
+    playpausebutton: string;
+    stopbutton: string;
     skipbutton: string;
+    loopbutton: string;
+    shufflebutton: string;
 }
 
 export interface MusicConstructorInterface {
@@ -23,10 +30,11 @@ export interface MusicConstructorInterface {
     pause: () => void;
     resume: () => void;
     seek: () => void;
-    add_queue: () => void;
-    remove_queue: () => void;
-    show_queue: () => void;
+    add_queue: (song: Song) => void;
+    remove_queue: (song: Song) => void;
     update_embed: () => void;
+    get_current_channel: () => VoiceChannel | null;
+    set_current_channel: (channel: VoiceChannel) => void;
 }
 
 export interface Song {

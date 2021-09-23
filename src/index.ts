@@ -6,6 +6,7 @@ import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
 import { GuildChannel, GuildChannelManager, GuildMember } from "discord.js";
+import { generateDependencyReport } from "@discordjs/voice";
 
 dotenv.config();
 const discord_token = process.env.TOKEN as string;
@@ -23,7 +24,7 @@ client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
     client.user?.setActivity({type: "WATCHING", name: "dedu"});
     await loadfiledata(client);
-    
+    console.log(generateDependencyReport());
     /*const gayboiis = "456094195187449868";
 
     const guild = client.guilds.cache.get(gayboiis);
