@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow } from "discord.js";
+import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, VoiceChannel } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { Vote } from "../../interfaces/vote.interface";
@@ -27,11 +27,11 @@ export default class implements Command{
 
         if(client.currentVote.size && client.currentVote.has(member.id)) return message.reply({content: `**${member.user.tag}** already has a pending vote.`});
 
-        const inChannel = member.voice.channel;
+        const inChannel = member.voice.channel as VoiceChannel | null;
         if(!inChannel) return message.reply({content: "User must be in a voicechannel."});
 
         const members = [...inChannel.members.values()].filter(m => m.id !== member.id);
-
+        
         const embed = new MessageEmbed()
             .setTitle(`Voting to mute ${member.user.tag}.`)
             .setThumbnail(member.user.displayAvatarURL())

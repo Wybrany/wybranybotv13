@@ -1,4 +1,12 @@
-import { Guild, VoiceChannel } from "discord.js";
+import { AudioPlayer } from "@discordjs/voice";
+import { Guild, Interaction, VoiceChannel } from "discord.js";
+
+export type MusicButtons = 
+    "buttonPlayPause" | 
+    "buttonSkip" | 
+    "buttonStop" | 
+    "buttonLoop" |
+    "buttonShuffle"
 
 export interface MusicChannel {
     guildid: string;
@@ -22,17 +30,29 @@ export interface EmbedButtons {
 
 export interface MusicConstructorInterface {
 
-    guild: Guild;
-    queue: Song[] | [];
+    guild: Guild
+    musicChannel: MusicChannel;
+    queue: Song[];
+
+    shuffle: boolean;
+    loop: boolean;
+    paused: boolean;
+
+    channel: VoiceChannel | null;
+    player: AudioPlayer | null;
+    current_song: Song | null;
 
     play: () => void;
-    stop: () => void;
-    pause: () => void;
-    resume: () => void;
+    stop: (interaction?: Interaction) => void;
+    toggle_pause: (interaction: Interaction) => void;
     seek: () => void;
+    skip: (interaction: Interaction) => void;
+    shift: (index: number) => void;
+    toggle_loop: (interaction: Interaction) => void;
+    toggle_shuffle: (interaction: Interaction) =>  void;
     add_queue: (song: Song) => void;
     remove_queue: (song: Song) => void;
-    update_embed: () => void;
+    update_embed: (state: 'NOWPLAYING' | 'QUEUE' | 'STOPPED' | 'PAUSED') => void;
     get_current_channel: () => VoiceChannel | null;
     set_current_channel: (channel: VoiceChannel) => void;
 }

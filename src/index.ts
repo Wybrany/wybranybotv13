@@ -5,8 +5,11 @@ import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
-import { GuildChannel, GuildChannelManager, GuildMember } from "discord.js";
 import { generateDependencyReport } from "@discordjs/voice";
+import { MusicButtons } from "./interfaces/music.interface";
+import { VoteButtons } from "./interfaces/vote.interface";
+import { MusicConstructor } from "./methods/music/music";
+import { ButtonInteraction, SelectMenuInteraction, VoiceChannel } from "discord.js";
 
 dotenv.config();
 const discord_token = process.env.TOKEN as string;
@@ -24,39 +27,87 @@ client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
     client.user?.setActivity({type: "WATCHING", name: "dedu"});
     await loadfiledata(client);
-    console.log(generateDependencyReport());
-    /*const gayboiis = "456094195187449868";
-
-    const guild = client.guilds.cache.get(gayboiis);
-    if(guild){
-        const channels = [...guild.channels.cache.filter(c => c.type === "GUILD_TEXT").values()];
-        for(const channel of channels){
-            if(channel.type !== "GUILD_TEXT") continue;
-            await channel.send({content: ''});
-        }
-    }*/
+    //console.log(generateDependencyReport());
 });
+
+client.on("voiceStateUpdate", (oldState, newState) => {
+    if(newState.id !== client.user?.id) return;
+    const newchannel = newState.channel as VoiceChannel | null;
+    if(!newchannel || newState.channel?.id){
+        if(client.music.has(newState.guild.id)) {
+            client.music.delete(newState.guild.id);
+            return;
+        }
+    }
+})
 
 client.on('interactionCreate', async interaction => {
     //Should split up the code here later and check for different commands that utilizes different buttons.
     //Eg. with customid that I split up with command-buttonname-id, where id could either be guild or member.
-	if (!interaction.isButton()) return;
-	const { user, customId } = interaction;
-    if(client.currentVote.has(user.id) || !client.currentVote.size) return;
-    const [ type, id ] = customId.split("-");
-    if(!client.currentVote.has(id)) return;
-    const currentVote = client.currentVote.get(id);
+    if(!interaction.guild) return;
+    const music = client.music.has(interaction.guild.id) ? client.music.get(interaction.guild.id) as MusicConstructor : null;
 
-    const member = interaction.guild?.members.cache.get(user.id);
-    if(!member) return;
-    const answer = type === "buttonNo" ? "NO" : "YES";
-    const getVote = currentVote?.getVote(member);
-    if(!getVote) currentVote?.addVote(member, answer);
-    else if(getVote.vote !== answer) currentVote?.updateVote(member, answer);
+	if (interaction.isButton()) {
+        const { user, customId } = interaction as ButtonInteraction;
+        const [ type, id ] = customId.split("-");
+
+        switch(type as MusicButtons | VoteButtons){
+            case 'buttonYes':
+            case 'buttonNo':
+                if(client.currentVote.has(user.id) || !client.currentVote.size) return;
+                if(!client.currentVote.has(id)) return;
+                const currentVote = client.currentVote.get(id);
+            
+                const member = interaction.guild.members.cache.get(user.id);
+                if(!member) return;
+                const answer = type === "buttonNo" ? "NO" : "YES";
+                const getVote = currentVote?.getVote(member);
+                if(!getVote) currentVote?.addVote(member, answer);
+                else if(getVote.vote !== answer) currentVote?.updateVote(member, answer);
+                
+            break;
     
-    await interaction.deferUpdate();
-});
+            case 'buttonLoop': if(music) music.toggle_loop(interaction);
+            break;
+    
+            case 'buttonShuffle': if(music) music.toggle_shuffle(interaction);
+            break;
+    
+            case 'buttonSkip': if(music) music.skip(interaction);
+            break;
+    
+            case 'buttonStop': if(music) music.stop(interaction);
+            break;
+    
+            case 'buttonPlayPause': if(music) music.toggle_pause(interaction);
+            break;
 
+            default:
+            break;
+        }
+        await interaction.deferUpdate();
+    }
+    else if(interaction.isSelectMenu()){
+        const { user, customId } = interaction as SelectMenuInteraction;
+        const [ type, id ] = customId.split("-");
+        switch(type as "selectSongQueue" | "removeSongQueue"){
+            case 'selectSongQueue':
+                const firstSong = interaction.values.shift() as string;
+                const [ index, songLink ] = firstSong.split("-");
+                const songIndex = parseFloat(index);
+                music?.shift(songIndex)
+            break;
+
+            case 'removeSongQueue':
+            break;
+
+            default:
+            break;
+        }
+        //Handle queue/skip/remove menus for music
+        await interaction.deferUpdate();
+    }
+});
 
 client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
@@ -84,15 +135,6 @@ client.on("messageCreate", async message => {
         return;
     }
 
-    //Check for nsfw property on channels later
-    /*if(command.nsfw !== undefined && command.nsfw){
-        const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT");
-        if(!channels.size) return;
-        const text = channels.map(channel => `<#${channel.id}>`).join(`, `);  
-        message.reply({content: `The command, **${command.name}**, can only be used in NSFW channels: ${text}`});
-        return;
-    }*/
-
     if(message.author.id === OwnerId) return command.run(client, message, args);
     if(!message.member.permissions.has(command.permission)){
         message.reply({content: `You don't have permission to use this command.`});
@@ -107,8 +149,7 @@ client.on("messageCreate", async message => {
         return;
     }
 
-    //Handling cooldown logic
-
+    //Handling cooldowns
     if(!client.guildUsedCommandRecently.has(message.guild.id)) 
     client.guildUsedCommandRecently.set(message.guild.id, new Guild_used_command_recently(message.guild.id));
 

@@ -11,6 +11,7 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "music";
     permission = Permissions.FLAGS.ADMINISTRATOR;
+    developerMode=true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         await message.delete();
@@ -19,10 +20,10 @@ export default class implements Command{
         const guildSettings = client.guildsettings.get(message.guild.id);
         
         //If there was a previous musicChannel, delete that message
-        //Because we don't want conflicting buttons;
+        //Because we don't want conflicting buttons, not that it really matter tho but anyways;
         if(guildSettings?.musicChannel && message.guild.channels.cache.has(guildSettings?.musicChannel?.channelid ?? "")){
             const { channelid, embedid } = guildSettings.musicChannel;
-            const channel = <TextChannel>message.guild.channels.cache.get(channelid);
+            const channel = message.guild.channels.cache.get(channelid) as TextChannel;
             const prevMessage = await channel.messages.fetch(embedid).catch(e => console.log(e));
             if(prevMessage) prevMessage.delete();
         }
@@ -47,30 +48,35 @@ export default class implements Command{
             .setCustomId(`buttonPlayPause-${message.guild.id}`)
             .setLabel("Pause")
             .setStyle("PRIMARY")
+            .setDisabled(true)
             .setEmoji("⏯️")
 
         const skipButton = new MessageButton()
             .setCustomId(`buttonSkip-${message.guild.id}`)
             .setLabel("Skip")
             .setStyle("PRIMARY")
+            .setDisabled(true)
             .setEmoji("⏭️")
 
         const stopButton = new MessageButton()
             .setCustomId(`buttonStop-${message.guild.id}`)
             .setLabel("Stop")
             .setStyle("PRIMARY")
+            .setDisabled(true)
             .setEmoji("⏹️")
         
         const loopButton = new MessageButton()
             .setCustomId(`buttonLoop-${message.guild.id}`)
             .setLabel(`Loop`)
             .setStyle("DANGER")
+            .setDisabled(true)
             .setEmoji("🔄")
 
         const shuffleButton = new MessageButton()
             .setCustomId(`buttonShuffle-${message.guild.id}`)
             .setLabel(`Shuffle`)
             .setStyle("DANGER")
+            .setDisabled(true)
             .setEmoji("🔀")
 
         const firstButtons = new MessageActionRow()
@@ -80,7 +86,7 @@ export default class implements Command{
             .setCustomId(`selectSongQueue-${message.guild.id}`)
             .setPlaceholder("Song Queue")
             .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
-            .setDisabled()
+            .setDisabled(true)
 
         const songQueue = new MessageActionRow()
             .addComponents(selectButton)
