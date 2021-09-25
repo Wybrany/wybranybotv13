@@ -19,7 +19,6 @@ export default class implements Command{
         if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
         const search = args.join(" ");
 
-        console.log(search)
         const musicChannel = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id) : null;
 
         if(!client.guildsettings.size || !client.guildsettings.has(message.guild.id) || !musicChannel?.musicChannel){
@@ -46,8 +45,9 @@ export default class implements Command{
         if(!client.music.get(message.guild.id))
             return deleteMessage(`Something went wrong. Please try again later.`, message, 5000);
 
-        if(!client.music.get(message.guild.id)?.get_current_channel()) client.music.get(message.guild.id)?.set_current_channel(message.member.voice.channel as VoiceChannel);
+        if(!client.music.get(message.guild.id)?.get_current_channel()) 
+            client.music.get(message.guild.id)?.set_current_channel(message.member.voice.channel as VoiceChannel);
         
-        return client.music.get(message.guild.id)?.add_queue(song);
+        client.music.get(message.guild.id)?.add_queue(song);
     }
 }

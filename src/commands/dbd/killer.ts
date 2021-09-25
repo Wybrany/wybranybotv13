@@ -222,9 +222,9 @@ export default class implements Command {
 
         //If there are any killers to randomize, do so. Including addons.
         if(newKillerList.length) {
-            killerNum = shuffle(newKillerList.length, 1)[0];
+            killerNum = shuffle(newKillerList.length, 1) as number;
             addonLength = newKillerList[killerNum].addons.length;
-            addonNum = shuffle(addonLength, addonLimit);
+            addonNum = shuffle(addonLength, addonLimit) as number[];
             ranKiller = newKillerList[killerNum].name;
             addonNum.forEach(n => ranAddons.push(newKillerList[killerNum].addons[n]));
         }
@@ -251,7 +251,7 @@ export default class implements Command {
         //If there are any perks to randomize, do so. Check for perklimit, sort the pages according to DBD, assign page numbers, and return;
         if(newKillerPerks.length) {
             if(!(newKillerPerks.length >= perkLimit)) perkLimit = newKillerPerks.length;
-            perkNum = shuffle(newKillerPerks.length, perkLimit);
+            perkNum = shuffle(newKillerPerks.length, perkLimit) as number[];
 
             sortedPerkList = currentKillerPerks.sort(compare);
             //greenPerks = currentKillerPerks.filter(perk => perk.color === "GREEN").sort(compare);
@@ -274,7 +274,7 @@ export default class implements Command {
 
         //If there are any offerings to ranomize, do so.
         if(newMapOfferings.length) {
-            offerNum = shuffle(newMapOfferings.length, 1)[0];
+            offerNum = shuffle(newMapOfferings.length, 1) as number;
             ranOffer = newMapOfferings[offerNum].name;
         }
 

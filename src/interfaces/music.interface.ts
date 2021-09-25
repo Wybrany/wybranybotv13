@@ -1,4 +1,4 @@
-import { AudioPlayer } from "@discordjs/voice";
+import { AudioPlayer, AudioResource } from "@discordjs/voice";
 import { Guild, Interaction, VoiceChannel } from "discord.js";
 
 export type MusicButtons = 
@@ -41,9 +41,10 @@ export interface MusicConstructorInterface {
     channel: VoiceChannel | null;
     player: AudioPlayer | null;
     current_song: Song | null;
+    resource: AudioResource<Song> | null;
 
     play: () => void;
-    stop: (interaction?: Interaction) => void;
+    stop: (interaction?: Interaction, leave?: boolean) => void;
     toggle_pause: (interaction: Interaction) => void;
     seek: () => void;
     skip: (interaction: Interaction) => void;

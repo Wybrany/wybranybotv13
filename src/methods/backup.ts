@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFile, writeFileSync } from "fs";
 import Modified_Client from "./client/Client";
-import { join } from "node:path";
+import { join } from "path";
 import { Guildsettings } from "../interfaces/guildsettings.interface";
 
 const backupPath = "./backup";

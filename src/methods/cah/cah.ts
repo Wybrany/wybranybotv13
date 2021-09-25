@@ -1,6 +1,6 @@
 import { ChannelConstructor, PlayerConstructor, Game, Deck, BlackCard, Gamestate } from "../../interfaces/cah.interface";
 
-class CAHGame implements Game {
+/*class CAHGame implements Game {
     public currentcardzar: string;
     public blackcard: BlackCard;
     public deck: Deck;
@@ -13,4 +13,4 @@ class CAHGame implements Game {
         this.blackcard
     }
     
-}
+}*/

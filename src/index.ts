@@ -33,7 +33,7 @@ client.on("ready", async () => {
 client.on("voiceStateUpdate", (oldState, newState) => {
     if(newState.id !== client.user?.id) return;
     const newchannel = newState.channel as VoiceChannel | null;
-    if(!newchannel || newState.channel?.id){
+    if(!newchannel || !newState.channel?.id){
         if(client.music.has(newState.guild.id)) {
             client.music.delete(newState.guild.id);
             return;
@@ -46,7 +46,6 @@ client.on('interactionCreate', async interaction => {
     //Eg. with customid that I split up with command-buttonname-id, where id could either be guild or member.
     if(!interaction.guild) return;
     const music = client.music.has(interaction.guild.id) ? client.music.get(interaction.guild.id) as MusicConstructor : null;
-
 	if (interaction.isButton()) {
         const { user, customId } = interaction as ButtonInteraction;
         const [ type, id ] = customId.split("-");
@@ -67,23 +66,11 @@ client.on('interactionCreate', async interaction => {
                 
             break;
     
-            case 'buttonLoop': if(music) music.toggle_loop(interaction);
-            break;
-    
-            case 'buttonShuffle': if(music) music.toggle_shuffle(interaction);
-            break;
-    
-            case 'buttonSkip': if(music) music.skip(interaction);
-            break;
-    
-            case 'buttonStop': if(music) music.stop(interaction);
-            break;
-    
-            case 'buttonPlayPause': if(music) music.toggle_pause(interaction);
-            break;
-
-            default:
-            break;
+            case 'buttonLoop':      if(music) music.toggle_loop(interaction);    break;
+            case 'buttonShuffle':   if(music) music.toggle_shuffle(interaction); break;
+            case 'buttonSkip':      if(music) music.skip(interaction);           break;
+            case 'buttonStop':      if(music) music.stop(interaction);           break;
+            case 'buttonPlayPause': if(music) music.toggle_pause(interaction);   break;
         }
         await interaction.deferUpdate();
     }
@@ -99,9 +86,7 @@ client.on('interactionCreate', async interaction => {
             break;
 
             case 'removeSongQueue':
-            break;
 
-            default:
             break;
         }
         //Handle queue/skip/remove menus for music
@@ -113,7 +98,7 @@ client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
     if(!message.content.startsWith(guildprefix)) checkForMention(message, client, guildprefix);
-
+    if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;
     if (!cmd) return;

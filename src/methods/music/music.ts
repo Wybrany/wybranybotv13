@@ -8,6 +8,7 @@ import {
     AudioResource,
     AudioPlayer,
     AudioPlayerStatus,
+    VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { MusicChannel, MusicConstructorInterface, Song, VideoDetails } from "../../interfaces/music.interface";
 import ytsr from "ytsr";
@@ -29,6 +30,7 @@ export class MusicConstructor implements MusicConstructorInterface {
     public channel: VoiceChannel | null;
     public player: AudioPlayer | null;
     public current_song: Song | null;
+    public resource: AudioResource<Song> | null;
 
     constructor(client: Modified_Client,guild: Guild, musicChannel: MusicChannel){
         this.client = client;
@@ -43,6 +45,7 @@ export class MusicConstructor implements MusicConstructorInterface {
         this.current_song = null;
         this.channel = null;
         this.player = null;
+        this.resource = null;
     }
 
     async play(): Promise<void>{
@@ -52,31 +55,36 @@ export class MusicConstructor implements MusicConstructorInterface {
             guildId: this.guild.id,
             adapterCreator: this.channel.guild.voiceAdapterCreator
         });
-        if(!connection || !this.queue.length) return this.stop();
+        if(!connection || !this.queue.length) return this.stop(undefined, true);
 
-        this.current_song = this.queue.shift() as Song;
-        console.log("play ", this.current_song ? true : false)
-        if(!this.current_song?.link) return this.play();
+        const current_song = this.queue.shift() as Song;
+        if(!current_song?.link) return this.play();
 
-        const resource = await probeAndCreateResource(this.current_song);
+        const resource = await probeAndCreateResource(current_song);
+
+        connection.on(VoiceConnectionStatus.Disconnected, () => {
+            this.stop(undefined, true);
+        })
         
-        this.player = createAudioPlayer({
+        const player = createAudioPlayer({
             debug: true,
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Pause
             }
         });
-
-        this.player.on("error", err => {
+        player.on("error", err => {
+            console.log(`Error`)
             console.error(err);
             this.play();
         })
 
-        this.player.on("stateChange", (oldState, newState) => {
+        player.on("stateChange", (oldState, newState) => {
             switch(newState.status){
                 case AudioPlayerStatus.Playing: 
                     console.log('The audio player has started playing!');
-                    if(oldState.status !== AudioPlayerStatus.Paused) this.update_embed("NOWPLAYING");
+                    if(oldState.status !== AudioPlayerStatus.Paused) {
+                        this.update_embed("NOWPLAYING");
+                    }
                 break;
 
                 case AudioPlayerStatus.Idle:
@@ -87,18 +95,20 @@ export class MusicConstructor implements MusicConstructorInterface {
                 break;
             }
         })
-
-        if(connection && this.player && resource) {
-            //console.log(resource, this.player, connection);
+        //console.log(connection, this.player, this.resource)
+        if(connection && player && resource) {
+            this.current_song = current_song;
+            this.player = player;
+            this.resource = resource;
             connection.subscribe(this.player);
-            this.player.play(resource);
+            this.player.play(this.resource);
         }
     }
-    stop(interaction?: Interaction){ 
+    stop(interaction?: Interaction, leave?: boolean){ 
         const connection = getVoiceConnection(this.guild.id);
         if(!connection) return;
         connection.destroy();
-        if(interaction){
+        if(interaction || leave){
             //Do embed stuff since a user manually stopped
             return this.update_embed("STOPPED");
         }
@@ -133,12 +143,12 @@ export class MusicConstructor implements MusicConstructorInterface {
             this.skip();
         }
     }
-    add_queue(song: Song){
+    async add_queue(song: Song): Promise<void>{
         if(!song) return;
-        console.log(this.queue.length, this.current_song ? true : false)
+        //console.log(this.player, this.queue.length, this.current_song?.title)
         if(!this.player && !this.queue.length && !this.current_song){
             this.queue.push(song);
-            return this.play();
+            return await this.play();
         }else {
             this.queue.push(song);
             this.update_embed("QUEUE");
@@ -195,7 +205,7 @@ export class MusicConstructor implements MusicConstructorInterface {
             case 'NOWPLAYING':
                 const npEmbed = embed
                     //Description could have a progressbar that updates, add an image as an album cover maybe
-                    .setTitle(`Now playing: `)
+                    .setTitle(`🎵 Now playing 🎵 `)
                     .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\nProgress bar\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
@@ -251,7 +261,7 @@ export class MusicConstructor implements MusicConstructorInterface {
             case 'QUEUE':
                 const queueEmbed = embed
                 //Description could have a progressbar that updates, add an image as an album cover maybe
-                    .setTitle(`Now playing: `)
+                    .setTitle(`🎵 Now playing 🎵`)
                     .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\nProgress bar\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
@@ -263,7 +273,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                         description: `${this.guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
                         value: `${i}-${q.link}`}))) 
                     : updatedQueue.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}).setDisabled(true);
-                await message.edit({embeds: [embed], components: [buttonRows, new MessageActionRow().addComponents(updatedQueue)]})
+                await message.edit({embeds: [queueEmbed], components: [buttonRows, new MessageActionRow().addComponents(updatedQueue)]})
             break;
 
             case 'SHUFFLE':
@@ -311,11 +321,6 @@ export class MusicConstructor implements MusicConstructorInterface {
     }
 }
 
-const createEmbedAndComponents = () => {
-    
-}
-
-
 type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING"
 
 export async function probeAndCreateResource(song: Song): Promise<AudioResource<Song>>{
@@ -323,7 +328,8 @@ export async function probeAndCreateResource(song: Song): Promise<AudioResource<
     const readable = await ytdl(song.link, {
         filter: format => 
                format.container === 'mp4' 
-            && format.audioQuality === 'AUDIO_QUALITY_MEDIUM'
+            && format.audioQuality === 'AUDIO_QUALITY_MEDIUM',
+        highWaterMark: 1<<25
     });
     //const chooseFormats = ytdl.chooseFormat(info.formats.filter(f => f.container === "mp4"), { quality: '134'});
     //const audioOnly = ytdl.filterFormats(chooseFormats, 'audioonly')

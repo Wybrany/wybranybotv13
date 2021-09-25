@@ -265,7 +265,7 @@ export default class implements Command {
 
         //If there are any survivors to randomize, do so. Including addons.
         if(newSurvivorList.length) {
-            survivorNum = shuffle(newSurvivorList.length, 1)[0];
+            survivorNum = shuffle(newSurvivorList.length, 1) as number;
             ranSurvivor = newSurvivorList[survivorNum].name;
         }
 
@@ -275,10 +275,10 @@ export default class implements Command {
         let ranAddons: string[] = [];
 
         if(newSurvivorLoadout.length){
-            itemNum = shuffle(newSurvivorLoadout.length, 1)[0];
+            itemNum = shuffle(newSurvivorLoadout.length, 1) as number;
             ranItem = newSurvivorLoadout[itemNum].name;
             if(newSurvivorLoadout[itemNum].type !== "Firecracker") {
-                addonNum = shuffle(newSurvivorLoadout[itemNum].addons.length, addonLimit); 
+                addonNum = shuffle(newSurvivorLoadout[itemNum].addons.length, addonLimit) as number[]; 
                 ranAddons = addonNum.map(n => newSurvivorLoadout[itemNum].addons[n]);
             }
         }
@@ -305,7 +305,7 @@ export default class implements Command {
         //If there are any perks to randomize, do so. Check for perklimit, sort the pages according to DBD, assign page numbers, and return;
         if(newSurvivorPerks.length) {
             if(!(newSurvivorPerks.length >= perkLimit)) perkLimit = newSurvivorPerks.length;
-            perkNum = shuffle(newSurvivorPerks.length, perkLimit);
+            perkNum = shuffle(newSurvivorPerks.length, perkLimit) as number[];
 
             sortedPerkList = currentSurvivorPerks.sort(compare);
             //greenPerks = currentSurvivorPerks.filter(perk => perk.color === "GREEN").sort(compare);
@@ -328,7 +328,7 @@ export default class implements Command {
 
         //If there are any offerings to ranomize, do so.
         if(newMapOfferings.length) {
-            offerNum = shuffle(newMapOfferings.length, 1)[0];
+            offerNum = shuffle(newMapOfferings.length, 1) as number;
             ranOffer = newMapOfferings[offerNum].name;
         }
 
