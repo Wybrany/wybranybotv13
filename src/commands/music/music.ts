@@ -97,14 +97,14 @@ export default class implements Command{
             channelid: message.channel.id,
             embedid: newMessage.id,
             buttons: {
-                playpausebutton: <string>playPauseButton.customId, 
-                skipbutton: <string>skipButton.customId,
-                stopbutton: <string>stopButton.customId,
-                loopbutton: <string>loopButton.customId,
-                shufflebutton: <string>shuffleButton.customId
+                playpausebutton: playPauseButton.customId as string, 
+                skipbutton: skipButton.customId as string, 
+                stopbutton: stopButton.customId as string, 
+                loopbutton: loopButton.customId as string, 
+                shufflebutton: shuffleButton.customId as string
             },
             songqueue: {
-                songqueue: <string>selectButton.customId
+                songqueue: selectButton.customId as string
             }
         }
 
