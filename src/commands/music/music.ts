@@ -11,7 +11,7 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "music";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode=true;
+    developerMode=false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         await message.delete();
@@ -27,18 +27,17 @@ export default class implements Command{
             const prevMessage = await channel.messages.fetch(embedid).catch(e => console.log(e));
             if(prevMessage) prevMessage.delete();
         }
+        
         const musicEmbed = new MessageEmbed()
             .setTitle(`Idle - Not playing anything`)
             .setDescription(`
                 Use ${guildSettings?.prefix ?? process.env.PREFIX}help music to display all available commands.
                 
-                To play something, use the play command as usual! The buttons below will help you navigate through songs easier.
+                To play something, use the play command as usual! The buttons will help you navigate through songs easier.
                 
                 You can pause/resume, skip and stop the bot. You can also toggle Loop and shuffle with the buttons! 
                 
-                The Song Queue will show up songs queued up to 25 songs. If you select any of the songs in the queue, you will play that song! Do note that the current song will be skipped.
-            
-                If the buttons are not to your liking, you can always use the usual commands.
+                The Song Queue will show songs queued up to 25 songs. Use the buttons below the Song Queue to toggle Select, Remove or Swap. 
             `)
             .setColor("BLUE")
             .setFooter(``)
@@ -50,7 +49,7 @@ export default class implements Command{
             .setStyle("PRIMARY")
             .setDisabled(true)
             .setEmoji("⏯️")
-
+        
         const skipButton = new MessageButton()
             .setCustomId(`buttonSkip-${message.guild.id}`)
             .setLabel("Skip")
@@ -70,7 +69,7 @@ export default class implements Command{
             .setLabel(`Loop`)
             .setStyle("DANGER")
             .setDisabled(true)
-            .setEmoji("🔄")
+            .setEmoji("🔁")
 
         const shuffleButton = new MessageButton()
             .setCustomId(`buttonShuffle-${message.guild.id}`)
@@ -82,16 +81,40 @@ export default class implements Command{
         const firstButtons = new MessageActionRow()
             .addComponents(playPauseButton, stopButton, skipButton, loopButton, shuffleButton);
 
-        const selectButton = new MessageSelectMenu()
+        const selectMenu = new MessageSelectMenu()
             .setCustomId(`selectSongQueue-${message.guild.id}`)
             .setPlaceholder("Song Queue")
             .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
             .setDisabled(true)
+        
+        const selectButton = new MessageButton()
+            .setCustomId(`buttonSelect-${message.guild.id}`)
+            .setLabel("Select Song")
+            .setStyle("SUCCESS")
+            .setDisabled(true)
+            .setEmoji("✅");
+
+        const removeButton = new MessageButton()
+            .setCustomId(`buttonRemove-${message.guild.id}`)
+            .setLabel("Remove Songs")
+            .setStyle("DANGER")
+            .setDisabled(true)
+            .setEmoji("❌");
+
+        const swapButton = new MessageButton()
+            .setCustomId(`buttonSwap-${message.guild.id}`)
+            .setLabel("Swap Songs")
+            .setStyle("DANGER")
+            .setDisabled(true)
+            .setEmoji("🔃");
+
+        const selectButtons = new MessageActionRow()
+            .addComponents(selectButton, removeButton, swapButton)
 
         const songQueue = new MessageActionRow()
-            .addComponents(selectButton)
-        
-        const newMessage = await message.channel.send({embeds: [musicEmbed], components: [firstButtons, songQueue]});
+            .addComponents(selectMenu)
+
+        const newMessage = await message.channel.send({embeds: [musicEmbed], components: [firstButtons, songQueue, selectButtons]});
         const musicChannel: MusicChannel = {
             guildid: message.guild.id,
             channelid: message.channel.id,
@@ -104,7 +127,12 @@ export default class implements Command{
                 shufflebutton: shuffleButton.customId as string
             },
             songqueue: {
-                songqueue: selectButton.customId as string
+                songqueue: selectMenu.customId as string
+            },
+            selectButtons: {
+                selectButton: selectButton.customId as string,
+                removeButton: removeButton.customId as string,
+                swapButton: swapButton.customId as string
             }
         }
 
