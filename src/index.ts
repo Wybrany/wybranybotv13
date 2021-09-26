@@ -71,22 +71,43 @@ client.on('interactionCreate', async interaction => {
             case 'buttonSkip':      if(music) music.skip(interaction);           break;
             case 'buttonStop':      if(music) music.stop(interaction);           break;
             case 'buttonPlayPause': if(music) music.toggle_pause(interaction);   break;
+
+            case 'buttonSelect': if(music) music.queue_state("SELECT", interaction); break;
+            case 'buttonRemove': if(music) music.queue_state("REMOVE", interaction); break;
+            case 'buttonSwap' : if(music) music.queue_state("SWAP", interaction); break;
         }
         await interaction.deferUpdate();
     }
     else if(interaction.isSelectMenu()){
         const { user, customId } = interaction as SelectMenuInteraction;
         const [ type, id ] = customId.split("-");
-        switch(type as "selectSongQueue" | "removeSongQueue"){
-            case 'selectSongQueue':
+        console.log(type);
+        switch(type as "selectSongQueue" | "removeSongQueue" |"swapSongQueue"){
+            case 'selectSongQueue':{
                 const firstSong = interaction.values.shift() as string;
                 const [ index, songLink ] = firstSong.split("-");
                 const songIndex = parseFloat(index);
                 music?.shift(songIndex)
+            }
             break;
 
-            case 'removeSongQueue':
+            case 'removeSongQueue':{
+                const selectedSongs = interaction.values as string[];
+                const getIndexes = selectedSongs
+                    .map(v => parseFloat(v.split("-")[0]))
+                    .sort((a,b) => b - a);
+                for(const song of getIndexes){
+                    music?.remove_queue(song, false);
+                }
+                music?.update_embed("QUEUE");
+            }
+            break;
 
+            case 'swapSongQueue':{
+                const selectedSongs = interaction.values as string[];
+                const [ song1, song2 ] = selectedSongs.map(v => parseFloat(v.split("-")[0]));
+                music?.swap_songs(song1, song2);
+            }
             break;
         }
         //Handle queue/skip/remove menus for music

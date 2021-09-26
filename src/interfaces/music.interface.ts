@@ -6,7 +6,10 @@ export type MusicButtons =
     "buttonSkip" | 
     "buttonStop" | 
     "buttonLoop" |
-    "buttonShuffle"
+    "buttonShuffle" |
+    "buttonSelect" |
+    "buttonRemove" |
+    "buttonSwap"
 
 export interface MusicChannel {
     guildid: string;
@@ -14,6 +17,13 @@ export interface MusicChannel {
     embedid: string;
     buttons: EmbedButtons;
     songqueue: SelectSongQueue;
+    selectButtons: SelectButtons;
+}
+
+export interface SelectButtons {
+    selectButton: string;
+    removeButton: string;
+    swapButton: string;
 }
 
 export interface SelectSongQueue{
@@ -28,16 +38,23 @@ export interface EmbedButtons {
     shufflebutton: string;
 }
 
+export type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING"
+
 export interface MusicConstructorInterface {
 
     guild: Guild
     musicChannel: MusicChannel;
     queue: Song[];
 
+    select: boolean;
+    remove: boolean;
+    swap: boolean;
+
     shuffle: boolean;
     loop: boolean;
     paused: boolean;
 
+    seeking: boolean;
     channel: VoiceChannel | null;
     player: AudioPlayer | null;
     current_song: Song | null;
@@ -46,14 +63,16 @@ export interface MusicConstructorInterface {
     play: () => void;
     stop: (interaction?: Interaction, leave?: boolean) => void;
     toggle_pause: (interaction: Interaction) => void;
-    seek: () => void;
+    seek: (time_s: number) => void;
     skip: (interaction: Interaction) => void;
     shift: (index: number) => void;
     toggle_loop: (interaction: Interaction) => void;
     toggle_shuffle: (interaction: Interaction) =>  void;
     add_queue: (song: Song) => void;
-    remove_queue: (song: Song) => void;
-    update_embed: (state: 'NOWPLAYING' | 'QUEUE' | 'STOPPED' | 'PAUSED') => void;
+    swap_songs: (song1: number, song2: number) => void;
+    remove_queue: (index: number, updateEmbed: boolean) => void;
+    queue_state: (state: "SELECT" | "REMOVE" | "SWAP", interaction?: Interaction) => void;
+    update_embed: (state: embed_state) => void;
     get_current_channel: () => VoiceChannel | null;
     set_current_channel: (channel: VoiceChannel) => void;
 }

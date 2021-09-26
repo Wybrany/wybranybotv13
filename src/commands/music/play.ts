@@ -11,10 +11,10 @@ export default class implements Command{
     description = "Play.";
     usage = "music < URL | ID | SEARCH_TERM >";
     permission = Permissions.FLAGS.SEND_MESSAGES;
-    //developerMode=true;
+    developerMode=false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-
+        
         await message.delete();
         if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
         const search = args.join(" ");
@@ -23,7 +23,7 @@ export default class implements Command{
 
         if(!client.guildsettings.size || !client.guildsettings.has(message.guild.id) || !musicChannel?.musicChannel){
             const guildPrefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? process.env.PREFIX : process.env.PREFIX;
-            return deleteMessage(`You need to create create a music channel. Use the command **${guildPrefix}music** in a channel that you want to use music at.`, message, 10000);
+            return deleteMessage(`You need to create create a music channel. Use the command **${guildPrefix}music** in a channel dedicated specifically for music commands.`, message, 10000);
         }
         if(!message.member?.voice.channel) 
             return deleteMessage(`You need to be in a voicechannel to use this command.`, message, 5000);
@@ -41,13 +41,15 @@ export default class implements Command{
         if(!song) return deleteMessage(`I could not find any results for **${search}**`, message);
 
         if(!client.music.has(message.guild.id)) client.music.set(message.guild.id, new MusicConstructor(client, message.guild, musicChannel.musicChannel));
-        
+
         if(!client.music.get(message.guild.id))
             return deleteMessage(`Something went wrong. Please try again later.`, message, 5000);
 
         if(!client.music.get(message.guild.id)?.get_current_channel()) 
             client.music.get(message.guild.id)?.set_current_channel(message.member.voice.channel as VoiceChannel);
         
+        deleteMessage(`✅ Successfully added **${song.title}** to the queue.`, message, 3000)
         client.music.get(message.guild.id)?.add_queue(song);
+        
     }
 }

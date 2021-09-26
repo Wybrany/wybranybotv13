@@ -26,7 +26,9 @@
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^4.4.0",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "^0.0.1-security",
+    "human-to-milliseconds": "^2.0.0",
     "libsodium-wrappers": "^0.7.9",
     "path": "^0.12.7",
     "tweetnacl": "^1.0.3",
@@ -37,6 +39,7 @@
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
     "@types/dotenv": "^8.2.0",
+    "@types/fluent-ffmpeg": "^2.1.18",
     "@types/node": "^16.6.1",
     "@types/node-fetch": "^2.5.12",
     "ts-node-dev": "^1.1.8",

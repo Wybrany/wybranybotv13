@@ -1,4 +1,4 @@
-import { Guild, VoiceChannel, Interaction, GuildChannel, TextChannel, MessageButton, MessageActionRow, MessageSelectMenu, Message } from "discord.js";
+import { Guild, VoiceChannel, Interaction, TextChannel, MessageButton, MessageActionRow, MessageSelectMenu } from "discord.js";
 import { 
     joinVoiceChannel, 
     getVoiceConnection, 
@@ -10,11 +10,12 @@ import {
     AudioPlayerStatus,
     VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { MusicChannel, MusicConstructorInterface, Song, VideoDetails } from "../../interfaces/music.interface";
+import { MusicChannel, MusicConstructorInterface, Song, VideoDetails, embed_state } from "../../interfaces/music.interface";
 import ytsr from "ytsr";
 import ytdl, { validateURL, getBasicInfo } from "ytdl-core-discord";
-import { createReadStream } from "fs";
 import Modified_Client from "../../methods/client/Client";
+import { FfmpegCommand } from "fluent-ffmpeg";
+import { WriteStream } from "fs";
 
 export class MusicConstructor implements MusicConstructorInterface {
 
@@ -23,10 +24,15 @@ export class MusicConstructor implements MusicConstructorInterface {
     public musicChannel: MusicChannel;
     public queue: Song[];
 
+    public select: boolean;
+    public remove: boolean;
+    public swap: boolean;
+
     public shuffle: boolean;
     public loop: boolean;
     public paused: boolean;
 
+    public seeking: boolean;
     public channel: VoiceChannel | null;
     public player: AudioPlayer | null;
     public current_song: Song | null;
@@ -38,10 +44,16 @@ export class MusicConstructor implements MusicConstructorInterface {
         this.musicChannel = musicChannel;
         this.queue = [];
 
+        //Songqueue state
+        this.select = true;
+        this.remove = false;
+        this.swap = false;
+
         this.shuffle = false;
         this.loop = false;
         this.paused = false;
 
+        this.seeking = false;
         this.current_song = null;
         this.channel = null;
         this.player = null;
@@ -60,12 +72,17 @@ export class MusicConstructor implements MusicConstructorInterface {
         const current_song = this.queue.shift() as Song;
         if(!current_song?.link) return this.play();
 
-        const resource = await probeAndCreateResource(current_song);
+        let resource = null;
+        if(this.seeking){
+            resource = null;
+            //Do something
+        }
+        else resource = await probeAndCreateResource(current_song);
 
         connection.on(VoiceConnectionStatus.Disconnected, () => {
             this.stop(undefined, true);
         })
-        
+
         const player = createAudioPlayer({
             debug: true,
             behaviors: {
@@ -132,8 +149,27 @@ export class MusicConstructor implements MusicConstructorInterface {
         }
         else return;
     }
-    seek(){
+    async seek(time_s: number){
+        if(!this.current_song) return;
+        /*const readable = await ytdl(this.current_song.link, {
+            filter: format => 
+                   format.container === 'mp4' 
+                && format.audioQuality === 'AUDIO_QUALITY_MEDIUM',
+            highWaterMark: 1<<25
+        });
+        const output = new WriteStream()
+        
+        const stream = new FfmpegCommand({ source: readable })
+            .withNoVideo()
+            .setStartTime(time_s)
+            .withAudioCodec('libmp3lame')
+            .toFormat('mp3')
+            .output(output)
+            .run();
 
+        const readStream = */
+
+        //const resource = createAudioResource(output, { metadata: this.current_song })
     }
     shift(index: number){
         const song = this.queue.splice(index, 1)[0];
@@ -154,10 +190,42 @@ export class MusicConstructor implements MusicConstructorInterface {
             this.update_embed("QUEUE");
         }
     }
-    remove_queue(song: Song){
-        if(song.link === this.current_song?.link && this.queue.some(s => s.link !== song.link)) this.skip();
-        this.queue = this.queue.filter(s => s.link !== song.link);
+    swap_songs(song1: number, song2: number){
+        [this.queue[song1], this.queue[song2]] = [this.queue[song2], this.queue[song1]];
         this.update_embed("QUEUE");
+    }
+    remove_queue(index: number, updateEmbed: boolean){
+        //if(song.link === this.current_song?.link && this.queue.some(s => s.link !== song.link)) this.skip();
+        //this.queue = this.queue.filter(s => s.link !== song.link);
+        this.queue.splice(index, 1);
+        if(updateEmbed) this.update_embed("QUEUE");
+    }
+    queue_state(state: "SELECT" | "REMOVE" | "SWAP", interaction?: Interaction){
+        switch(state){
+            case 'SELECT':
+                this.select = true;
+                this.remove = false;
+                this.swap = false;
+            break;
+
+            case 'REMOVE':
+                if(!this.queue.length) return;
+                this.select = false;
+                this.remove = true;
+                this.swap = false;
+            break;
+
+            case 'SWAP':
+                if(this.queue.length <= 1 ) return;
+                this.select = false;
+                this.remove = false;
+                this.swap = true;
+
+            break;
+            default: return;
+        }
+        if(interaction && this.player) this.update_embed("QUEUE");
+        
     }
     get_current_channel(): VoiceChannel | null{
         return this.channel;
@@ -198,9 +266,10 @@ export class MusicConstructor implements MusicConstructorInterface {
         
         const prefix = this.client.guildsettings.get(this.guild.id)?.prefix;
         const [ embed ] = message.embeds;
-        const [ buttonRows, selectMenu ] = message.components;
+        const [ buttonRows, selectMenu, selectButtons ] = message.components;
         const [ buttonPlayPause, buttonSkip, buttonStop, buttonLoop, buttonShuffle ] = buttonRows.components;
         const [ queue ] = selectMenu.components;
+        const [ selectButton, removeButton, swapButton ] = selectButtons.components;
         switch(state){
             case 'NOWPLAYING':
                 const npEmbed = embed
@@ -210,7 +279,10 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
                     .setTimestamp()
-                const nowPlayingQueue = new MessageSelectMenu().setCustomId(`selectSongQueue-${this.guild.id}`).setPlaceholder(`Song Queue`);
+                const npPlaceHolderText = this.select ? `Select a song from Song Queue` : this.remove ? `Remove multiple songs from Song Queue` : `Swap places with two songs`;
+                const npCustomId = this.select ? `selectSongQueue-${this.guild.id}` : this.remove ? `removeSongQueue-${this.guild.id}` : `swapSongQueue-${this.guild.id}`;
+                const nowPlayingQueue = new MessageSelectMenu().setCustomId(npCustomId).setPlaceholder(npPlaceHolderText);
+                this.remove && this.queue.length ? nowPlayingQueue.setMinValues(1).setMaxValues(this.queue.length) : this.swap && this.queue.length >= 1 ? nowPlayingQueue.setMinValues(1).setMaxValues(2) : ``;
                 this.queue.length
                     ? nowPlayingQueue.addOptions(this.queue.map((q, i) => ({
                         label: `${i+1}.) ${q.title}`, 
@@ -220,9 +292,12 @@ export class MusicConstructor implements MusicConstructorInterface {
                 const nowPlayingComp = new MessageActionRow().addComponents(
                         buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), buttonShuffle.setDisabled(false)
                     );
-                await message.edit({embeds: [npEmbed], components: [nowPlayingComp, new MessageActionRow().addComponents(nowPlayingQueue)]});
+                const nowplayingSelectButtons = this.queue.length 
+                    ? generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, false, this.queue.length)
+                    : generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true)
+                await message.edit({embeds: [npEmbed], components: [nowPlayingComp, new MessageActionRow().addComponents(nowPlayingQueue), nowplayingSelectButtons]});
             break;
-
+            
             case 'PAUSED':
                 const pEmbed = this.paused ? embed.setColor("DARK_RED") : embed.setColor("DARK_GREEN");
                 const newPause = new MessageButton()
@@ -233,29 +308,29 @@ export class MusicConstructor implements MusicConstructorInterface {
                 const newComp = new MessageActionRow().addComponents(
                         newPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), buttonShuffle.setDisabled(false)
                     );
-                await message.edit({embeds: [pEmbed], components: [newComp, selectMenu]})
+                await message.edit({embeds: [pEmbed], components: [newComp, selectMenu, selectButtons]})
             break;
-                
+            
             case 'STOPPED':
                 const stEmbed = embed
                     .setTitle(`Idle - Not playing anything`)
                     .setDescription(`
                     Use ${prefix ?? process.env.PREFIX}help music to display all available commands.
                     
-                    To play something, use the play command as usual! The buttons below will help you navigate through songs easier.
+                    To play something, use the play command as usual! The buttons will help you navigate through songs easier.
                     
                     You can pause/resume, skip and stop the bot. You can also toggle Loop and shuffle with the buttons! 
                     
-                    The Song Queue will show up songs queued up to 25 songs. If you select any of the songs in the queue, you will play that song! Do note that the current song will be skipped.
-                
-                    If the buttons are not to your liking, you can always use the usual commands.
+                    The Song Queue will show songs queued up to 25 songs. Use the buttons below the Song Queue to toggle Select, Remove or Swap.
                     `)
                     .setColor("BLUE")
                     .setFooter(``)
                     .setTimestamp()
                     const newbuttonRows = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                     const newQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                await message.edit({embeds: [stEmbed], components: [newbuttonRows, newQueue]})
+                    const stoppedSelectButtons = generate_new_select_buttons(true, false, false, this.guild, true);
+
+                await message.edit({embeds: [stEmbed], components: [newbuttonRows, newQueue, stoppedSelectButtons]})
             break;
 
             case 'QUEUE':
@@ -266,16 +341,20 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
                     .setTimestamp()
-                const updatedQueue = new MessageSelectMenu().setCustomId(`selectSongQueue-${this.guild.id}`).setPlaceholder(`Song Queue`);
-                this.queue.length 
+                const placeHolderText = this.select ? `Select a song from Song Queue` : this.remove ? `Remove multiple songs from Song Queue` : `Swap places with two songs`;
+                const customId = this.select ? `selectSongQueue-${this.guild.id}` : this.remove ? `removeSongQueue-${this.guild.id}` : `swapSongQueue-${this.guild.id}`;
+                const updatedQueue = new MessageSelectMenu().setCustomId(customId).setPlaceholder(placeHolderText);
+                this.remove && this.queue.length ? updatedQueue.setMinValues(1).setMaxValues(this.queue.length) : this.swap && this.queue.length >= 1 ? updatedQueue.setMinValues(1).setMaxValues(2) : ``;
+                this.queue.length
                     ? updatedQueue.addOptions(this.queue.map((q, i) => ({
                         label: `${i+1}.) ${q.title}`, 
                         description: `${this.guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
                         value: `${i}-${q.link}`}))) 
                     : updatedQueue.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}).setDisabled(true);
-                await message.edit({embeds: [queueEmbed], components: [buttonRows, new MessageActionRow().addComponents(updatedQueue)]})
+                const queueSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, false, this.queue.length);
+                await message.edit({embeds: [queueEmbed], components: [buttonRows, new MessageActionRow().addComponents(updatedQueue), queueSelectButtons]});
             break;
-
+            
             case 'SHUFFLE':
                 const newShuffle = new MessageButton()
                     .setCustomId(`buttonShuffle-${this.guild.id}`)
@@ -286,7 +365,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), newShuffle.setDisabled(false)
                     );
                 //Should update queue later as well for the new "shuffled" queue;
-                await message.edit({embeds: [embed], components: [newShuComp, selectMenu]})
+                await message.edit({embeds: [embed], components: [newShuComp, selectMenu, selectButtons]})
             break;
                 
             case 'LOOP':
@@ -299,7 +378,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), newLoop.setDisabled(false), buttonShuffle.setDisabled(false)
                 );
             //Should update queue later as well for the new "shuffled" queue;
-            await message.edit({embeds: [embed], components: [newLoopComp, selectMenu]})
+            await message.edit({embeds: [embed], components: [newLoopComp, selectMenu, selectButtons]})
             break;
 
             case 'CHANGING':
@@ -311,7 +390,8 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const changingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                 const changingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                await message.edit({embeds: [changingEmbed], components: [changingButtons, changingQueue]});
+                const changingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true);
+                await message.edit({embeds: [changingEmbed], components: [changingButtons, changingQueue, changingSelectButtons]});
             break;
 
             default:
@@ -321,7 +401,34 @@ export class MusicConstructor implements MusicConstructorInterface {
     }
 }
 
-type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING"
+const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, disabled: boolean, queuelength?: number): MessageActionRow => {
+    const selectButton = new MessageButton()
+        .setCustomId(`buttonSelect-${guild.id}`)
+        .setLabel("Select Song")
+        .setEmoji("✅");
+    buttonSelect ? selectButton.setStyle("SUCCESS") : selectButton.setStyle("DANGER");
+    if(!queuelength) selectButton.setDisabled(true)
+    else disabled ? selectButton.setDisabled(true) : selectButton.setDisabled(false);
+
+    const removeButton = new MessageButton()
+        .setCustomId(`buttonRemove-${guild.id}`)
+        .setLabel("Remove Songs")
+        .setEmoji("❌");
+    buttonRemove ? removeButton.setStyle("SUCCESS") : removeButton.setStyle("DANGER");
+    if(!queuelength) removeButton.setDisabled(true)
+    else disabled ? removeButton.setDisabled(true) : removeButton.setDisabled(false);
+
+    const swapButton = new MessageButton()
+        .setCustomId(`buttonSwap-${guild.id}`)
+        .setLabel("Swap Songs")
+        .setEmoji("🔃");
+    buttonSwap ? swapButton.setStyle("SUCCESS") : swapButton.setStyle("DANGER");
+    if(queuelength ? queuelength as number <= 1 : queuelength === 0) swapButton.setDisabled(true)
+    else disabled ? swapButton.setDisabled(true) : swapButton.setDisabled(false);
+    
+    return new MessageActionRow()
+        .addComponents(selectButton, removeButton, swapButton)
+}
 
 export async function probeAndCreateResource(song: Song): Promise<AudioResource<Song>>{
     console.time("probeAndCreateResource");
