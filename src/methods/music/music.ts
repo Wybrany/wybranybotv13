@@ -14,8 +14,7 @@ import { MusicChannel, MusicConstructorInterface, Song, VideoDetails, embed_stat
 import ytsr from "ytsr";
 import ytdl, { validateURL, getBasicInfo } from "ytdl-core-discord";
 import Modified_Client from "../../methods/client/Client";
-import { FfmpegCommand } from "fluent-ffmpeg";
-import { WriteStream } from "fs";
+import { shuffle } from "../shuffle";
 
 export class MusicConstructor implements MusicConstructorInterface {
 
@@ -69,9 +68,15 @@ export class MusicConstructor implements MusicConstructorInterface {
         });
         if(!connection || !this.queue.length) return this.stop(undefined, true);
 
-        const current_song = this.queue.shift() as Song;
+        let current_song: Song | null = null;
+        if(this.shuffle){
+            const randomIndex = shuffle(this.queue.length, 1) as number;
+            current_song = this.queue.splice(randomIndex, 1)[0];
+        }else current_song = this.queue.shift() as Song;
+
         if(!current_song?.link) return this.play();
 
+        let interval: NodeJS.Timeout | null = null;
         let resource = null;
         if(this.seeking){
             resource = null;
@@ -94,18 +99,31 @@ export class MusicConstructor implements MusicConstructorInterface {
             console.error(err);
             this.play();
         })
-
         player.on("stateChange", (oldState, newState) => {
             switch(newState.status){
                 case AudioPlayerStatus.Playing: 
                     console.log('The audio player has started playing!');
                     if(oldState.status !== AudioPlayerStatus.Paused) {
                         this.update_embed("NOWPLAYING");
+                        let previousCheck = 0;
+                        interval = setInterval(() => {
+                            const duration = update_every_tick(this.player as AudioPlayer);
+                            if(duration > previousCheck) {
+                                previousCheck = duration;
+                                this.update_embed("NOWPLAYING");
+                            }
+                        }, 5000)
                     }
                 break;
-
+                
                 case AudioPlayerStatus.Idle:
                     console.log('Player is idle!');
+                    if(interval) clearInterval(interval);
+                    if(this.loop) {
+                        const currentSong = this.current_song as Song;
+                        Object.assign(currentSong, {looped: true});
+                        this.queue.push(currentSong);
+                    }
                     this.current_song = null;
                     if(this.queue.length) this.update_embed("CHANGING");
                     this.play();
@@ -131,10 +149,8 @@ export class MusicConstructor implements MusicConstructorInterface {
         }
     }
     skip(interaction?: Interaction){
-        if(this.player) {
-            if(!this.queue.length) this.update_embed("STOPPED");
+        if(this.player) 
             return this.player.stop();
-        }
     }
     toggle_pause(interaction: Interaction){
         if(this.player && this.paused){ 
@@ -248,6 +264,8 @@ export class MusicConstructor implements MusicConstructorInterface {
     toggle_loop(interaction: Interaction){
         if(this.player && this.loop){
             this.loop = false;
+            //const songsWithoutLoop = this.queue.filter(song => !song.looped);
+            //this.queue = songsWithoutLoop;
             this.update_embed("LOOP");
         }
         else if(this.player && !this.loop){
@@ -272,10 +290,11 @@ export class MusicConstructor implements MusicConstructorInterface {
         const [ selectButton, removeButton, swapButton ] = selectButtons.components;
         switch(state){
             case 'NOWPLAYING':
+                const npprogressBar = generate_progress_bar(this.player as AudioPlayer);
                 const npEmbed = embed
                     //Description could have a progressbar that updates, add an image as an album cover maybe
                     .setTitle(`🎵 Now playing 🎵 `)
-                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\nProgress bar\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
+                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\n${npprogressBar}\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
                     .setTimestamp()
@@ -334,10 +353,11 @@ export class MusicConstructor implements MusicConstructorInterface {
             break;
 
             case 'QUEUE':
+                const qprogressBar = generate_progress_bar(this.player as AudioPlayer);
                 const queueEmbed = embed
                 //Description could have a progressbar that updates, add an image as an album cover maybe
                     .setTitle(`🎵 Now playing 🎵`)
-                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\nProgress bar\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
+                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\n${qprogressBar}\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
                     .setTimestamp()
@@ -401,6 +421,37 @@ export class MusicConstructor implements MusicConstructorInterface {
     }
 }
 
+const update_every_tick = (player: AudioPlayer): number => {
+    //@ts-ignore
+    const resource = player?.state?.resource as AudioResource;
+    if(!resource) return 0;
+    const { playbackDuration, metadata } = resource;
+    const { details } = metadata as Song;
+    const { lengthSeconds } = details;
+
+    let progress_based_on_40 = Math.trunc((playbackDuration/1000)/(parseFloat(lengthSeconds)) * 39);
+    if(progress_based_on_40 >= 39) progress_based_on_40 = 39;
+
+    return progress_based_on_40;
+}
+
+const generate_progress_bar = (player: AudioPlayer): string => {
+    //@ts-ignore
+    const resource = player?.state?.resource as AudioResource;
+    if(!resource) return new Array(40).fill("🔘", 0, 1).fill("▬").join("");
+    const { playbackDuration, metadata } = resource;
+    const { details } = metadata as Song;
+    const { lengthSeconds } = details;
+
+    let progress_based_on_40 = Math.trunc((playbackDuration/1000)/(parseFloat(lengthSeconds)) * 39);
+    if(progress_based_on_40 >= 39) progress_based_on_40 = 39;
+    //▬▬▬🔘▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    console.log(progress_based_on_40);
+    const progressBar = new Array(40).fill("▬");
+    progressBar[progress_based_on_40] = "🔘"
+    return progressBar.join("");
+}
+
 const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, disabled: boolean, queuelength?: number): MessageActionRow => {
     const selectButton = new MessageButton()
         .setCustomId(`buttonSelect-${guild.id}`)
@@ -455,6 +506,7 @@ export const getSongInfo = async (search_term: string, author: string): Promise<
         length: "",
         unique_id: "", //Probably indexed based on queue
         who_queued_id: author,
+        looped: false
     }
     let search = search_term;
     if(!validate){
@@ -473,7 +525,13 @@ export const getSongInfo = async (search_term: string, author: string): Promise<
     let minutes = (Math.floor((parseFloat(lengthSeconds) / 60)) % 60)
     let seconds = (parseFloat(lengthSeconds) % 60);
     //console.log(hours, minutes, seconds);
-    const duration = `${hours > 0 ? `${hours}:${`${minutes}`.padStart(2, "0")}:${seconds}` : `${minutes > 0}` ? `${minutes}:${seconds}`: `0:${seconds}` }`
+    const duration = `${
+        hours > 0 
+            ? `${`${hours}`.padStart(2, "0")}:${`${minutes}`.padStart(2, "0")}:${`${seconds}`.padStart(2, "0")}` : 
+        minutes > 0 
+            ? `${`${minutes}`.padStart(2, "0")}:${`${seconds}`.padStart(2, "0")}`: 
+        `0:${`${seconds}`.padStart(2, "0")}` }`
+
     Object.assign(song, {title, link: `https://www.youtube.com/watch?v=${videoId}`, length: duration, details: songInfo.videoDetails });
     console.timeEnd("getSongInfo");
     return song as Song;

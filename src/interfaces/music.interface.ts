@@ -83,6 +83,7 @@ export interface Song {
     link: string;
     length: string;
     who_queued_id: string;
+    looped: boolean;
     details: VideoDetails;
 }
 
