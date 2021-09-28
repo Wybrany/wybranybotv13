@@ -42,11 +42,15 @@ export class Vote_Class implements Vote {
             this.timerStarted = false;
             this.timer = null;
     }
-    addVote(member: GuildMember, type: "YES" | "NO"){
+    addVote(client:Modified_Client ,member: GuildMember, type: "YES" | "NO"){
         const vote: CurrentVotes = {member: member, vote: type};
         if(this.currentVotes.some(vote => vote.member.id === member.id)) return;
         this.currentVotes.push(vote);
-        this.updateEmbed("VOTE");
+        if(this.members.length === this.currentVotes.length){
+            clearTimeout(this.timer);
+            return this.checkVotes(client)
+        }
+        return this.updateEmbed("VOTE");
     }
     updateVote(member: GuildMember, type: "YES" | "NO"){
         const vote: CurrentVotes = {member: member, vote: type};

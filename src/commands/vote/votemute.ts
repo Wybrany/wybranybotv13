@@ -15,10 +15,10 @@ export default class implements Command{
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
         const [ target, time ] = args;
-        if(!message.guild) return message.reply({content: 'Something went wrong. Please try again later.'});
+        if(!message.guild || !client.user) return message.reply({content: 'Something went wrong. Please try again later.'});
         if(!message.guild.members.cache.get(message.author.id)?.voice.channel)
             return message.reply({content: 'You must be in a voicechannel to use this command.'});
-
+        
         const mention = message.mentions.users.first() || message.guild.members.cache.get(target) || null;
         if(!mention) return message.reply({content: "You need to tag a member or provide an id."});
 
@@ -30,7 +30,7 @@ export default class implements Command{
         const inChannel = member.voice.channel as VoiceChannel | null;
         if(!inChannel) return message.reply({content: "User must be in a voicechannel."});
 
-        const members = [...inChannel.members.values()].filter(m => m.id !== member.id);
+        const members = [...inChannel.members.values()].filter(m => m.id !== member.id || m.id !== client.user?.id);
         
         const embed = new MessageEmbed()
             .setTitle(`Voting to mute ${member.user.tag}.`)

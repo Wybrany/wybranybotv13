@@ -13,17 +13,18 @@ export default class implements Command{
     usage = "seek <timestamp>, eg 1m20s or 20s";
     permission = Permissions.FLAGS.ADMINISTRATOR;
     developerMode = true;
-
+    
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-        
+
         await message.delete();
 
         if(!message.guild || !message.member || !client.user) 
             return deleteMessage(`Something went wrong. Please try again later.`, message);
             
         const [ input ] = args;
-
+        console.log(input);
         const time_ms = htms(input) as string | undefined ?? null;
+        console.log(time_ms)
         const time_in_seconds = time_ms ? Math.floor((parseFloat(time_ms) / 1000)) : null;
         if(!time_in_seconds || !Number.isInteger(time_in_seconds)) return deleteMessage(`You did not give me a proper timestamp. See following examples: **1m20s** or **20s**`, message, 5000);
 

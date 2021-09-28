@@ -38,7 +38,7 @@ export interface EmbedButtons {
     shufflebutton: string;
 }
 
-export type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING"
+export type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING" | "SEEKING"
 
 export interface MusicConstructorInterface {
 
@@ -55,6 +55,8 @@ export interface MusicConstructorInterface {
     paused: boolean;
 
     seeking: boolean;
+    seek_time: number;
+
     channel: VoiceChannel | null;
     player: AudioPlayer | null;
     current_song: Song | null;

@@ -15,6 +15,10 @@ import ytsr from "ytsr";
 import ytdl, { validateURL, getBasicInfo } from "ytdl-core-discord";
 import Modified_Client from "../../methods/client/Client";
 import { shuffle } from "../shuffle";
+import ffmpeg from "fluent-ffmpeg";
+import internal, { Stream } from "stream";
+import { Readable, Writable } from "stream";
+import { createWriteStream, write } from "fs";
 
 export class MusicConstructor implements MusicConstructorInterface {
 
@@ -32,6 +36,8 @@ export class MusicConstructor implements MusicConstructorInterface {
     public paused: boolean;
 
     public seeking: boolean;
+    public seek_time: number;
+
     public channel: VoiceChannel | null;
     public player: AudioPlayer | null;
     public current_song: Song | null;
@@ -53,6 +59,8 @@ export class MusicConstructor implements MusicConstructorInterface {
         this.paused = false;
 
         this.seeking = false;
+        this.seek_time = 0;
+
         this.current_song = null;
         this.channel = null;
         this.player = null;
@@ -72,17 +80,24 @@ export class MusicConstructor implements MusicConstructorInterface {
         if(this.shuffle){
             const randomIndex = shuffle(this.queue.length, 1) as number;
             current_song = this.queue.splice(randomIndex, 1)[0];
-        }else current_song = this.queue.shift() as Song;
-
+        }
+        else current_song = this.queue.shift() as Song;
+        //console.log(current_song);
         if(!current_song?.link) return this.play();
 
         let interval: NodeJS.Timeout | null = null;
-        let resource = null;
+        let resource: AudioResource<Song> | null = null;
         if(this.seeking){
-            resource = null;
-            //Do something
+            console.log("In this.seeking");
+            const readable = await create_readable(current_song as Song);
+            if(!readable) return this.play();
+            const seek_writeable = await create_seek_readble(readable, this.seek_time);
+            console.log(seek_writeable)
+            if(!seek_writeable) return this.play();
+            resource = createAudioResource(readable, {metadata: current_song}) as AudioResource<Song>
         }
         else resource = await probeAndCreateResource(current_song);
+        if(!resource) return this.play();
 
         connection.on(VoiceConnectionStatus.Disconnected, () => {
             this.stop(undefined, true);
@@ -125,7 +140,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                         this.queue.push(currentSong);
                     }
                     this.current_song = null;
-                    if(this.queue.length) this.update_embed("CHANGING");
+                    if(this.queue.length && !this.seeking) this.update_embed("CHANGING");
                     this.play();
                 break;
             }
@@ -165,27 +180,14 @@ export class MusicConstructor implements MusicConstructorInterface {
         }
         else return;
     }
-    async seek(time_s: number){
-        if(!this.current_song) return;
-        /*const readable = await ytdl(this.current_song.link, {
-            filter: format => 
-                   format.container === 'mp4' 
-                && format.audioQuality === 'AUDIO_QUALITY_MEDIUM',
-            highWaterMark: 1<<25
-        });
-        const output = new WriteStream()
-        
-        const stream = new FfmpegCommand({ source: readable })
-            .withNoVideo()
-            .setStartTime(time_s)
-            .withAudioCodec('libmp3lame')
-            .toFormat('mp3')
-            .output(output)
-            .run();
-
-        const readStream = */
-
-        //const resource = createAudioResource(output, { metadata: this.current_song })
+    seek(time_s: number){
+        if(!this.current_song || !this.player) return;
+        this.seeking = true;
+        this.seek_time = time_s;
+        this.update_embed("SEEKING");
+        this.queue.unshift(this.current_song);
+        this.skip();
+        console.log("Now seeking")
     }
     shift(index: number){
         const song = this.queue.splice(index, 1)[0];
@@ -351,7 +353,7 @@ export class MusicConstructor implements MusicConstructorInterface {
 
                 await message.edit({embeds: [stEmbed], components: [newbuttonRows, newQueue, stoppedSelectButtons]})
             break;
-
+                
             case 'QUEUE':
                 const qprogressBar = generate_progress_bar(this.player as AudioPlayer);
                 const queueEmbed = embed
@@ -367,7 +369,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                 this.remove && this.queue.length ? updatedQueue.setMinValues(1).setMaxValues(this.queue.length) : this.swap && this.queue.length >= 1 ? updatedQueue.setMinValues(1).setMaxValues(2) : ``;
                 this.queue.length
                     ? updatedQueue.addOptions(this.queue.map((q, i) => ({
-                        label: `${i+1}.) ${q.title}`, 
+                        label: `${i+1}.) ${q?.title ?? "unknown"}`, 
                         description: `${this.guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
                         value: `${i}-${q.link}`}))) 
                     : updatedQueue.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}).setDisabled(true);
@@ -414,6 +416,19 @@ export class MusicConstructor implements MusicConstructorInterface {
                 await message.edit({embeds: [changingEmbed], components: [changingButtons, changingQueue, changingSelectButtons]});
             break;
 
+            case 'SEEKING':
+                const seekingEmbed = embed
+                    .setTitle(`Seeking... Please wait.`)
+                    .setColor("BLUE")
+                    .setDescription("")
+                    .setFooter("")
+                    .setTimestamp()
+                const seekingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
+                const seekingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
+                const seekingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true);
+                await message.edit({embeds: [seekingEmbed], components: [seekingButtons, seekingQueue, seekingSelectButtons]});
+            break;
+
             default:
 
             break;
@@ -446,7 +461,6 @@ const generate_progress_bar = (player: AudioPlayer): string => {
     let progress_based_on_40 = Math.trunc((playbackDuration/1000)/(parseFloat(lengthSeconds)) * 39);
     if(progress_based_on_40 >= 39) progress_based_on_40 = 39;
     //▬▬▬🔘▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-    console.log(progress_based_on_40);
     const progressBar = new Array(40).fill("▬");
     progressBar[progress_based_on_40] = "🔘"
     return progressBar.join("");
@@ -481,18 +495,41 @@ const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolea
         .addComponents(selectButton, removeButton, swapButton)
 }
 
-export async function probeAndCreateResource(song: Song): Promise<AudioResource<Song>>{
-    console.time("probeAndCreateResource");
-    const readable = await ytdl(song.link, {
+export async function create_seek_readble(readable: internal.Readable, time: number): Promise<internal.Writable | null>{
+    if(!readable) return null;
+    const command = ffmpeg({ source: readable });
+    const writable = new Writable();
+    return new Promise((resolve, reject) => {
+        command
+            .withNoVideo()
+            .withAudioCodec('libmp3lame')
+            .toFormat('mp3')
+            .setDuration(time)
+            .on("error", err => {
+                console.error(`ffmpeg error: ${err}`);
+                reject(null);
+            })
+            .on("end", () => {
+                console.log(`Done with seeking!`);
+                resolve(writable);
+            })
+            .writeToStream(writable, {end: true});
+    })
+}
+
+export async function create_readable(song: Song): Promise<internal.Readable | null> {
+    if(!song) return null;
+    return await ytdl(song.link, {
         filter: format => 
                format.container === 'mp4' 
             && format.audioQuality === 'AUDIO_QUALITY_MEDIUM',
         highWaterMark: 1<<25
     });
-    //const chooseFormats = ytdl.chooseFormat(info.formats.filter(f => f.container === "mp4"), { quality: '134'});
-    //const audioOnly = ytdl.filterFormats(chooseFormats, 'audioonly')
-    //const readable = createReadStream('./media/soundboard/beko/33333.mp3')
-    console.timeEnd("probeAndCreateResource");
+}
+
+export async function probeAndCreateResource(song: Song): Promise<AudioResource<Song> | null>{
+    const readable = await create_readable(song);
+    if(!readable) return null;
     return createAudioResource(readable, { metadata: song });
 }
 

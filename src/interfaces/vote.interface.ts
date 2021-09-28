@@ -17,7 +17,7 @@ export interface Vote {
 
     currentVotes: CurrentVotes[];
 
-    addVote: (member: GuildMember, type: "YES" | "NO") => void;
+    addVote: (client: Modified_Client, member: GuildMember, type: "YES" | "NO") => void;
     updateVote: (member: GuildMember, type: "YES" | "NO") => void;
     removeVote: (member: GuildMember) => void;
     getVote: (member: GuildMember) => CurrentVotes | null;

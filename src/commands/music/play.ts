@@ -14,7 +14,7 @@ export default class implements Command{
     developerMode=false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-        
+
         await message.delete();
         if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
         const search = args.join(" ");
@@ -31,7 +31,7 @@ export default class implements Command{
         const permissions = message.member.voice.channel.permissionsFor(client.user);
         if(!permissions?.has("CONNECT") || !permissions.has("SPEAK"))
             return deleteMessage(`I need permissions to join and speak in your voicechannel.`, message, 5000);
-
+        
         if(musicChannel?.musicChannel?.channelid !== message.channel.id)
             return deleteMessage(`You can only use this command at <#${client.guildsettings.get(message.guild.id)?.musicChannel?.channelid}>`, message, 5000)
 
@@ -50,6 +50,5 @@ export default class implements Command{
         
         deleteMessage(`✅ Successfully added **${song.title}** to the queue.`, message, 3000)
         client.music.get(message.guild.id)?.add_queue(song);
-        
     }
 }

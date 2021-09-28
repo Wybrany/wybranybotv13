@@ -8,3 +8,4 @@ media/music
 media/soundboard
 media/numbers
 src/commands/random
+src/commands/soundboard

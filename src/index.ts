@@ -61,7 +61,7 @@ client.on('interactionCreate', async interaction => {
                 if(!member) return;
                 const answer = type === "buttonNo" ? "NO" : "YES";
                 const getVote = currentVote?.getVote(member);
-                if(!getVote) currentVote?.addVote(member, answer);
+                if(!getVote) currentVote?.addVote(client, member, answer);
                 else if(getVote.vote !== answer) currentVote?.updateVote(member, answer);
                 
             break;
@@ -102,7 +102,7 @@ client.on('interactionCreate', async interaction => {
                 music?.update_embed("QUEUE");
             }
             break;
-
+            
             case 'swapSongQueue':{
                 const selectedSongs = interaction.values as string[];
                 const [ song1, song2 ] = selectedSongs.map(v => parseFloat(v.split("-")[0]));
