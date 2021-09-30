@@ -10,22 +10,33 @@ import {
     AudioPlayerStatus,
     VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { MusicChannel, MusicConstructorInterface, Song, VideoDetails, embed_state } from "../../interfaces/music.interface";
+import { 
+    MusicChannel, 
+    MusicConstructorInterface, 
+    Song, 
+    VideoDetails, 
+    embed_state, 
+    search_type 
+} from "../../interfaces/music.interface";
 import ytsr from "ytsr";
 import ytdl, { validateURL, getBasicInfo } from "ytdl-core-discord";
+import ytpl, { validateID, getPlaylistID } from "ytpl";
 import Modified_Client from "../../methods/client/Client";
 import { shuffle } from "../shuffle";
 import ffmpeg from "fluent-ffmpeg";
-import internal, { Stream } from "stream";
-import { Readable, Writable } from "stream";
-import { createWriteStream, write } from "fs";
+import internal from "stream";
+import { Writable } from "stream";
+import lyricsFinder from "lyrics-finder";
 
 export class MusicConstructor implements MusicConstructorInterface {
 
     public client: Modified_Client;
     public guild: Guild
     public musicChannel: MusicChannel;
-    public queue: Song[];
+
+    public playing: boolean;
+    public currentQueuePage: number;
+    public queue: [Song[]];
 
     public select: boolean;
     public remove: boolean;
@@ -47,7 +58,10 @@ export class MusicConstructor implements MusicConstructorInterface {
         this.client = client;
         this.guild = guild;
         this.musicChannel = musicChannel;
-        this.queue = [];
+
+        this.playing = false;
+        this.currentQueuePage = 0;
+        this.queue = [[]];
 
         //Songqueue state
         this.select = true;
@@ -74,14 +88,23 @@ export class MusicConstructor implements MusicConstructorInterface {
             guildId: this.guild.id,
             adapterCreator: this.channel.guild.voiceAdapterCreator
         });
-        if(!connection || !this.queue.length) return this.stop(undefined, true);
+        if(!connection || !this.queue.length || !checkQueueLength(this.queue)) return this.stop(undefined, true);
 
         let current_song: Song | null = null;
         if(this.shuffle){
-            const randomIndex = shuffle(this.queue.length, 1) as number;
-            current_song = this.queue.splice(randomIndex, 1)[0];
+            const randomQueueChunk = shuffle(this.queue.length, 1) as number;
+            const randomQueue = shuffle(this.queue[randomQueueChunk].length, 1) as number;
+            current_song = this.queue[randomQueueChunk].splice(randomQueue, 1)[0];
+            const newQueue = regenerate_queue(this.queue);
+            this.queue = [[]];
+            this.add_queue(newQueue, false);
         }
-        else current_song = this.queue.shift() as Song;
+        else {
+            current_song = this.queue[0].shift() as Song;
+            const newQueue = regenerate_queue(this.queue);
+            this.queue = [[]];
+            this.add_queue(newQueue, false);
+        }
         //console.log(current_song);
         if(!current_song?.link) return this.play();
 
@@ -122,6 +145,10 @@ export class MusicConstructor implements MusicConstructorInterface {
                         this.update_embed("NOWPLAYING");
                         let previousCheck = 0;
                         interval = setInterval(() => {
+                            if(!this.playing){
+                                if(interval) clearInterval(interval);
+                                return;
+                            }
                             const duration = update_every_tick(this.player as AudioPlayer);
                             if(duration > previousCheck) {
                                 previousCheck = duration;
@@ -134,13 +161,15 @@ export class MusicConstructor implements MusicConstructorInterface {
                 case AudioPlayerStatus.Idle:
                     console.log('Player is idle!');
                     if(interval) clearInterval(interval);
+                    if(!this.playing) return;
                     if(this.loop) {
                         const currentSong = this.current_song as Song;
                         Object.assign(currentSong, {looped: true});
-                        this.queue.push(currentSong);
+                        if(this.queue[this.queue.length - 1].length === 25) this.queue.push([currentSong]);
+                        else this.queue[this.queue.length - 1].push(currentSong);
                     }
                     this.current_song = null;
-                    if(this.queue.length && !this.seeking) this.update_embed("CHANGING");
+                    if(this.queue.length && checkQueueLength(this.queue) && !this.seeking) this.update_embed("CHANGING");
                     this.play();
                 break;
             }
@@ -154,70 +183,132 @@ export class MusicConstructor implements MusicConstructorInterface {
             this.player.play(this.resource);
         }
     }
+
     stop(interaction?: Interaction, leave?: boolean){ 
         const connection = getVoiceConnection(this.guild.id);
         if(!connection) return;
+        this.playing = false;
         connection.destroy();
         if(interaction || leave){
             //Do embed stuff since a user manually stopped
             return this.update_embed("STOPPED");
         }
     }
+
     skip(interaction?: Interaction){
         if(this.player) 
             return this.player.stop();
     }
+
     toggle_pause(interaction: Interaction){
         if(this.player && this.paused){ 
             this.player.unpause();
             this.paused = false;
-            return this.update_embed("PAUSED")
+            return this.update_embed("NOWPLAYING")
         }
         else if(this.player && !this.paused) {
             this.player.pause();
             this.paused = true;
-            return this.update_embed("PAUSED");
+            return this.update_embed("NOWPLAYING");
         }
         else return;
     }
+
     seek(time_s: number){
         if(!this.current_song || !this.player) return;
-        this.seeking = true;
+        /*this.seeking = true;
         this.seek_time = time_s;
         this.update_embed("SEEKING");
         this.queue.unshift(this.current_song);
-        this.skip();
+        this.skip();*/
         console.log("Now seeking")
     }
+
     shift(index: number){
-        const song = this.queue.splice(index, 1)[0];
+        const song = this.queue[this.currentQueuePage].splice(index, 1)[0];
         if(song) {
             this.update_embed("CHANGING");
-            this.queue.unshift(song);
+            const newQueue = regenerate_queue(this.queue);
+            newQueue.unshift(song);
+            this.queue = [[]];
+            this.add_queue(newQueue, false);
             this.skip();
         }
     }
-    async add_queue(song: Song): Promise<void>{
-        if(!song) return;
-        //console.log(this.player, this.queue.length, this.current_song?.title)
-        if(!this.player && !this.queue.length && !this.current_song){
-            this.queue.push(song);
+
+    async add_queue(songs: Song[], update: boolean): Promise<void>{
+        if(!songs || !songs.length) return;
+        for(let i = 0; i < this.queue.length; i++){
+            if(this.queue[i].length === 25 && !songs.length) break;
+            if(this.queue[i].length === 25 && songs.length && !Array.isArray(this.queue[i+1])){
+                this.queue.push([]);
+                continue;
+            }
+            const queueSongs = songs.splice(0, (25 - this.queue[i].length))
+            console.log(`Songs remaining to splice: ${songs.length}`);
+            this.queue[i].push(...queueSongs);
+            if(songs.length && !Array.isArray(this.queue[i+1])) this.queue.push([]);
+        }
+        // 1 -> 0
+        if(this.currentQueuePage > (this.queue.length - 1)) this.currentQueuePage = (this.queue.length - 1);
+        console.log(`addQueue, 2dqueue length: ${this.queue.length}`);
+        if(!this.player && !this.current_song && !this.playing){
+            this.playing = true;
             return await this.play();
-        }else {
-            this.queue.push(song);
-            this.update_embed("QUEUE");
+        }
+        if(update) {
+            console.log("Now updating!");
+            this.update_embed("NOWPLAYING");
         }
     }
+
     swap_songs(song1: number, song2: number){
-        [this.queue[song1], this.queue[song2]] = [this.queue[song2], this.queue[song1]];
-        this.update_embed("QUEUE");
+        if(checkQueueLength(this.queue) <= 1) return
+        this.queue[this.currentQueuePage][song1], this.queue[this.currentQueuePage][song2] = this.queue[this.currentQueuePage][song2], this.queue[this.currentQueuePage][song1]
+        //(this.queue[this.currentQueuePage][song1], this.queue[this.currentQueuePage][song2]) = (this.queue[this.currentQueuePage][song2], this.queue[this.currentQueuePage][song1]);
+        this.update_embed("NOWPLAYING");
     }
+
     remove_queue(index: number, updateEmbed: boolean){
         //if(song.link === this.current_song?.link && this.queue.some(s => s.link !== song.link)) this.skip();
         //this.queue = this.queue.filter(s => s.link !== song.link);
-        this.queue.splice(index, 1);
-        if(updateEmbed) this.update_embed("QUEUE");
+        this.queue[this.currentQueuePage].splice(index, 1);
+        const newQueue = regenerate_queue(this.queue);
+        this.queue = [[]];
+        this.add_queue(newQueue, false);
+        if(updateEmbed) this.update_embed("NOWPLAYING");
     }
+
+    queue_page(state: "FIRST" | "NEXT" | "PREV" | "LAST", interaction?: Interaction){
+        console.log(state, this.currentQueuePage);
+        switch(state){
+            case 'FIRST':
+                if(this.currentQueuePage === 0) return; 
+                this.currentQueuePage = 0;
+                console.log(this.currentQueuePage)
+            break;
+
+            case 'NEXT':
+                if((this.currentQueuePage + 1) > (this.queue.length - 1) || this.currentQueuePage === (this.queue.length - 1)) return;
+                this.currentQueuePage += 1;
+                console.log(this.currentQueuePage)
+            break;
+
+            case 'PREV':
+                if(this.currentQueuePage === 0 || (this.currentQueuePage - 1) < 0) return;
+                this.currentQueuePage -= 1;
+                console.log(this.currentQueuePage)
+            break;
+
+            case 'LAST':
+                if(this.currentQueuePage === (this.queue.length - 1)) return; 
+                this.currentQueuePage = this.queue.length - 1;
+                console.log(this.currentQueuePage)
+            break;
+        }
+        if(interaction) this.update_embed("NOWPLAYING");
+    }
+
     queue_state(state: "SELECT" | "REMOVE" | "SWAP", interaction?: Interaction){
         switch(state){
             case 'SELECT':
@@ -227,14 +318,14 @@ export class MusicConstructor implements MusicConstructorInterface {
             break;
 
             case 'REMOVE':
-                if(!this.queue.length) return;
+                if(!checkQueueLength(this.queue)) return;
                 this.select = false;
                 this.remove = true;
                 this.swap = false;
             break;
 
             case 'SWAP':
-                if(this.queue.length <= 1 ) return;
+                if(checkQueueLength(this.queue) <= 1 ) return;
                 this.select = false;
                 this.remove = false;
                 this.swap = true;
@@ -242,40 +333,30 @@ export class MusicConstructor implements MusicConstructorInterface {
             break;
             default: return;
         }
-        if(interaction && this.player) this.update_embed("QUEUE");
-        
+        if(interaction && this.player) this.update_embed("NOWPLAYING");
     }
+
     get_current_channel(): VoiceChannel | null{
         return this.channel;
     }
+
     set_current_channel(channel: VoiceChannel){
         this.channel = channel;
         if(this.channel === null) this.stop();
     }
+
     toggle_shuffle(interaction: Interaction){
-        if(this.player && this.shuffle){
-            this.shuffle = false;
-            this.update_embed("SHUFFLE");
-        }
-        else if(this.player && !this.shuffle){
-            this.shuffle = true;
-            this.update_embed("SHUFFLE");
-        }
-        else return;
+        if(this.player && this.shuffle) this.shuffle = false;
+        else if(this.player && !this.shuffle) this.shuffle = true;
+        this.update_embed("NOWPLAYING");
     }
+
     toggle_loop(interaction: Interaction){
-        if(this.player && this.loop){
-            this.loop = false;
-            //const songsWithoutLoop = this.queue.filter(song => !song.looped);
-            //this.queue = songsWithoutLoop;
-            this.update_embed("LOOP");
-        }
-        else if(this.player && !this.loop){
-            this.loop = true;
-            this.update_embed("LOOP");
-        }
-        else return;
+        if(this.player && this.loop) this.loop = false;
+        else if(this.player && !this.loop) this.loop = true;
+        this.update_embed("NOWPLAYING");
     }
+
     async update_embed(state: embed_state){
         if(!state) return console.error(`No state.`);
         const channel = this.guild.channels.cache.get(this.musicChannel.channelid) as TextChannel | undefined;
@@ -286,50 +367,33 @@ export class MusicConstructor implements MusicConstructorInterface {
         
         const prefix = this.client.guildsettings.get(this.guild.id)?.prefix;
         const [ embed ] = message.embeds;
-        const [ buttonRows, selectMenu, selectButtons ] = message.components;
-        const [ buttonPlayPause, buttonSkip, buttonStop, buttonLoop, buttonShuffle ] = buttonRows.components;
+        const [ buttonRows, selectMenu ] = message.components;
         const [ queue ] = selectMenu.components;
-        const [ selectButton, removeButton, swapButton ] = selectButtons.components;
+
         switch(state){
-            case 'NOWPLAYING':
+            case 'NOWPLAYING':{
                 const npprogressBar = generate_progress_bar(this.player as AudioPlayer);
                 const npEmbed = embed
                     //Description could have a progressbar that updates, add an image as an album cover maybe
                     .setTitle(`🎵 Now playing 🎵 `)
-                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\n${npprogressBar}\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
+                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\n${npprogressBar}\n\n${checkQueueLength(this.queue) === 1 ? `${checkQueueLength(this.queue)} song remaining.` : `${checkQueueLength(this.queue)} songs remaining.`}\`\`\``)
                     .setColor("DARK_GREEN")
                     .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
-                    .setTimestamp()
-                const npPlaceHolderText = this.select ? `Select a song from Song Queue` : this.remove ? `Remove multiple songs from Song Queue` : `Swap places with two songs`;
-                const npCustomId = this.select ? `selectSongQueue-${this.guild.id}` : this.remove ? `removeSongQueue-${this.guild.id}` : `swapSongQueue-${this.guild.id}`;
-                const nowPlayingQueue = new MessageSelectMenu().setCustomId(npCustomId).setPlaceholder(npPlaceHolderText);
-                this.remove && this.queue.length ? nowPlayingQueue.setMinValues(1).setMaxValues(this.queue.length) : this.swap && this.queue.length >= 1 ? nowPlayingQueue.setMinValues(1).setMaxValues(2) : ``;
-                this.queue.length
-                    ? nowPlayingQueue.addOptions(this.queue.map((q, i) => ({
-                        label: `${i+1}.) ${q.title}`, 
-                        description: `${this.guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
-                        value: `${i}-${q.link}`}))) 
-                    : nowPlayingQueue.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}).setDisabled(true);
-                const nowPlayingComp = new MessageActionRow().addComponents(
-                        buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), buttonShuffle.setDisabled(false)
-                    );
-                const nowplayingSelectButtons = this.queue.length 
-                    ? generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, false, this.queue.length)
-                    : generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true)
-                await message.edit({embeds: [npEmbed], components: [nowPlayingComp, new MessageActionRow().addComponents(nowPlayingQueue), nowplayingSelectButtons]});
-            break;
-            
-            case 'PAUSED':
-                const pEmbed = this.paused ? embed.setColor("DARK_RED") : embed.setColor("DARK_GREEN");
-                const newPause = new MessageButton()
-                    .setCustomId(`buttonPlayPause-${this.guild.id}`)
-                    .setStyle("PRIMARY")
-                    .setEmoji("⏯️")
-                this.paused ? newPause.setLabel("Resume").setStyle("DANGER") : newPause.setLabel("Pause").setStyle("PRIMARY");
-                const newComp = new MessageActionRow().addComponents(
-                        newPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), buttonShuffle.setDisabled(false)
-                    );
-                await message.edit({embeds: [pEmbed], components: [newComp, selectMenu, selectButtons]})
+                    .setTimestamp();
+                this.paused ? npEmbed.setColor("DARK_RED") : npEmbed.setColor("DARK_GREEN");
+                const selectButton = generate_music_buttons(this.paused, this.loop, this.shuffle, this.queue, this.guild, false);
+                const selectMenu = this.select 
+                    ? generate_current_queue_list(this.queue, this.currentQueuePage, this.guild, "SELECT") 
+                    : this.remove ? generate_current_queue_list(this.queue, this.currentQueuePage, this.guild, "REMOVE")
+                    : generate_current_queue_list(this.queue, this.currentQueuePage, this.guild, "SWAP");
+                const queuePageButtons = generate_queue_buttons(this.queue, this.currentQueuePage, this.guild);
+                const swapButtons = checkQueueLength(this.queue)
+                    ? generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, false)
+                    : generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true)
+
+                const newComponents = queuePageButtons ? [selectButton, selectMenu, queuePageButtons, swapButtons] : [selectButton, selectMenu, swapButtons];
+                await message.edit({embeds: [npEmbed], components: newComponents });
+            }
             break;
             
             case 'STOPPED':
@@ -347,60 +411,11 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setColor("BLUE")
                     .setFooter(``)
                     .setTimestamp()
-                    const newbuttonRows = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
-                    const newQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                    const stoppedSelectButtons = generate_new_select_buttons(true, false, false, this.guild, true);
+                const newButtonRows = generate_music_buttons(false, false, false, this.queue, this.guild, true);
+                const newQueue = generate_current_queue_list([[]], 0, this.guild, "SELECT");
+                const stoppedSelectButtons = generate_new_select_buttons(true, false, false, this.guild, this.queue, true);
 
-                await message.edit({embeds: [stEmbed], components: [newbuttonRows, newQueue, stoppedSelectButtons]})
-            break;
-                
-            case 'QUEUE':
-                const qprogressBar = generate_progress_bar(this.player as AudioPlayer);
-                const queueEmbed = embed
-                //Description could have a progressbar that updates, add an image as an album cover maybe
-                    .setTitle(`🎵 Now playing 🎵`)
-                    .setDescription(`\`\`\`ini\n▶️ ${this.current_song?.title ?? "Unkown"} | ${this.current_song?.length ?? "Unknown"}\n\n${qprogressBar}\n\n${this.queue.length === 1 ? `${this.queue.length} song remaining.` : `${this.queue.length} songs remaining.`}\`\`\``)
-                    .setColor("DARK_GREEN")
-                    .setFooter(`Requested by: ${this.guild.members.cache.get(this.current_song?.who_queued_id ?? "")?.user.username ?? "Unknown"}`)
-                    .setTimestamp()
-                const placeHolderText = this.select ? `Select a song from Song Queue` : this.remove ? `Remove multiple songs from Song Queue` : `Swap places with two songs`;
-                const customId = this.select ? `selectSongQueue-${this.guild.id}` : this.remove ? `removeSongQueue-${this.guild.id}` : `swapSongQueue-${this.guild.id}`;
-                const updatedQueue = new MessageSelectMenu().setCustomId(customId).setPlaceholder(placeHolderText);
-                this.remove && this.queue.length ? updatedQueue.setMinValues(1).setMaxValues(this.queue.length) : this.swap && this.queue.length >= 1 ? updatedQueue.setMinValues(1).setMaxValues(2) : ``;
-                this.queue.length
-                    ? updatedQueue.addOptions(this.queue.map((q, i) => ({
-                        label: `${i+1}.) ${q?.title ?? "unknown"}`, 
-                        description: `${this.guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
-                        value: `${i}-${q.link}`}))) 
-                    : updatedQueue.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}).setDisabled(true);
-                const queueSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, false, this.queue.length);
-                await message.edit({embeds: [queueEmbed], components: [buttonRows, new MessageActionRow().addComponents(updatedQueue), queueSelectButtons]});
-            break;
-            
-            case 'SHUFFLE':
-                const newShuffle = new MessageButton()
-                    .setCustomId(`buttonShuffle-${this.guild.id}`)
-                    .setLabel(`Shuffle`)
-                    .setEmoji("🔀")
-                this.shuffle ? newShuffle.setStyle("SUCCESS") : newShuffle.setStyle("DANGER");
-                const newShuComp = new MessageActionRow().addComponents(
-                    buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), buttonLoop.setDisabled(false), newShuffle.setDisabled(false)
-                    );
-                //Should update queue later as well for the new "shuffled" queue;
-                await message.edit({embeds: [embed], components: [newShuComp, selectMenu, selectButtons]})
-            break;
-                
-            case 'LOOP':
-                const newLoop = new MessageButton()
-                    .setCustomId(`buttonLoop-${this.guild.id}`)
-                    .setLabel(`Loop`)
-                    .setEmoji("🔄")
-                this.loop ? newLoop.setStyle("SUCCESS") : newLoop.setStyle("DANGER");
-                const newLoopComp = new MessageActionRow().addComponents(
-                    buttonPlayPause.setDisabled(false), buttonSkip.setDisabled(false), buttonStop.setDisabled(false), newLoop.setDisabled(false), buttonShuffle.setDisabled(false)
-                );
-            //Should update queue later as well for the new "shuffled" queue;
-            await message.edit({embeds: [embed], components: [newLoopComp, selectMenu, selectButtons]})
+                await message.edit({embeds: [stEmbed], components: [newButtonRows, newQueue, stoppedSelectButtons]})
             break;
 
             case 'CHANGING':
@@ -412,7 +427,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const changingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                 const changingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                const changingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true);
+                const changingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true);
                 await message.edit({embeds: [changingEmbed], components: [changingButtons, changingQueue, changingSelectButtons]});
             break;
 
@@ -425,15 +440,32 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const seekingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                 const seekingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                const seekingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, true);
+                const seekingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true);
                 await message.edit({embeds: [seekingEmbed], components: [seekingButtons, seekingQueue, seekingSelectButtons]});
             break;
-
+                
             default:
 
             break;
         }
     }
+}
+
+const checkQueueLength = (queue2d: [Song[]]): number => {
+    let queuelength = 0;
+    for(let i = 0; i < queue2d.length; i++){
+        if(Array.isArray(queue2d[i])) queuelength += queue2d[i]?.length ?? 0;
+    }
+    console.log(`Check queuelength: ${queuelength}`);
+    return queuelength;
+}
+
+const regenerate_queue = (queue2d: [Song[]]): Song[] => {
+    const oldQueue: Song[] = [];
+    for(const queue of queue2d){
+        oldQueue.push(...queue);
+    }
+    return oldQueue;
 }
 
 const update_every_tick = (player: AudioPlayer): number => {
@@ -466,7 +498,126 @@ const generate_progress_bar = (player: AudioPlayer): string => {
     return progressBar.join("");
 }
 
-const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, disabled: boolean, queuelength?: number): MessageActionRow => {
+const generate_music_buttons = (paused: boolean, loop: boolean, shuffle: boolean, queue: [Song[]], guild: Guild, disabled: boolean): MessageActionRow => {
+    
+    const playPauseButton = new MessageButton()
+        .setCustomId(`buttonPlayPause-${guild.id}`)
+        .setLabel("Pause")
+        .setStyle("PRIMARY")
+        .setDisabled(false)
+        .setEmoji("⏯️")
+    if(paused) playPauseButton.setLabel("Resume").setStyle("DANGER")
+    if(disabled) playPauseButton.setDisabled(true);
+
+    const skipButton = new MessageButton()
+        .setCustomId(`buttonSkip-${guild.id}`)
+        .setLabel("Skip")
+        .setStyle("PRIMARY")
+        .setDisabled(false)
+        .setEmoji("⏭️")
+    if(disabled) skipButton.setDisabled(true);
+
+    const stopButton = new MessageButton()
+        .setCustomId(`buttonStop-${guild.id}`)
+        .setLabel("Stop")
+        .setStyle("PRIMARY")
+        .setDisabled(false)
+        .setEmoji("⏹️")
+    if(disabled) stopButton.setDisabled(true);
+
+    const loopButton = new MessageButton()
+        .setCustomId(`buttonLoop-${guild.id}`)
+        .setLabel(`Loop`)
+        .setStyle("DANGER")
+        .setDisabled(false)
+        .setEmoji("🔁")
+    if(loop) loopButton.setStyle("SUCCESS");
+    if(disabled) loopButton.setDisabled(true);
+
+    const shuffleButton = new MessageButton()
+        .setCustomId(`buttonShuffle-${guild.id}`)
+        .setLabel(`Shuffle`)
+        .setStyle("DANGER")
+        .setDisabled(false)
+        .setEmoji("🔀")
+    if(shuffle) shuffleButton.setStyle("SUCCESS");
+    if(disabled) shuffleButton.setDisabled(true);
+    
+    return new MessageActionRow().addComponents(playPauseButton, skipButton, stopButton, loopButton, shuffleButton);
+}
+
+const generate_queue_buttons = (queue: [Song[]], currentpage: number, guild: Guild): MessageActionRow | null => {
+    if(!queue?.length || checkQueueLength(queue) <= 25 || queue.length === 1) return null;
+    const skipToFirst = new MessageButton()
+        .setCustomId(`buttonFirstPageQueue-${guild.id}`)
+        .setLabel(`First Page`)
+        .setStyle("PRIMARY")
+        .setEmoji("⏮️")
+        
+    const nextPageButton = new MessageButton()
+        .setCustomId(`buttonNextPageQueue-${guild.id}`)
+        .setLabel(`Next Page`)
+        .setStyle("PRIMARY")
+        .setEmoji("▶️")
+
+    const prevPageButton = new MessageButton()
+        .setCustomId(`buttonPrevPageQueue-${guild.id}`)
+        .setLabel(`Previous Page`)
+        .setStyle("PRIMARY")
+        .setEmoji("◀️")
+    
+    const skipToLast = new MessageButton()
+        .setCustomId(`buttonLastPageQueue-${guild.id}`)
+        .setLabel(`Last Page`)
+        .setStyle("PRIMARY")
+        .setEmoji("⏭️");
+    
+    //Only return buttons when necessary
+    if(queue.length === 2){
+        if(currentpage === 0) return new MessageActionRow().addComponents(nextPageButton);
+        else return new MessageActionRow().addComponents(prevPageButton);
+    }
+    else if(queue.length >= 3) {
+        if(currentpage === 0) return new MessageActionRow().addComponents(nextPageButton, skipToLast);
+        else if(currentpage === (queue.length - 1)) return new MessageActionRow().addComponents(skipToFirst, prevPageButton);
+        else if((currentpage + 1) === (queue.length - 1)) return new MessageActionRow().addComponents(skipToFirst, prevPageButton, nextPageButton);
+        else if((currentpage - 1) === 0) return new MessageActionRow().addComponents(prevPageButton, nextPageButton, skipToLast);
+        else return new MessageActionRow().addComponents(skipToFirst, prevPageButton, nextPageButton, skipToLast);
+    }
+    return null;
+}
+
+const generate_current_queue_list = (queue: [Song[]], currentpage: number, guild: Guild, type: "SELECT" | "REMOVE" | "SWAP"): MessageActionRow => {
+
+    const placeHolderText = type === "SELECT" ? `Select a song from Song Queue. Page: ${currentpage + 1}/${queue.length}` : type === "REMOVE" ? `Remove multiple songs from Song Queue. Page: ${currentpage + 1}/${queue.length}` : `Swap places with two songs. Page: ${currentpage + 1}/${queue.length}`;
+    const customId = type === "SELECT" ? `selectSongQueue-${guild.id}` : type === "REMOVE" ? `removeSongQueue-${guild.id}` : `swapSongQueue-${guild.id}`;
+
+    const selectMenu = new MessageSelectMenu()
+        .setCustomId(`selectSongQueue-${guild.id}`)
+        .setPlaceholder("Song Queue")
+        .setDisabled(true)
+
+    if(queue.length <= 1 && !checkQueueLength(queue)) 
+        return new MessageActionRow()
+            .addComponents(selectMenu.addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"}))
+    
+    selectMenu
+        .setCustomId(customId)
+        .setPlaceholder(placeHolderText)
+        .setDisabled(false)
+        .addOptions(queue[currentpage].map((q, i) => ({
+            label: `${(i+1) + (currentpage * 25)}.) ${q.title}`, 
+            description: `${guild.members.cache.get(q.who_queued_id)?.user.username ?? "unknown"} - ${q.length}`, 
+            value: `${i}-${q.link}`}))
+        )
+    type === "REMOVE" && queue[currentpage].length ? selectMenu.setMinValues(1).setMaxValues(queue[currentpage].length) : type === "SWAP" && queue[currentpage].length >= 2 ? selectMenu.setMinValues(1).setMaxValues(2) : ``;
+    
+    return new MessageActionRow().addComponents(selectMenu);
+}
+
+const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, queue: [Song[]], disabled: boolean): MessageActionRow => {
+    const queuelength = checkQueueLength(queue);
+
     const selectButton = new MessageButton()
         .setCustomId(`buttonSelect-${guild.id}`)
         .setLabel("Select Song")
@@ -488,7 +639,7 @@ const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolea
         .setLabel("Swap Songs")
         .setEmoji("🔃");
     buttonSwap ? swapButton.setStyle("SUCCESS") : swapButton.setStyle("DANGER");
-    if(queuelength ? queuelength as number <= 1 : queuelength === 0) swapButton.setDisabled(true)
+    if(queuelength % 25 <= 1 && queuelength >= 1) swapButton.setDisabled(true)
     else disabled ? swapButton.setDisabled(true) : swapButton.setDisabled(false);
     
     return new MessageActionRow()
@@ -533,35 +684,96 @@ export async function probeAndCreateResource(song: Song): Promise<AudioResource<
     return createAudioResource(readable, { metadata: song });
 }
 
-export const getSongInfo = async (search_term: string, author: string): Promise<Song | null> => {
+export const validate_search = (search_term: string): search_type => {
+    if (validateID(search_term)) return "PLAYLIST";
+    else if(validateURL(search_term)) return "YOUTUBE";
+    else return "SEARCH";
+}
 
-    console.time("getSongInfo");
-    const validate = validateURL(search_term);
+export const getSongInfo = async (search_term: string, type: search_type, author: string): Promise<Song[] | null> => {
+
+    let search = search_term;
+
     let song: any = {
         title: "",
         link: "",
         length: "",
         unique_id: "", //Probably indexed based on queue
         who_queued_id: author,
+        type: "",
         looped: false
     }
-    let search = search_term;
-    if(!validate){
-        const stringSearch = await ytsr(search_term, {limit: 1});
-        if(!stringSearch.items.length)
+
+    const songs: Song[] = [];
+
+    switch(type){
+        case 'SEARCH':
+            try{
+                console.time("search");
+                const stringSearch = await ytsr(search, {limit: 1});
+                if(!stringSearch.items.length) return null;
+                const { url } = stringSearch.items[0] as any;
+                if(!url) return null;
+                const searchSong = await getBasicInfo(url);
+                if(!searchSong) return null;
+                const { title, link, duration, details } = process_basic_info(searchSong);
+                Object.assign(song, {title, link, length: duration, details, type: type});
+                songs.push(song);
+                console.timeEnd("search");
+            }catch(err){
+                console.error(err);
+                return null;
+            }
+        break;
+
+        case 'YOUTUBE':
+            try{
+                const songInfo: any = await getBasicInfo(search);
+                if(!songInfo) return null;
+                const { title, link, duration, details } = process_basic_info(songInfo);
+                Object.assign(song, {title, link, length: duration, details, type: type});
+                songs.push(song);
+            }catch(err){
+                console.error(err);
+                return null;
+            }
+        break;
+
+        case 'PLAYLIST':
+            try{
+                console.time("playlist")
+                const parsedId = await getPlaylistID(search);
+                if(!parsedId) return null;
+                const playList = await ytpl(parsedId);
+                if(!playList) return null;
+                const { items, continuation } = playList;
+                for(const item of items){
+                    const { title, shortUrl, duration, durationSec } = item;
+                    songs.push({title, link: shortUrl, length: duration as string, details: {lengthSeconds: `${durationSec}`}, looped: false, search_type: "PLAYLIST", unique_id: "", who_queued_id: author, playlistname: playList.title});
+                }
+                console.timeEnd("playlist");
+            }
+            catch(err){
+                console.error(err);
+                return null;
+            }
+        break;
+
+        default:
             return null;
-        const { url } = <any>stringSearch.items[0];
-        search = url;
     }
-    
-    const songInfo: any = await getBasicInfo(search);
-    if(!songInfo) return null;
-    const { title, lengthSeconds, videoId  } = <VideoDetails>songInfo.videoDetails;
-    
+
+    return songs;
+}
+
+export const process_basic_info = (info: any): any => {
+    const { videoDetails } = info;
+    const { title, lengthSeconds, videoId } = videoDetails;
+
     let hours = Math.floor(parseFloat(lengthSeconds) / 3600)
     let minutes = (Math.floor((parseFloat(lengthSeconds) / 60)) % 60)
     let seconds = (parseFloat(lengthSeconds) % 60);
-    //console.log(hours, minutes, seconds);
+
     const duration = `${
         hours > 0 
             ? `${`${hours}`.padStart(2, "0")}:${`${minutes}`.padStart(2, "0")}:${`${seconds}`.padStart(2, "0")}` : 
@@ -569,7 +781,10 @@ export const getSongInfo = async (search_term: string, author: string): Promise<
             ? `${`${minutes}`.padStart(2, "0")}:${`${seconds}`.padStart(2, "0")}`: 
         `0:${`${seconds}`.padStart(2, "0")}` }`
 
-    Object.assign(song, {title, link: `https://www.youtube.com/watch?v=${videoId}`, length: duration, details: songInfo.videoDetails });
-    console.timeEnd("getSongInfo");
-    return song as Song;
+    return {
+        title: title,
+        link: `https://www.youtube.com/watch?v=${videoId}`,
+        duration: duration,
+        details: videoDetails ?? null
+    }
 }

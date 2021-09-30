@@ -1,5 +1,6 @@
 import { AudioPlayer, AudioResource } from "@discordjs/voice";
 import { Guild, Interaction, VoiceChannel } from "discord.js";
+import Modified_Client from "../methods/client/Client";
 
 export type MusicButtons = 
     "buttonPlayPause" | 
@@ -9,7 +10,11 @@ export type MusicButtons =
     "buttonShuffle" |
     "buttonSelect" |
     "buttonRemove" |
-    "buttonSwap"
+    "buttonSwap" |
+    "buttonFirstPageQueue" |
+    "buttonNextPageQueue" | 
+    "buttonPrevPageQueue" |
+    "buttonLastPageQueue"
 
 export interface MusicChannel {
     guildid: string;
@@ -18,6 +23,14 @@ export interface MusicChannel {
     buttons: EmbedButtons;
     songqueue: SelectSongQueue;
     selectButtons: SelectButtons;
+    queuePageButtons?: QueuePageButtons
+}
+
+export interface QueuePageButtons {
+    skiptofirstpagebutton: string;
+    nextpagequeuebutton: string;
+    prevpagequeuebutton: string;
+    skiptolastpagebutton: string;
 }
 
 export interface SelectButtons {
@@ -38,13 +51,17 @@ export interface EmbedButtons {
     shufflebutton: string;
 }
 
-export type embed_state = "NOWPLAYING" | "PAUSED" | "STOPPED"  | "QUEUE" | "SHUFFLE" | "LOOP" | "CHANGING" | "SEEKING"
+export type embed_state = "NOWPLAYING" | "STOPPED" | "CHANGING" | "SEEKING"
 
 export interface MusicConstructorInterface {
 
+    client: Modified_Client;
     guild: Guild
     musicChannel: MusicChannel;
-    queue: Song[];
+
+    playing: boolean;
+    currentQueuePage: number;
+    queue: [Song[]];
 
     select: boolean;
     remove: boolean;
@@ -70,14 +87,17 @@ export interface MusicConstructorInterface {
     shift: (index: number) => void;
     toggle_loop: (interaction: Interaction) => void;
     toggle_shuffle: (interaction: Interaction) =>  void;
-    add_queue: (song: Song) => void;
+    add_queue: (songs: Song[], update: boolean) => void;
     swap_songs: (song1: number, song2: number) => void;
     remove_queue: (index: number, updateEmbed: boolean) => void;
+    queue_page: (state: "FIRST" | "NEXT" | "PREV" | "LAST", interaction?: Interaction) => void;
     queue_state: (state: "SELECT" | "REMOVE" | "SWAP", interaction?: Interaction) => void;
     update_embed: (state: embed_state) => void;
     get_current_channel: () => VoiceChannel | null;
     set_current_channel: (channel: VoiceChannel) => void;
 }
+
+export type search_type = "YOUTUBE" | "PLAYLIST" | "SEARCH";
 
 export interface Song {
     unique_id: string;
@@ -86,29 +106,31 @@ export interface Song {
     length: string;
     who_queued_id: string;
     looped: boolean;
+    search_type: search_type;
+    playlistname?: string;
     details: VideoDetails;
 }
 
 export interface VideoDetails {
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
     lengthSeconds: string;
-    viewCount: string;
-    category: string;
-    publishDate: string;
-    ownerChannelName: string;
-    likes: number;
-    dislikes: number;
-    videoId: string,
-    media: {
-        song: string;
-        category: string;
-        artist: string;
-        album: string;
+    viewCount?: string;
+    category?: string;
+    publishDate?: string;
+    ownerChannelName?: string;
+    likes?: number;
+    dislikes?: number;
+    videoId?: string,
+    media?: {
+        song?: string;
+        category?: string;
+        artist?: string;
+        album?: string;
     }
-    author: {
-        name: string;
-        user: string;
-        channel_url: string;
+    author?: {
+        name?: string;
+        user?: string;
+        channel_url?: string;
     }
 }

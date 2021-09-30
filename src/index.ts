@@ -49,7 +49,7 @@ client.on('interactionCreate', async interaction => {
 	if (interaction.isButton()) {
         const { user, customId } = interaction as ButtonInteraction;
         const [ type, id ] = customId.split("-");
-
+        console.log(type);
         switch(type as MusicButtons | VoteButtons){
             case 'buttonYes':
             case 'buttonNo':
@@ -69,12 +69,17 @@ client.on('interactionCreate', async interaction => {
             case 'buttonLoop':      if(music) music.toggle_loop(interaction);    break;
             case 'buttonShuffle':   if(music) music.toggle_shuffle(interaction); break;
             case 'buttonSkip':      if(music) music.skip(interaction);           break;
-            case 'buttonStop':      if(music) music.stop(interaction);           break;
+            case 'buttonStop':      if(music) music.stop(interaction, true);     break;
             case 'buttonPlayPause': if(music) music.toggle_pause(interaction);   break;
 
             case 'buttonSelect': if(music) music.queue_state("SELECT", interaction); break;
             case 'buttonRemove': if(music) music.queue_state("REMOVE", interaction); break;
-            case 'buttonSwap' : if(music) music.queue_state("SWAP", interaction); break;
+            case 'buttonSwap' : if(music) music.queue_state("SWAP", interaction);    break;
+
+            case 'buttonFirstPageQueue': if(music) music.queue_page("FIRST", interaction); break;
+            case 'buttonNextPageQueue': if(music) music.queue_page("NEXT", interaction);   break;
+            case 'buttonPrevPageQueue': if(music) music.queue_page("PREV", interaction);   break;
+            case 'buttonLastPageQueue': if(music) music.queue_page("LAST", interaction);   break;
         }
         await interaction.deferUpdate();
     }
@@ -99,7 +104,7 @@ client.on('interactionCreate', async interaction => {
                 for(const song of getIndexes){
                     music?.remove_queue(song, false);
                 }
-                music?.update_embed("QUEUE");
+                music?.update_embed("NOWPLAYING");
             }
             break;
             

@@ -43,6 +43,7 @@ export default class implements Command{
             .setFooter(``)
             .setTimestamp()
         
+        //Songbuttons
         const playPauseButton = new MessageButton()
             .setCustomId(`buttonPlayPause-${message.guild.id}`)
             .setLabel("Pause")
@@ -81,12 +82,14 @@ export default class implements Command{
         const firstButtons = new MessageActionRow()
             .addComponents(playPauseButton, stopButton, skipButton, loopButton, shuffleButton);
 
+        //SelectMenu
         const selectMenu = new MessageSelectMenu()
             .setCustomId(`selectSongQueue-${message.guild.id}`)
             .setPlaceholder("Song Queue")
             .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
             .setDisabled(true)
         
+        //SelectButtons
         const selectButton = new MessageButton()
             .setCustomId(`buttonSelect-${message.guild.id}`)
             .setLabel("Select Song")
@@ -107,6 +110,38 @@ export default class implements Command{
             .setStyle("DANGER")
             .setDisabled(true)
             .setEmoji("🔃");
+        
+        //QueuePageButtons
+        /*const skipToFirst = new MessageButton()
+            .setCustomId(`firstPageQueue-${message.guild.id}`)
+            .setLabel(`First Page`)
+            .setStyle("PRIMARY")
+            .setDisabled(true)
+            .setEmoji("⏮️")
+            
+        const nextPageButton = new MessageButton()
+            .setCustomId(`nextPageQueue-${message.guild.id}`)
+            .setLabel(`Next Page`)
+            .setStyle("PRIMARY")
+            .setDisabled(true)
+            .setEmoji("▶️")
+
+        const prevPageButton = new MessageButton()
+            .setCustomId(`prevPageQueue-${message.guild.id}`)
+            .setLabel(`Previous Page`)
+            .setStyle("PRIMARY")
+            .setDisabled(true)
+            .setEmoji("◀️")
+
+        const skipToLast = new MessageButton()
+            .setCustomId(`lastPageQueue-${message.guild.id}`)
+            .setLabel(`Last Page`)
+            .setStyle("PRIMARY")
+            .setDisabled(true)
+            .setEmoji("⏭️")*/
+
+        /*const queuePageButtons = new MessageActionRow()
+            .addComponents(skipToFirst, prevPageButton, nextPageButton, skipToLast)*/
 
         const selectButtons = new MessageActionRow()
             .addComponents(selectButton, removeButton, swapButton)
@@ -133,7 +168,13 @@ export default class implements Command{
                 selectButton: selectButton.customId as string,
                 removeButton: removeButton.customId as string,
                 swapButton: swapButton.customId as string
-            }
+            },
+            /*queuePageButtons: {
+                skiptofirstpagebutton: skipToFirst.customId as string,
+                nextpagequeuebutton: nextPageButton.customId as string,
+                prevpagequeuebutton: prevPageButton.customId as string,
+                skiptolastpagebutton: skipToLast.customId as string
+            }*/
         }
 
         if(guildSettings) client.guildsettings.set(message.guild.id, {...guildSettings, musicChannel});
