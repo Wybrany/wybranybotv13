@@ -10,8 +10,11 @@ import { MusicButtons } from "./interfaces/music.interface";
 import { VoteButtons } from "./interfaces/vote.interface";
 import { MusicConstructor } from "./methods/music/music";
 import { ButtonInteraction, SelectMenuInteraction, VoiceChannel } from "discord.js";
+import { setMaxListeners } from "process";
 
+setMaxListeners(100);
 dotenv.config();
+
 const discord_token = process.env.TOKEN as string;
 const base_path = process.env.BASE_PATH as string;
 const prefix = process.env.PREFIX as string;
