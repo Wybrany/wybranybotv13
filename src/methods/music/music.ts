@@ -264,7 +264,7 @@ export class MusicConstructor implements MusicConstructorInterface {
 
     swap_songs(song1: number, song2: number){
         if(checkQueueLength(this.queue) <= 1) return
-        this.queue[this.currentQueuePage][song1], this.queue[this.currentQueuePage][song2] = this.queue[this.currentQueuePage][song2], this.queue[this.currentQueuePage][song1]
+        [this.queue[this.currentQueuePage][song1], this.queue[this.currentQueuePage][song2]] = [this.queue[this.currentQueuePage][song2], this.queue[this.currentQueuePage][song1]]
         //(this.queue[this.currentQueuePage][song1], this.queue[this.currentQueuePage][song2]) = (this.queue[this.currentQueuePage][song2], this.queue[this.currentQueuePage][song1]);
         this.update_embed("NOWPLAYING");
     }
@@ -388,8 +388,8 @@ export class MusicConstructor implements MusicConstructorInterface {
                     : generate_current_queue_list(this.queue, this.currentQueuePage, this.guild, "SWAP");
                 const queuePageButtons = generate_queue_buttons(this.queue, this.currentQueuePage, this.guild);
                 const swapButtons = checkQueueLength(this.queue)
-                    ? generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, false)
-                    : generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true)
+                    ? generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, this.currentQueuePage, false)
+                    : generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, this.currentQueuePage, true)
 
                 const newComponents = queuePageButtons ? [selectButton, selectMenu, queuePageButtons, swapButtons] : [selectButton, selectMenu, swapButtons];
                 await message.edit({embeds: [npEmbed], components: newComponents });
@@ -413,7 +413,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const newButtonRows = generate_music_buttons(false, false, false, this.queue, this.guild, true);
                 const newQueue = generate_current_queue_list([[]], 0, this.guild, "SELECT");
-                const stoppedSelectButtons = generate_new_select_buttons(true, false, false, this.guild, this.queue, true);
+                const stoppedSelectButtons = generate_new_select_buttons(true, false, false, this.guild, this.queue, this.currentQueuePage, true);
 
                 await message.edit({embeds: [stEmbed], components: [newButtonRows, newQueue, stoppedSelectButtons]})
             break;
@@ -427,7 +427,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const changingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                 const changingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                const changingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true);
+                const changingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild,this.queue, this.currentQueuePage, true);
                 await message.edit({embeds: [changingEmbed], components: [changingButtons, changingQueue, changingSelectButtons]});
             break;
 
@@ -440,7 +440,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                     .setTimestamp()
                 const seekingButtons = new MessageActionRow().addComponents(buttonRows.components.map(comp => comp.setDisabled(true)));
                 const seekingQueue = new MessageActionRow().addComponents(queue.setDisabled(true));
-                const seekingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, true);
+                const seekingSelectButtons = generate_new_select_buttons(this.select, this.remove, this.swap, this.guild, this.queue, this.currentQueuePage, true);
                 await message.edit({embeds: [seekingEmbed], components: [seekingButtons, seekingQueue, seekingSelectButtons]});
             break;
                 
@@ -615,7 +615,7 @@ const generate_current_queue_list = (queue: [Song[]], currentpage: number, guild
     return new MessageActionRow().addComponents(selectMenu);
 }
 
-const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, queue: [Song[]], disabled: boolean): MessageActionRow => {
+const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, queue: [Song[]], currentPage: number, disabled: boolean): MessageActionRow => {
     const queuelength = checkQueueLength(queue);
 
     const selectButton = new MessageButton()
@@ -639,7 +639,7 @@ const generate_new_select_buttons = (buttonSelect: boolean, buttonRemove: boolea
         .setLabel("Swap Songs")
         .setEmoji("🔃");
     buttonSwap ? swapButton.setStyle("SUCCESS") : swapButton.setStyle("DANGER");
-    if(queuelength % 25 <= 1 && queuelength >= 1) swapButton.setDisabled(true)
+    if(queuelength <= 1 || queue[currentPage].length <= 1) swapButton.setDisabled(true)
     else disabled ? swapButton.setDisabled(true) : swapButton.setDisabled(false);
     
     return new MessageActionRow()

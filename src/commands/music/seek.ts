@@ -37,6 +37,7 @@ export default class implements Command{
             const guildPrefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? process.env.PREFIX : process.env.PREFIX;
             return deleteMessage(`You need to create create a music channel. Use the command **${guildPrefix}music** in a channel dedicated specifically for music commands.`, message, 10000);
         }
+        
         if(!message.member?.voice.channel) 
             return deleteMessage(`You need to be in a voicechannel to use this command.`, message, 5000);
         

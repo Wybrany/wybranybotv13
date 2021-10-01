@@ -123,14 +123,14 @@ client.on('interactionCreate', async interaction => {
 client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
-    if(!message.content.startsWith(guildprefix)) checkForMention(message, client, guildprefix);
+    if(!message.content.startsWith(guildprefix)) return checkForMention(message, client, guildprefix);
     if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;
-    if (!cmd) return;
+    if (!cmd) return checkForMention(message, client, guildprefix);
 
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
-    if (!command) return;
+    if (!command) return checkForMention(message, client, guildprefix);
     
     const channelWhiteList = command.channelWhitelist?.length ? command.channelWhitelist.includes(message.channel.name) : null;
     if(channelWhiteList !== null && channelWhiteList === false){

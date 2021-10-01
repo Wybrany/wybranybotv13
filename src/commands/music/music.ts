@@ -3,6 +3,7 @@ import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { MusicChannel } from "../../interfaces/music.interface";
 import { savefiledata } from "../../methods/backup";
+import { deleteMessage } from "../../methods/deletemessage";
 
 export default class implements Command{
     name = "music";
@@ -14,8 +15,9 @@ export default class implements Command{
     developerMode=false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
+        
         await message.delete();
-        if(!message.guild) return message.reply({content: 'Something went wrong. Please try again later.'});
+        if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
 
         const guildSettings = client.guildsettings.get(message.guild.id);
         
@@ -24,7 +26,7 @@ export default class implements Command{
         if(guildSettings?.musicChannel && message.guild.channels.cache.has(guildSettings?.musicChannel?.channelid ?? "")){
             const { channelid, embedid } = guildSettings.musicChannel;
             const channel = message.guild.channels.cache.get(channelid) as TextChannel;
-            const prevMessage = await channel.messages.fetch(embedid).catch(e => console.log(e));
+            const prevMessage = channel.messages.cache.get(embedid) || await channel.messages.fetch(embedid).catch(e => {}) || null;
             if(prevMessage) prevMessage.delete();
         }
         
@@ -110,38 +112,6 @@ export default class implements Command{
             .setStyle("DANGER")
             .setDisabled(true)
             .setEmoji("🔃");
-        
-        //QueuePageButtons
-        /*const skipToFirst = new MessageButton()
-            .setCustomId(`firstPageQueue-${message.guild.id}`)
-            .setLabel(`First Page`)
-            .setStyle("PRIMARY")
-            .setDisabled(true)
-            .setEmoji("⏮️")
-            
-        const nextPageButton = new MessageButton()
-            .setCustomId(`nextPageQueue-${message.guild.id}`)
-            .setLabel(`Next Page`)
-            .setStyle("PRIMARY")
-            .setDisabled(true)
-            .setEmoji("▶️")
-
-        const prevPageButton = new MessageButton()
-            .setCustomId(`prevPageQueue-${message.guild.id}`)
-            .setLabel(`Previous Page`)
-            .setStyle("PRIMARY")
-            .setDisabled(true)
-            .setEmoji("◀️")
-
-        const skipToLast = new MessageButton()
-            .setCustomId(`lastPageQueue-${message.guild.id}`)
-            .setLabel(`Last Page`)
-            .setStyle("PRIMARY")
-            .setDisabled(true)
-            .setEmoji("⏭️")*/
-
-        /*const queuePageButtons = new MessageActionRow()
-            .addComponents(skipToFirst, prevPageButton, nextPageButton, skipToLast)*/
 
         const selectButtons = new MessageActionRow()
             .addComponents(selectButton, removeButton, swapButton)
@@ -168,13 +138,7 @@ export default class implements Command{
                 selectButton: selectButton.customId as string,
                 removeButton: removeButton.customId as string,
                 swapButton: swapButton.customId as string
-            },
-            /*queuePageButtons: {
-                skiptofirstpagebutton: skipToFirst.customId as string,
-                nextpagequeuebutton: nextPageButton.customId as string,
-                prevpagequeuebutton: prevPageButton.customId as string,
-                skiptolastpagebutton: skipToLast.customId as string
-            }*/
+            }
         }
 
         if(guildSettings) client.guildsettings.set(message.guild.id, {...guildSettings, musicChannel});
