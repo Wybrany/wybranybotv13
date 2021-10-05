@@ -10,9 +10,11 @@ import { MusicButtons } from "./interfaces/music.interface";
 import { VoteButtons } from "./interfaces/vote.interface";
 import { MusicConstructor } from "./methods/music/music";
 import { ButtonInteraction, SelectMenuInteraction, VoiceChannel } from "discord.js";
-import { off, setMaxListeners } from "process";
+import { setMaxListeners } from "process";
 import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "./interfaces/cah.interface";
+import { promisify } from "util";
 
+const wait = promisify(setTimeout);
 setMaxListeners(100);
 dotenv.config();
 
@@ -116,6 +118,7 @@ client.on('interactionCreate', async interaction => {
         const { user, customId } = interaction as SelectMenuInteraction;
         const [ type, id ] = customId.split("-");
         console.log(type);
+        
         switch(type as "selectSongQueue" | "removeSongQueue" |"swapSongQueue" | CAHSelectMenu){
             case 'selectSongQueue':{
                 const firstSong = interaction.values.shift() as string;
@@ -152,8 +155,9 @@ client.on('interactionCreate', async interaction => {
                 if(!member || !cahgame) return;
                 if(cahgame.players.find(p => p.member.id === member.id)?.player_cards_state === "SELECT")
                     cahgame.select_cards("SELECT", indexes, member, interaction);
-                else 
+                else {
                     cahgame.select_cards("REMOVE", indexes, member, interaction);
+                }
             break;
 
             case 'WhiteCardsVote':

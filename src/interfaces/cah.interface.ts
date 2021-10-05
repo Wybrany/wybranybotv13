@@ -56,8 +56,8 @@ export interface Game {
     start: () => void;
     stop: (command?: boolean) => void;
 
-    create_channel: (member: GuildMember, parent: CategoryChannel) => Promise<TextChannel>
-    create_embed: (member: GuildMember, channel: TextChannel) => Promise<Message>;
+    create_channel: (member: GuildMember, parent: CategoryChannel) => Promise<TextChannel | null>
+    create_embed: (member: GuildMember, channel: TextChannel) => Promise<Message | null>;
     load_deck: () => void;
     give_cards: (amount: number) => void;
     select_cardczar: () => void;

@@ -1,0 +1,86 @@
+{
+    "pack": {
+      "name": "Test pack",
+      "id": "_testpack"
+    },
+    "black": [
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 3,
+        "draw": 1
+      },
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 3,
+        "draw": 1
+      },
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 2,
+        "draw": 1
+      },
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 2,
+        "draw": 1
+      },
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 1,
+        "draw": 1
+      },
+      {
+        "content": "Just a random sentence containing ______'s.",
+        "pick": 1,
+        "draw": 1
+      }
+    ],
+    "white": [
+        "Whitecard 1",
+        "Whitecard 2",
+        "Whitecard 3",
+        "Whitecard 4",
+        "Whitecard 5",
+        "Whitecard 6",
+        "Whitecard 7",
+        "Whitecard 8",
+        "Whitecard 9",
+        "Whitecard 10",
+        "Whitecard 11",
+        "Whitecard 12",
+        "Whitecard 13",
+        "Whitecard 14",
+        "Whitecard 15",
+        "Whitecard 16",
+        "Whitecard 17",
+        "Whitecard 18",
+        "Whitecard 19",
+        "Whitecard 20",
+        "Whitecard 21",
+        "Whitecard 22",
+        "Whitecard 23",
+        "Whitecard 24",
+        "Whitecard 25",
+        "Whitecard 26",
+        "Whitecard 27",
+        "Whitecard 28",
+        "Whitecard 29",
+        "Whitecard 30",
+        "Whitecard 31",
+        "Whitecard 32",
+        "Whitecard 33",
+        "Whitecard 34",
+        "Whitecard 35",
+        "Whitecard 36",
+        "Whitecard 37",
+        "Whitecard 38",
+        "Whitecard 39",
+        "Whitecard 40"
+
+    ],
+    "quantity": {
+      "black": 4,
+      "white": 40,
+      "total": 44
+    }
+  }

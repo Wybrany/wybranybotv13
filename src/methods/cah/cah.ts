@@ -73,9 +73,13 @@ export class CAHGame implements Game {
         this.gamestate = "GAMEOVER";
         //Update the game with gameover texts.
         for(const player of this.players){
-            const member = this.guild.members.cache.get(player.member.id);
-            if(member && player.previous_roles.length) await member.roles.add(player.previous_roles);
-            await player.channel.delete();
+            try{
+                const member = this.guild.members.cache.get(player.member.id);
+                if(member && player.previous_roles.length) await member.roles.add(player.previous_roles);
+                await player.channel.delete();
+            }catch(err){
+                console.error(err);
+            }
         }
         if(command) return;
         //Should also create a txtfile that logs everything, send this as well when possible.
@@ -89,13 +93,16 @@ export class CAHGame implements Game {
             `)
             .setColor(`RANDOM`)
             .setTimestamp();
-        
-        const cahLobby = this.guild.channels.cache.find(c => c.name === "cah-lobby") as TextChannel | null;
-        if(cahLobby) await cahLobby.send({embeds: [embed]});
-        this.client.cahgame.delete(this.guild.id);
+        try{
+            const cahLobby = this.guild.channels.cache.find(c => c.name === "cah-lobby") as TextChannel | null;
+            if(cahLobby) await cahLobby.send({embeds: [embed]});
+            this.client.cahgame.delete(this.guild.id);   
+        }catch(err){
+            console.error(err)
+        }
     }
 
-    async create_channel(player: GuildMember, parent: CategoryChannel): Promise<TextChannel>{
+    async create_channel(player: GuildMember, parent: CategoryChannel): Promise<TextChannel | null>{
         const permissions: OverwriteResolvable[] = [
             {
                 id: this.guild.roles.everyone.id,
@@ -114,18 +121,27 @@ export class CAHGame implements Game {
             reason: `Created by bot for CAH-game`
         }
 
-        return await this.guild.channels.create(`Player-${player.user.username}`, options) as TextChannel;
+        try{
+            return await this.guild.channels.create(`Player-${player.user.username}`, options) as TextChannel;
+        }catch(err){
+            console.error(err);
+            return null;
+        }
 
     }
 
-    async create_embed(player: GuildMember, channel: TextChannel): Promise<Message>{
+    async create_embed(player: GuildMember, channel: TextChannel): Promise<Message | null>{
         const embed = new MessageEmbed()
             .setTitle(`Game-embed for ${player.user.username}`)
             .setDescription(`Please wait while the game is being created for other players...`)
             .setColor(`BLUE`)
             .setTimestamp();
-        
-        return await channel.send({embeds: [embed]});
+        try{
+            return await channel.send({embeds: [embed]});
+        }catch(err){
+            console.error(err)
+            return null;
+        }
     }
 
     load_deck(){
@@ -144,11 +160,13 @@ export class CAHGame implements Game {
     }
 
     give_cards(amount: number): string[] | null {
-        if(!this.deck || !this.deck.deckblackcards.length || !this.deck.deckwhitecards.length) return null;
+        if(!this.deck || !this.deck.deckwhitecards.length) return null;
         const randomIndex = shuffle(this.deck.deckwhitecards.length, amount);
-        if(amount === 1) return this.deck.deckwhitecards.splice(randomIndex as number, 1)
+        if(amount === 1) return this.deck.deckwhitecards.splice(randomIndex as number, 1);
+        const indexAsArray = randomIndex as number[];
+        const sortIndexArray = indexAsArray.sort((a,b) => b - a);
         const whiteCards: string[] = [];
-        for(const index of randomIndex as number[]){
+        for(const index of sortIndexArray){
             const card = this.deck.deckwhitecards.splice(index, 1)[0];
             whiteCards.push(card);
         }
@@ -175,22 +193,26 @@ export class CAHGame implements Game {
             this.roundWon = player;
             if(player.points >= this.wincondition) return this.stop()
         }
+        if(!this.deck?.deckblackcards.length) return this.stop();
         for(const player of this.players){
             player.replacedcards = false;
             player.ready = false;
             this.replace_cards("REMOVE", player.selected_cards_indexes, player.member);
             player.selected_cards_indexes = [];
             player.selected_white_cards = [];
+            player.player_cards_state = "SELECT";
             this.update_embed("ROUNDWON", player);
         }
         setTimeout(() => {
             this.gamestate = "SELECT";
             this.selected_cards = [];
             this.currentcardzar = this.select_cardczar();
+            this.roundWon = null;
+            this.select_blackcard();
             for(const player of this.players){
                 this.update_embed("SELECT", player);
             }
-        }, 7500)
+        }, 6000)
     }
 
     check_if_all_selected(): boolean{
@@ -207,7 +229,6 @@ export class CAHGame implements Game {
         const message = await this.create_embed(member, channel);
         if(!message) return null;
         let whiteCards = this.give_cards(10);
-        if(!whiteCards) whiteCards = [""];
         if(!whiteCards) return null;
         const roles_with_administrator = [...member.roles.cache?.values()]?.filter(r => r.permissions.has("ADMINISTRATOR")) ?? [];
         if(roles_with_administrator.length) member.roles.remove(roles_with_administrator, `Removing for CAH.`);
@@ -220,7 +241,13 @@ export class CAHGame implements Game {
         if(!player) return false;
         this.players.splice(this.players.map(p => p.member.id).indexOf(player.member.id), 1);
         if(this.selected_cards.some(c => c.player.member.id === player.member.id)) this.selected_cards.splice(this.selected_cards.map(c => c.player.member.id).indexOf(player.member.id), 1);
-        if(this.guild.channels.cache.has(player.channel.id)) await player.channel.delete();
+        if(this.guild.channels.cache.has(player.channel.id)) {
+            try{
+                await player.channel.delete();
+            }catch(err){
+                console.error(err);
+            }
+        }
         if(this.check_if_all_selected()){
             for(const player of this.players){
                 await this.update_embed("VOTE", player);
@@ -272,10 +299,13 @@ export class CAHGame implements Game {
         const player_index = this.players.findIndex(p => p.member.id === member.id);
         if(player_index === -1 || !this.blackcard) return;
 
-        if(this.blackcard.pick === 2 && state === "SWAP") this.select_cards("SWAP", this.players[player_index].selected_cards_indexes, member, interaction);
-        else if(this.blackcard.pick >= 3 && state === "SWAP") this.players[player_index].player_cards_state = state;
+        if((this.players[player_index].selected_cards_indexes.length || this.players[player_index].selected_white_cards.length) && state === "SWAP"){
+            if(this.blackcard.pick === 2 && state === "SWAP") return this.select_cards("SWAP", this.players[player_index].selected_cards_indexes, member, interaction);
+            else if(this.blackcard.pick >= 3 && state === "SWAP") this.players[player_index].player_cards_state = state;
+        }
+        else if(state === "REMOVE" && !this.players[player_index].replacedcards) this.players[player_index].player_cards_state = state;
         else this.players[player_index].player_cards_state = state;
-        
+
         this.update_embed("SELECT", this.players[player_index]);
     }
     
@@ -305,15 +335,22 @@ export class CAHGame implements Game {
                 if(this.players[player_index].replacedcards || this.players[player_index].ready) return;
                 if(cards.some(c => this.players[player_index].selected_cards_indexes.includes(c))) return;
                 this.players[player_index].replacedcards = true;
+                this.players[player_index].player_cards_state = "SELECT";
                 this.replace_cards("SELECT", cards, member, interaction);
             break;
 
             case 'SWAP':
-                if(!this.players[player_index].selected_cards_indexes.length || !this.players[player_index].selected_white_cards.length) return;
-                const [ card1, card2 ] = cards;
-                const player_cselection = this.players[player_index].selected_white_cards;
-                [[player_cselection[card1], player_cselection[card2]] = [player_cselection[card2], player_cselection[card1]]];
-                this.players[player_index].selected_white_cards = player_cselection;
+                if(!this.players[player_index].selected_cards_indexes.length || !this.players[player_index].selected_white_cards.length || !this.blackcard) return;
+                if(this.blackcard.pick >= 3){
+                    const [ card1, card2 ] = cards;
+                    const player_cselection = this.players[player_index].selected_white_cards;
+                    [[player_cselection[card1], player_cselection[card2]] = [player_cselection[card2], player_cselection[card1]]];
+                    this.players[player_index].selected_white_cards = player_cselection;
+                } else if(this.blackcard.pick === 2) {
+                    const player_cselection = this.players[player_index].selected_white_cards;
+                    [[player_cselection[0], player_cselection[1]] = [player_cselection[1], player_cselection[0]]];
+                    this.players[player_index].selected_white_cards = player_cselection;
+                }
             break;
         }
         //Check if selection is over, otherwise update this embed.
@@ -325,7 +362,11 @@ export class CAHGame implements Game {
         const select_menu = generate_select_menu(state, player, this.currentcardzar as PlayerConstructor, this.selected_cards as Selected_Cards[], this.blackcard as BlackCard);
         const buttons = generate_buttons(state, player, this.currentcardzar as PlayerConstructor, this.blackcard as BlackCard);
         console.log(`Updating embed for ${player.member.user.username} to ${state}`)
-        await player.message.edit({embeds: [embed], components: [select_menu, buttons]});
+        try{
+            await player.message.edit({embeds: [embed], components: [select_menu, buttons]});
+        }catch(err){
+            console.error(err);
+        }
     }
 }
 
@@ -387,6 +428,7 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
                 .setColor(`GREEN`)
                 .setDescription(`
                     ${roundWon.member.user.username} has won this round with his cards.
+
                     Cards:
                     ${selected_cards.find(p => p.player.member.id === roundWon.member.id)?.cards.map((c, i) => `${i+1}.) ${c}`).join("\n") ?? `Failed to load cards...`}
                 `)
@@ -437,7 +479,7 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
                     value: `${i}-${card?.substring(0, 90) ?? "Unkown"}`,
                     description: `${card?.substring(0, 99) ?? "Unkown"}`
                 })))
-                .setMinValues(1)
+                .setMinValues(blackCard.pick)
                 .setMaxValues(blackCard.pick)
             if(player.player_cards_state === "REMOVE") select_menu
                 .setMinValues(1)
@@ -456,10 +498,10 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
                             value: `${i}-${c?.substring(0, 90) ?? "Unkown"}`,
                             description: `${c?.substring(0, 99) ?? "Unkown"}`
                         })))
-                        .setMinValues(1)
+                        .setMinValues(2)
                         .setMaxValues(2);
             }
-            if(player.member.id === czar.member.id) return actionrow.addComponents(select_menu.setDisabled(true));
+            if(player.member.id === czar.member.id) return actionrow.addComponents(select_menu.setDisabled(true).setPlaceholder(`You are cardzar.`));
         break;
 
         case 'VOTE':
@@ -552,7 +594,7 @@ const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: 
     if(player.replacedcards)
         buttonRemove.setDisabled(true);
     
-    if(blackcard.pick === 1)
+    if(blackcard.pick === 1 || !player.selected_cards_indexes.length || !player.selected_white_cards.length)
         buttonSwap.setDisabled(true);
     
     if(player.ready)

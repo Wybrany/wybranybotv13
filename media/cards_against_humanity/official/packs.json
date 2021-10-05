@@ -1,6 +1,15 @@
 {
   "packs": [
     {
+      "name": "Test pack",
+      "id": "_testpack",
+      "quantity": {
+        "black": 4,
+        "white": 40,
+        "total": 44
+        }
+    },
+    {
       "name": "2012 Holiday Pack",
       "id": "2012_holiday_pack",
       "quantity": {
