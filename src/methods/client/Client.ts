@@ -2,7 +2,7 @@ import { Client, Collection, Guild, Intents, Message } from "discord.js";
 import { Command } from "src/interfaces/client.interface";
 import { Guildsettings } from "src/interfaces/guildsettings.interface";
 import { Cooldown } from "src/interfaces/cooldown.interface";
-import { Game } from "src/interfaces/cah.interface";
+import { Game, CurrentSettings, CAH_Settings } from "src/interfaces/cah.interface";
 import { Vote } from "src/interfaces/vote.interface";
 import { MusicConstructorInterface } from "src/interfaces/music.interface";
 
@@ -15,7 +15,8 @@ export default class extends Client {
     public guildsettings: Map<string, Guildsettings>;
     public guildUsedCommandRecently: Map <string, Cooldown>
 
-    public cahsettings: Map<string, {}>;
+    public cah_settings_embed: Map<string, CAH_Settings>
+    public cahsettings: Map<string, CurrentSettings>;
     public cahgame: Map<string, Game>;
     public cahlog: string[];
 
@@ -37,6 +38,7 @@ export default class extends Client {
         this.guildUsedCommandRecently = new Map();
 
         //CAH
+        this.cah_settings_embed = new Map();
         this.cahsettings = new Map();
         this.cahgame = new Map();
         this.cahlog = [];
