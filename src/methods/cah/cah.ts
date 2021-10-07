@@ -160,6 +160,7 @@ export class CAHGame implements Game {
     }
 
     give_cards(amount: number): string[] | null {
+        console.log(this.deck?.deckwhitecards)
         if(!this.deck || !this.deck.deckwhitecards.length) return null;
         const randomIndex = shuffle(this.deck.deckwhitecards.length, amount);
         if(amount === 1) return this.deck.deckwhitecards.splice(randomIndex as number, 1);
@@ -170,6 +171,8 @@ export class CAHGame implements Game {
             const card = this.deck.deckwhitecards.splice(index, 1)[0];
             whiteCards.push(card);
         }
+        console.log(this.deck.deckwhitecards);
+        console.log(whiteCards);
         return whiteCards;
     }
 
@@ -209,8 +212,10 @@ export class CAHGame implements Game {
             this.currentcardzar = this.select_cardczar();
             this.roundWon = null;
             this.select_blackcard();
+            if(!this.blackcard) return this.stop();
             for(const player of this.players){
                 this.update_embed("SELECT", player);
+                if(!player.whiteCards.length || player.whiteCards.length < this.blackcard.pick) player.ready = true;
             }
         }, 6000)
     }
@@ -241,6 +246,18 @@ export class CAHGame implements Game {
         if(!player) return false;
         this.players.splice(this.players.map(p => p.member.id).indexOf(player.member.id), 1);
         if(this.selected_cards.some(c => c.player.member.id === player.member.id)) this.selected_cards.splice(this.selected_cards.map(c => c.player.member.id).indexOf(player.member.id), 1);
+        if(player.member.id === this.currentcardzar?.member.id){
+            this.currentcardzar = this.select_cardczar();
+            if(this.selected_cards.some(c => c.player.member.id === this.currentcardzar?.member.id)){
+                this.selected_cards.splice(this.selected_cards.map(c => c.player.member.id).indexOf(player.member.id))
+                const player_index = this.players.findIndex(p => p.member.id === this.currentcardzar?.member.id);
+                if(player_index !== -1){
+                    this.players[player_index].selected_cards_indexes = [];
+                    this.players[player_index].selected_white_cards = [];
+                    this.players[player_index].ready = false;
+                }
+            }
+        }
         if(this.guild.channels.cache.has(player.channel.id)) {
             try{
                 await player.channel.delete();
@@ -360,7 +377,7 @@ export class CAHGame implements Game {
     async update_embed(state: Update_Embed, player: PlayerConstructor){
         const embed = generate_embeds(state, player, this.players, this.blackcard as BlackCard, this.selected_cards, this.roundWon as PlayerConstructor, this.currentcardzar as PlayerConstructor);
         const select_menu = generate_select_menu(state, player, this.currentcardzar as PlayerConstructor, this.selected_cards as Selected_Cards[], this.blackcard as BlackCard);
-        const buttons = generate_buttons(state, player, this.currentcardzar as PlayerConstructor, this.blackcard as BlackCard);
+        const buttons = generate_buttons(state, player, this.currentcardzar as PlayerConstructor, this.blackcard as BlackCard, this.deck as Deck);
         console.log(`Updating embed for ${player.member.user.username} to ${state}`)
         try{
             await player.message.edit({embeds: [embed], components: [select_menu, buttons]});
@@ -394,7 +411,7 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
                     ${player.selected_white_cards.length ? `
                     You have selected:
                     ${player.selected_white_cards.map((c, i) => `${i+1}.) ${c}`).join("\n") ?? ""}
-                    ` : ``}
+                    ` : `There are no whitecards remaining.`}
                 `)
                 .setFooter(`Time remaining: XXs`)
                 .setTimestamp();
@@ -545,7 +562,7 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
     return actionrow.addComponents(select_menu);
 }
 
-const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, blackcard: BlackCard): MessageActionRow => {
+const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, blackcard: BlackCard, deck: Deck): MessageActionRow => {
     const actionrow = new MessageActionRow();
     const buttonSelect = new MessageButton()
         .setCustomId(`buttonCAHSelect-${player.guild.id}`)
@@ -591,7 +608,7 @@ const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: 
         buttonSwap.setStyle(`SUCCESS`);
     }
     
-    if(player.replacedcards)
+    if(player.replacedcards || !deck.deckwhitecards.length)
         buttonRemove.setDisabled(true);
     
     if(blackcard.pick === 1 || !player.selected_cards_indexes.length || !player.selected_white_cards.length)

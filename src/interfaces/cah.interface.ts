@@ -1,5 +1,5 @@
 import { CategoryChannel, Guild, GuildMember, Interaction, Message, OverwriteResolvable, Role, TextChannel } from "discord.js";
-import { update_state } from "src/methods/cah/cahsettings";
+import { update_state } from "src/methods/cah/Cahsettings";
 import Modified_Client from "../methods/client/Client";
 
 export type Gamestate = "SETUP" | "SELECT" | "VOTE" | "ROUNDWON" | "PAUSE" | "GAMEOVER";
