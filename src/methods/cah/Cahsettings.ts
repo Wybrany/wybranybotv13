@@ -78,7 +78,7 @@ export class CAH_SETTINGS implements CAH_Settings {
                 this.winstate += amount;
             break;
             case 'MINUS':
-                if(this.winstate - amount <= 0) this.winstate -= amount;
+                if(this.winstate - amount <= 0) this.winstate = 0;
                 else this.winstate -= amount; 
             break;
         }
@@ -86,6 +86,11 @@ export class CAH_SETTINGS implements CAH_Settings {
     }
 
     save(){
+        this.client.cahsettings.set(this.guild.id, {
+            guildId: this.guild.id, 
+            packs: this.selectedPacks, 
+            wincondition: this.winstate
+        });
         savefiledata(this.client, this.guild.id);
         this.update_embed("SAVE");
         this.client.cah_settings_embed.delete(this.guild.id);
@@ -102,6 +107,7 @@ export class CAH_SETTINGS implements CAH_Settings {
 
             const comp = generate_components(state, this.packs, this.selectedPacks, this.winstate, this.currentPage, this.guild);
             await this.embed?.edit({ embeds: [embed], components: [comp]});
+            return;
         }catch(err){
             console.error(err);
             this.client.cah_settings_embed.delete(this.guild.id);
@@ -121,9 +127,9 @@ const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPac
                     These are your current settings:
 
                     Wincondition: ${winstate}p
-                    Selected Packs: ${selectedPacks.map(p => p.name).join(", ")}
-                    Whitecards: ${selectedPacks.map(p => p.quantity.white).reduce((acc, red) => acc + red)}
-                    Blackcards: ${selectedPacks.map(p => p.quantity.black).reduce((acc, red) => acc + red)}
+                    Selected Packs: ${selectedPacks.length ? selectedPacks.map(p => p.name).join(", ") : `No packs selected.`}
+                    Whitecards: ${selectedPacks.length ? selectedPacks.map(p => p.quantity.white).reduce((acc, red) => acc + red) : 0}
+                    Blackcards: ${selectedPacks.length ? selectedPacks.map(p => p.quantity.black).reduce((acc, red) => acc + red) : 0}
 
                     Use the buttons below to navigate your settings.
                 `)
