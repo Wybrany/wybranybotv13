@@ -96,11 +96,11 @@ client.on('interactionCreate', async interaction => {
             case 'buttonChooseWinStateSettings': if(cahsettings) cahsettings.update_embed("WINSTATE"); break;
 
             case 'buttonChoosePack':             if(cahsettings) cahsettings.toggle_select_pack(); break;
-            case 'buttonSavePack':               if(cahsettings) cahsettings.update_embed("CREATE"); break;
+            case 'buttonSavePack':               if(cahsettings) cahsettings.update_embed("MENU"); break;
             case 'buttonPrevPackPage':           if(cahsettings) cahsettings.prev_page(); break;
             case 'buttonNextPackPage':           if(cahsettings) cahsettings.next_page(); break;
 
-            case 'buttonSaveWinState':           if(cahsettings) cahsettings.update_embed("CREATE"); break;
+            case 'buttonSaveWinState':           if(cahsettings) cahsettings.update_embed("MENU"); break;
             case 'buttonPlusOneWin':             if(cahsettings) cahsettings.update_win_state("PLUS", 1); break;
             case 'buttonMinusOneWin':            if(cahsettings) cahsettings.update_win_state("MINUS", 1); break;
             case 'buttonPlusFiveWin':            if(cahsettings) cahsettings.update_win_state("PLUS", 5); break;

@@ -21,7 +21,7 @@ export default class implements Command{
     permission = Permissions.FLAGS.SEND_MESSAGES;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-        console.log("HERE")
+        
         if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
 
         const voiceChannel = message.member.voice.channel as VoiceChannel | null;
