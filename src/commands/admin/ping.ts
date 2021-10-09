@@ -9,6 +9,7 @@ export default class implements Command{
     description = "Ping pong!";
     usage = "ping";
     permission = Permissions.FLAGS.ADMINISTRATOR;
+    ownerOnly = true;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
         console.log("Successfully executed command!")

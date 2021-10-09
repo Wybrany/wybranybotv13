@@ -5,6 +5,7 @@ import { Cooldown } from "src/interfaces/cooldown.interface";
 import { Game, CurrentSettings, CAH_Settings } from "src/interfaces/cah.interface";
 import { Vote } from "src/interfaces/vote.interface";
 import { MusicConstructorInterface } from "src/interfaces/music.interface";
+import { Autoclass_Interface } from "src/interfaces/auto.interface";
 
 export default class extends Client {
 
@@ -13,7 +14,9 @@ export default class extends Client {
     public categories: string[] | null;
 
     public guildsettings: Map<string, Guildsettings>;
-    public guildUsedCommandRecently: Map <string, Cooldown>
+    public guildUsedCommandRecently: Map<string, Cooldown>
+
+    public member_troll_list: Map<string, Autoclass_Interface>
 
     public cah_settings_embed: Map<string, CAH_Settings>
     public cahsettings: Map<string, CurrentSettings>;
@@ -27,15 +30,18 @@ export default class extends Client {
     constructor(){
         super({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES]});
 
-        //Here I use my global variables.
-
         this.commands = new Collection();
         this.aliases = new Collection();
         this.categories = null;
 
+        //Here I use my global variables.
+
         //GUILDSTUFF
         this.guildsettings = new Map();
         this.guildUsedCommandRecently = new Map();
+
+        //Autotroll
+        this.member_troll_list = new Map();
 
         //CAH
         this.cah_settings_embed = new Map();

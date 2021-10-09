@@ -1,5 +1,5 @@
 import { Message, PermissionResolvable } from "discord.js";
-import Client from "src/methods/client/Client";
+import Client from "../methods/client/Client";
 
 export interface Command {
     name: string;
@@ -12,6 +12,7 @@ export interface Command {
     developerMode?: boolean
     nsfw?: boolean;
     channelWhitelist?: string[];
+    guildWhitelist?: string[];
 
     run(client: Client, message: Message , args?: string[]): void;
 }

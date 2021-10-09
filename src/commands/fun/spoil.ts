@@ -9,6 +9,8 @@ export default class implements Command {
     description ="Spoils a string, either char by char, word by word or an entire sentence";
     usage =`_spoil <char | word | sentence> <text>`;
     permission =  Permissions.FLAGS.SEND_MESSAGES;
+    guildWhitelist = ["715123274719297566", "456094195187449868"];
+    developerMode = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

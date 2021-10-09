@@ -207,14 +207,18 @@ client.on("messageCreate", async message => {
         message.reply({content: `You don't have permission to use this command.`});
         return;
     }
+
     if(command?.developerMode){
         message.reply({content: `This command is currently being developed. You can't use this command.`});
         return;
     }
+    
     if(command?.ownerOnly){
         message.reply({content: `This command is for owner only.`});
         return;
     }
+
+    if(command?.channelWhitelist?.includes(message.guild.id || message.guild.name)) return;
 
     //Handling cooldowns
     if(!client.guildUsedCommandRecently.has(message.guild.id)) 

@@ -1,19 +1,23 @@
-import { Guild, GuildMember, Role } from "discord.js";
+import { Guild, GuildMember } from "discord.js";
 import Modified_Client from "../client/Client";
+import { auto_state, Autoclass_Interface } from "../../interfaces/auto.interface";
 
-export type auto_state = "KICK" | "MUTE" | "DISCONNECT" | "NAME" | "MOVE";
+export const getRandomTimer = (time_ms: number) => {
+    const random_ms = Math.floor(Math.random() * (time_ms));
+    if(time_ms < 1000 || random_ms < 1000) return 1000;
+    return random_ms;
+}
 
-export class Autoclass {
+export class Autoclass implements Autoclass_Interface {
     public client: Modified_Client;
     public guild: Guild;
     public target: GuildMember;
 
-    public previousRoles: Role[];
-    public give_role: boolean;
-
+    public timer: number;
     public timeout: NodeJS.Timeout | null;
     public startNextTroll: boolean;
     public timerStarted: boolean;
+
     public random: boolean;
     public randomInterval: number | null;
 
@@ -24,20 +28,40 @@ export class Autoclass {
         this.guild = guild;
         this.target = target;
 
-        this.previousRoles = [...target.roles.cache.values()];
-        this.give_role = false;
-
+        this.timer = 5000;
         this.timeout = null;
         this.startNextTroll = false;
         this.timerStarted = false;
+
         this.random = false;
         this.randomInterval = null;
 
         this.state = state;
     }
 
+    add_random_interval(time_ms: number){
+        this.randomInterval = time_ms;
+        this.random = true;
+    }
+
     change_troll_state(state: boolean){
         this.startNextTroll = state;
+    }
+
+    stop_timer(){
+        if(this.timeout) clearTimeout(this.timeout)
+        this.startNextTroll = false;
+        this.timerStarted = false;
+    }
+
+    async start_timer(){
+        if(this.random) this.timer = this.randomInterval ? getRandomTimer(this.randomInterval) : 5000;
+        this.timerStarted = true;
+        this.timeout = setTimeout(() => this.auto(), this.timer)
+    }
+
+    async auto(){
+        //Do something.
     }
 
 }

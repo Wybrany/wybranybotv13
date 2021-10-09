@@ -10,6 +10,7 @@ export default class implements Command{
     description = "Moves all members in a voicechannel to either a random one or selected one";
     usage = "moveall [ voicechannelid | voicechannelname ]";
     permission = Permissions.FLAGS.ADMINISTRATOR;
+    developerMode = true;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
 
