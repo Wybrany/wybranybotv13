@@ -1,4 +1,4 @@
-import { Guild, GuildMember } from "discord.js";
+import { Guild, GuildMember, Role, Message, Invite, GuildChannel } from "discord.js";
 import Modified_Client from "../methods/client/Client";
 
 export type auto_state = "KICK" | "MUTE" | "DISCONNECT" | "NAME" | "MOVE";
@@ -25,22 +25,30 @@ export interface Autoclass_Interface {
     auto: () => Promise<void>;
 }
 
+export interface Autokick_Interface extends Autoclass_Interface {
+    give_roles_back: boolean;
+    previous_roles: Role[];
+
+    invite_link: Invite;
+    invite_sent: boolean;
+
+    message: Message;
+
+    give_back_roles: () => Promise<void>;
+}
+
 export interface Autoname_Interface extends Autoclass_Interface {
-    
+    nickname: string;
 }
 
 export interface Autodisconnect_Interface extends Autoclass_Interface {
     
 }
 
-export interface Automove_Interface extends Autoclass_Interface {
+export interface Automove_Interface extends Autoclass_Interface  {
     
 }
 
 export interface Automute_Interface extends Autoclass_Interface {
-    
-}
-
-export interface Autokick_Interface extends Autoclass_Interface {
     
 }

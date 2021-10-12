@@ -28,7 +28,14 @@ export default class extends Client {
     public currentVote: Map<string, Vote>
 
     constructor(){
-        super({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES]});
+        super({
+            intents: [
+                Intents.FLAGS.GUILDS, 
+                Intents.FLAGS.GUILD_MESSAGES, 
+                Intents.FLAGS.GUILD_VOICE_STATES,
+                Intents.FLAGS.GUILD_MEMBERS
+            ]
+        });
 
         this.commands = new Collection();
         this.aliases = new Collection();
