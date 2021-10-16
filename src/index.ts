@@ -11,6 +11,7 @@ import { InteractionCreate } from "./methods/events/InteractionCreate";
 import { GuildmemberAdd } from "./methods/events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./methods/events/GuildmemberUpdate";
 import { VoicestateUpdate } from "./methods/events/VoicestateUpdate";
+import { MessageDelete } from "./methods/events/MessageDelete";
 
 setMaxListeners(100);
 dotenv.config();
@@ -36,7 +37,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => await VoicestateUpda
 client.on('interactionCreate', async interaction => await InteractionCreate(client, interaction));
 client.on('guildMemberAdd', async member => await GuildmemberAdd(client, member));
 client.on('guildMemberUpdate', async (guildMemberOld, guildMemberNew) => await GuildmemberUpdate(client, guildMemberOld, guildMemberNew));
-
+client.on('messageDelete', async message => MessageDelete(client, message));
 
 client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;

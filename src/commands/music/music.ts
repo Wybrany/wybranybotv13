@@ -18,7 +18,8 @@ export default class implements Command{
         
         await message.delete();
         if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
-
+        const music = client.music.has(message.guild.id) ? client.music.get(message.guild.id) : null;
+        if(music) return deleteMessage(`You can't use this command while playing music.`, message, 5000);
         const guildSettings = client.guildsettings.get(message.guild.id);
         
         //If there was a previous musicChannel, delete that message

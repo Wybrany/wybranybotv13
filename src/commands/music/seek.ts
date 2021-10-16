@@ -16,16 +16,16 @@ export default class implements Command{
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
-        await message.delete();
+        /*await message.delete();
 
         if(!message.guild || !message.member || !client.user) 
             return deleteMessage(`Something went wrong. Please try again later.`, message);
             
         const [ input ] = args;
         console.log(input);
-        const time_ms = htms(input) as string | undefined ?? null;
-        console.log(time_ms)
-        const time_in_seconds = time_ms ? Math.floor((parseFloat(time_ms) / 1000)) : null;
+        const time_ms = htms(input);
+        if(!input || !time_ms) return deleteMessage(`You need to give me a valid timestamp. Eg. 1m20s or 20s`, message, 5000);
+        const time_in_seconds = time_ms ? Math.floor((time_ms / 1000)) : null;
         if(!time_in_seconds || !Number.isInteger(time_in_seconds)) return deleteMessage(`You did not give me a proper timestamp. See following examples: **1m20s** or **20s**`, message, 5000);
 
         if(!client.music.has(message.guild.id))
@@ -48,7 +48,7 @@ export default class implements Command{
         if(musicChannel?.musicChannel?.channelid !== message.channel.id)
             return deleteMessage(`You can only use this command at <#${client.guildsettings.get(message.guild.id)?.musicChannel?.channelid}>`, message, 5000);
 
-        client.music.get(message.guild.id)?.seek(time_in_seconds);
+        client.music.get(message.guild.id)?.seek(time_in_seconds);*/
 
     }
 }
