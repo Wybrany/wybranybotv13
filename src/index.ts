@@ -5,8 +5,8 @@ import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
-import { VoiceChannel } from "discord.js";
 import { setMaxListeners } from "process";
+import { deleteMessage } from "./methods/deletemessage";
 import { InteractionCreate } from "./methods/events/InteractionCreate";
 import { GuildmemberAdd } from "./methods/events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./methods/events/GuildmemberUpdate";
@@ -29,7 +29,7 @@ Load_Commands(client, base_path);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
-    client.user?.setActivity({type: "WATCHING", name: "dedu"});
+    client.user?.setActivity({type: "WATCHING", name: "@me for prefix."});
     loadfiledata(client);
 });
 
@@ -41,50 +41,37 @@ client.on('messageDelete', async message => MessageDelete(client, message));
 
 client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
+    if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
+
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
     if(!message.content.startsWith(guildprefix)) return checkForMention(message, client, guildprefix);
-    if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
+
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;
     if (!cmd) return checkForMention(message, client, guildprefix);
+    
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
     if (!command) return checkForMention(message, client, guildprefix);
     
-    const channelWhiteList = command.channelWhitelist?.length ? command.channelWhitelist.includes(message.channel.name) : null;
-    if(channelWhiteList !== null && channelWhiteList === false){
+    if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name)){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
         const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT" && channelWhiteList.includes(channel.name));
-        if(!channels.size) {
-            message.reply({content: `This command is only whitelisted in following channelnames: **${channelWhiteList.join(", ")}**, please create such channels to make **${command.name}** command work.`})
-            return;
-        }
+        if(!channels.size)
+            return await deleteMessage(`This command is only whitelisted in following channelnames: **${channelWhiteList.join(", ")}**, please create such channels to make **${command.name}** command work.`, message, 10000)
         
         const text = channels.map(channel => `<#${channel.id}>`).join(`, `);
-        message.reply({content: `The command, **${command.name}**, can only be used in following channels: ${text}`});
-        return;
+        return await deleteMessage(`The command, **${command.name}**, can only be used in following channels: ${text}`, message, 10000);
     }
 
     if(message.author.id === OwnerId) return command.run(client, message, args);
-    if(!message.member.permissions.has(command.permission)){
-        message.reply({content: `You don't have permission to use this command.`});
-        return;
-    }
-
-    if(command?.developerMode){
-        message.reply({content: `This command is currently being developed. You can't use this command.`});
-        return;
-    }
-    
-    if(command?.ownerOnly){
-        message.reply({content: `This command is for owner only.`});
-        return;
-    }
-
-    if(command?.channelWhitelist?.includes(message.guild.id || message.guild.name)) return;
+    if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
+    if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
+    if(command?.ownerOnly) return;
+    if(command?.guildWhitelist?.includes(message.guild.id || message.guild.name)) return;
 
     //Handling cooldowns
     if(!client.guildUsedCommandRecently.has(message.guild.id)) 
-    client.guildUsedCommandRecently.set(message.guild.id, new Guild_used_command_recently(message.guild.id));
+        client.guildUsedCommandRecently.set(message.guild.id, new Guild_used_command_recently(message.guild.id));
 
     const usedCommandRecently = client.guildUsedCommandRecently.get(message.guild.id);
     if(!usedCommandRecently) return console.warn(`Usedcommandrencelty does not exist for this guild ${message.guild.id} for some reason`);

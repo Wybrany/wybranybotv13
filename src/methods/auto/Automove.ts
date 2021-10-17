@@ -13,7 +13,6 @@ export class Automove extends Autoclass {
         if(!current_channel) return console.error(`I got no current channel in automove.`);
         if(this.random) this.timer = this.randomInterval ? getRandomTimer(this.randomInterval) : 5000;
         this.timerStarted = true;
-        console.log(this.timer)
         this.timeout = setTimeout(() => this.auto(current_channel), this.timer);
     }
 

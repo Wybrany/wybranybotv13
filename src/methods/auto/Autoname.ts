@@ -3,7 +3,7 @@ import Modified_Client from "../client/Client";
 import { Autoclass } from "./Autoclass";
 import { auto_state } from "../../interfaces/auto.interface";
 
-export class Autodisconnect extends Autoclass {
+export class Autoname extends Autoclass {
 
     public nickname: string;
 

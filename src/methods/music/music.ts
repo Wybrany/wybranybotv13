@@ -456,7 +456,6 @@ const checkQueueLength = (queue2d: [Song[]]): number => {
     for(let i = 0; i < queue2d.length; i++){
         if(Array.isArray(queue2d[i])) queuelength += queue2d[i]?.length ?? 0;
     }
-    console.log(`Check queuelength: ${queuelength}`);
     return queuelength;
 }
 

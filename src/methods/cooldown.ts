@@ -26,7 +26,7 @@ export class Guild_used_command_recently{
         return false;
     }
     change_warning_message(value: boolean){
-        if(typeof(value) === "boolean") this.sent_warning_message = value;
+        this.sent_warning_message = value;
     }
     async send_warning_message(message: Message){
         if(!this.sent_warning_message){
