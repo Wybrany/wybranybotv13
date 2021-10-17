@@ -29,7 +29,7 @@ Load_Commands(client, base_path);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
-    client.user?.setActivity({name: "@me for prefix.", type: "CUSTOM"});
+    client.user?.setActivity({name: "@me for prefix", type: "WATCHING"});
     loadfiledata(client);
 });
 

@@ -1,7 +1,7 @@
 import { Guild, GuildMember, Role, Message, Invite, GuildChannel } from "discord.js";
 import Modified_Client from "../methods/client/Client";
 
-export type auto_state = "KICK" | "MUTE" | "DISCONNECT" | "NAME" | "MOVE";
+export type auto_state = "KICK" | "DISCONNECT" | "NAME" | "MOVE";
 
 export interface Autoclass_Interface {
     client: Modified_Client;
@@ -46,9 +46,5 @@ export interface Autodisconnect_Interface extends Autoclass_Interface {
 }
 
 export interface Automove_Interface extends Autoclass_Interface  {
-    
-}
-
-export interface Automute_Interface extends Autoclass_Interface {
     
 }
