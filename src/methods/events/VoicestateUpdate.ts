@@ -9,7 +9,8 @@ export const VoicestateUpdate = async (client: Modified_Client, oldState: VoiceS
 
     if(client.music.has(newState.guild.id) && (newState.member.id === client.user.id)){
         if(newchannel || newState.channel?.id) return;
-        return client.music.delete(newState.guild.id);
+        client.music.delete(newState.guild.id);
+        return;
     }
 
     else if (client.member_troll_list.has(newState.id)) {
