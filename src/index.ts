@@ -52,7 +52,13 @@ client.on("messageCreate", async message => {
     
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
     if (!command) return checkForMention(message, client, guildprefix);
-    
+
+    //if(message.author.id === OwnerId) return command.run(client, message, args);
+    if(command?.ownerOnly) return;
+    if(command?.guildWhitelist?.length && !command?.guildWhitelist?.includes(message.guild.id)) return;
+    if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
+    if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
+
     if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name)){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
         const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT" && channelWhiteList.includes(channel.name));
@@ -62,12 +68,6 @@ client.on("messageCreate", async message => {
         const text = channels.map(channel => `<#${channel.id}>`).join(`, `);
         return await deleteMessage(`The command, **${command.name}**, can only be used in following channels: ${text}`, message, 10000);
     }
-
-    if(message.author.id === OwnerId) return command.run(client, message, args);
-    if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
-    if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
-    if(command?.ownerOnly) return;
-    if(command?.guildWhitelist?.includes(message.guild.id || message.guild.name)) return;
 
     //Handling cooldowns
     if(!client.guildUsedCommandRecently.has(message.guild.id)) 

@@ -22,7 +22,7 @@ export default class implements Command {
     channelWhitelist = ["media", "memes", "meme", "images", "private"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
     developerMode = true;
-    guildWhitelist = ["715123274719297566", "456094195187449868"];
+    guildWhitelist = ["456094195187449868"];
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

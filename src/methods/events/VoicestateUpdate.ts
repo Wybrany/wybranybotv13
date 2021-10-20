@@ -11,7 +11,7 @@ export const VoicestateUpdate = async (client: Modified_Client, oldState: VoiceS
         if(!newchannel || !newState.channel?.id) client.music.delete(newState.guild.id);
         return;
     }
-
+    
     else if (client.member_troll_list.has(newState.id)) {
         const get_member_troll_list = client.member_troll_list.get(newState.id) as Automove | Autodisconnect | undefined;
         if(!get_member_troll_list) return;

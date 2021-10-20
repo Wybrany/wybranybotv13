@@ -3,6 +3,7 @@ import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 
 const ownerId = process.env.OWNERID as string;
+const prefix = process.env.PREFIX as string;
 
 interface CategoryCommands {
     category: string;
@@ -28,8 +29,9 @@ export default class implements Command {
 
 const getCommands = (commands: Collection<string, Command>, member: GuildMember) => {
     return commands
-        .filter(command => 
-               (command?.permission ? member?.permissions.has(command.permission) : true)
+        .filter(command =>
+               (command?.guildWhitelist?.length ? command?.guildWhitelist?.includes(member.guild.id) : true) 
+            || (command?.permission ? member?.permissions.has(command.permission) : true)
             || (command.developerMode === true && member.id !== ownerId)
             || (command.ownerOnly === true && member.id !== ownerId)
             )
@@ -59,14 +61,14 @@ const getChunkBorders = (commands: CategoryCommands[]): string => {
     }
     return text;
 }
-
 //Main functions
 
 function getAllCommands(client: Modified_Client, message: Message){
-
+    if(!message.guild) return;
     const title = `Available commands for: **${message.author.tag}**`;
     const member = message.guild?.members.cache.get(message.author.id);
     const categories = client.categories?.length ? client.categories : [];
+    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
 
     const allCommandsEmbed = new MessageEmbed()
         .setColor("BLUE")
@@ -78,7 +80,7 @@ function getAllCommands(client: Modified_Client, message: Message){
 
     let info = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands) : "No commands are available for you...\n\n";
 
-    info += `\nUse _help <command> to see more information.`
+    info += `\nUse ${guildprefix}help <command> to see more information.`
     allCommandsEmbed.setDescription(`${info}`);
     return message.channel.send({embeds: [allCommandsEmbed]});
 }

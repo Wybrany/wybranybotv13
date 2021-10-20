@@ -13,7 +13,7 @@ export default class implements Command {
     usage = "_survivor";
     channelWhitelist = ["dbd-bot"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
-    guildWhitelist = ["715123274719297566", "456094195187449868"];
+    guildWhitelist = ["456094195187449868"];
 
     run = async (client: Modified_Client, message: Message, args: string[]) => { 
 
