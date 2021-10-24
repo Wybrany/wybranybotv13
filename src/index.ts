@@ -29,7 +29,7 @@ Load_Commands(client, base_path);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
-    client.user?.setActivity({name: "@me for prefix"});
+    client.user?.setActivity({name: "Something"});
     loadfiledata(client);
 });
 
@@ -59,7 +59,7 @@ client.on("messageCreate", async message => {
     if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
     if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
 
-    if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name)){
+    if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name.toLowerCase())){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
         const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT" && channelWhiteList.includes(channel.name));
         if(!channels.size)

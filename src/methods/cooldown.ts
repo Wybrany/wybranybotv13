@@ -31,7 +31,7 @@ export class Guild_used_command_recently{
     async send_warning_message(message: Message){
         if(!this.sent_warning_message){
             this.sent_warning_message = true;
-            return message.reply({content: `You are on cooldown. You may only use ${maxCommands} commands per 10 sec. Rechargerate is at 1 command per 5 sec.`});
+            return message.reply({content: `You are on cooldown. You may only use ${maxCommands} commands per ${maxCommands * 5} seconds. Rechargerate is at 1 command per 5 sec.`});
         }
     }
     async start_timer(){
