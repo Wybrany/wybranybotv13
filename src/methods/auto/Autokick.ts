@@ -35,7 +35,10 @@ export class Autokick extends Autoclass {
     async auto(){
         if(!this.startNextTroll || !this.guild.members.cache.has(this.target.id)) 
             return await this.start_timer();
-
+        /*const guild = this.client.guilds.cache.get(this.guild.id);
+        const member = guild?.members.cache.get(this.target.id);
+        if(!guild || !member) this.stop_timer();*/
+        
         if(!this.invite_sent){
             if(this.message)
                 this.message.edit({content: `${this.invite_link}`})

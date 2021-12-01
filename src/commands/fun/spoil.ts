@@ -11,7 +11,7 @@ export default class implements Command {
     permission =  Permissions.FLAGS.SEND_MESSAGES;
     guildWhitelist = ["456094195187449868"];
     developerMode = true;
-
+    
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
         message.delete();

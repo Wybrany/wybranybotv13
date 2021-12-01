@@ -1,11 +1,11 @@
 import { Client, Collection, Guild, Intents, Message } from "discord.js";
-import { Command } from "src/interfaces/client.interface";
-import { Guildsettings } from "src/interfaces/guildsettings.interface";
-import { Cooldown } from "src/interfaces/cooldown.interface";
-import { Game, CurrentSettings, CAH_Settings } from "src/interfaces/cah.interface";
-import { Vote } from "src/interfaces/vote.interface";
-import { MusicConstructorInterface } from "src/interfaces/music.interface";
-import { Autoclass_Interface } from "src/interfaces/auto.interface";
+import { Command } from "../../interfaces/client.interface";
+import { Guildsettings } from "../../interfaces/guildsettings.interface";
+import { Cooldown } from "../../interfaces/cooldown.interface";
+import { Game, CurrentSettings, CAH_Settings } from "../../interfaces/cah.interface";
+import { Vote } from "../../interfaces/vote.interface";
+import { MusicConstructorInterface } from "../../interfaces/music.interface";
+import { Autoclass_Interface } from "../../interfaces/auto.interface";
 
 export default class extends Client {
 

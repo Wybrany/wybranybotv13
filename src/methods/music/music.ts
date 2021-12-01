@@ -110,6 +110,7 @@ export class MusicConstructor implements MusicConstructorInterface {
 
         let interval: NodeJS.Timeout | null = null;
         let resource: AudioResource<Song> | null = null;
+
         if(this.seeking){
             console.log("In this.seeking");
             const readable = await create_readable(current_song as Song);
@@ -119,32 +120,50 @@ export class MusicConstructor implements MusicConstructorInterface {
             if(!seek_writeable) return this.play();
             resource = createAudioResource(readable, {metadata: current_song}) as AudioResource<Song>
         }
+        //Also check for spotify and create a different resource here.
         else resource = await probeAndCreateResource(current_song);
         if(!resource) return this.play();
 
-        connection.on(VoiceConnectionStatus.Disconnected, () => {
+        /*connection.on(VoiceConnectionStatus.Disconnected, () => {
+            console.log(`VoiceConnectionStatus.Disconnected`)
             this.stop(undefined, true);
-        })
+        })*/
 
         const player = createAudioPlayer({
-            debug: true,
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Pause
             }
         });
-        player.on("error", err => {
-            console.log(`Error`)
+
+        player.on("error", async err => {
+            console.log(`Audioplayer-Error`)
             console.error(err);
-            this.play();
+            try{
+                await this.update_embed("CHANGING");
+                const musicChannel = this.client.guildsettings.get(this.guild.id)?.musicChannel?.channelid;
+                if(musicChannel){
+                    const channel = this.guild.channels.cache.get(musicChannel) as TextChannel | undefined;
+                    if(channel) 
+                        channel.send({content: `❌ I got an error trying to play: **${this.current_song?.title ?? "UNKNOWN TITLE"}**. This song will be skipped.`})
+                            .then(m => setTimeout(async() => await m.delete(), 60000))
+                            .catch(err => console.error(`❌ I got an error trying to send a message to guild ${this.guild.id}`));
+                }
+            }catch(err){
+                console.error(`playerOnErrorSendMessage: ${err}`)
+            }
+            this.player = null;
+            this.resource = null;
+            this.current_song = null;
+            return this.play();
         })
-        player.on("stateChange", (oldState, newState) => {
+        player.on("stateChange", async (oldState, newState) => {
             switch(newState.status){
                 case AudioPlayerStatus.Playing: 
                     console.log('The audio player has started playing!');
                     if(oldState.status !== AudioPlayerStatus.Paused) {
                         this.update_embed("NOWPLAYING");
                         let previousCheck = 0;
-                        interval = setInterval(() => {
+                        interval = setInterval(async () => {
                             if(!this.playing){
                                 if(interval) clearInterval(interval);
                                 return;
@@ -152,7 +171,7 @@ export class MusicConstructor implements MusicConstructorInterface {
                             const duration = update_every_tick(this.player as AudioPlayer);
                             if(duration > previousCheck) {
                                 previousCheck = duration;
-                                this.update_embed("NOWPLAYING");
+                                await this.update_embed("NOWPLAYING");
                             }
                         }, 5000)
                     }
@@ -168,19 +187,26 @@ export class MusicConstructor implements MusicConstructorInterface {
                         if(this.queue[this.queue.length - 1].length === 25) this.queue.push([currentSong]);
                         else this.queue[this.queue.length - 1].push(currentSong);
                     }
+                    if(this.queue.length && checkQueueLength(this.queue) && !this.seeking) await this.update_embed("CHANGING");
                     this.current_song = null;
-                    if(this.queue.length && checkQueueLength(this.queue) && !this.seeking) this.update_embed("CHANGING");
-                    this.play();
-                break;
+                    this.player = null;
+                    this.resource = null;
+                    return this.play();
             }
         })
         //console.log(connection, this.player, this.resource)
         if(connection && player && resource) {
-            this.current_song = current_song;
-            this.player = player;
-            this.resource = resource;
-            connection.subscribe(this.player);
-            this.player.play(this.resource);
+            try{
+                connection.subscribe(player);
+                player.play(resource);
+                this.current_song = current_song;
+                this.player = player;
+                this.resource = resource;
+                this.playing = true;
+            }catch(err){
+                console.error(`Error playing resource: ${err}`);
+                return this.play();
+            }
         }
     }
 
@@ -199,7 +225,6 @@ export class MusicConstructor implements MusicConstructorInterface {
         if(this.player) 
             return this.player.stop();
     }
-
     toggle_pause(interaction: Interaction){
         if(this.player && this.paused){ 
             this.player.unpause();
@@ -221,6 +246,7 @@ export class MusicConstructor implements MusicConstructorInterface {
         this.update_embed("SEEKING");
         this.queue.unshift(this.current_song);
         this.skip();*/
+
         console.log("Now seeking")
     }
 
@@ -252,14 +278,14 @@ export class MusicConstructor implements MusicConstructorInterface {
         // 1 -> 0
         if(this.currentQueuePage > (this.queue.length - 1)) this.currentQueuePage = (this.queue.length - 1);
         console.log(`addQueue, 2dqueue length: ${this.queue.length}`);
-        if(!this.player && !this.current_song && !this.playing){
+        /*if(!this.player && !this.current_song && !this.playing){
             this.playing = true;
             return await this.play();
         }
         if(update) {
             console.log("Now updating!");
             this.update_embed("NOWPLAYING");
-        }
+        }*/
     }
 
     swap_songs(song1: number, song2: number){

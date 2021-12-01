@@ -14,7 +14,7 @@ export default class implements Command {
     description = "Autodisconnects a user from a voicechannel when joining one until stopped.";
     usage = "autodisconnect <@mention>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
         await message.delete();

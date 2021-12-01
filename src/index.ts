@@ -16,8 +16,7 @@ import { MessageDelete } from "./methods/events/MessageDelete";
 setMaxListeners(100);
 dotenv.config();
 
-const discord_token = process.env.TOKEN as string;
-const base_path = process.env.BASE_PATH as string;
+const discord_token = process.env.TOKEN as string;const base_path = process.env.BASE_PATH as string;
 const prefix = process.env.PREFIX as string;
 const OwnerId = process.env.OWNERID as string;
 
@@ -53,7 +52,7 @@ client.on("messageCreate", async message => {
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
     if (!command) return checkForMention(message, client, guildprefix);
 
-    //if(message.author.id === OwnerId) return command.run(client, message, args);
+    if(message.author.id === OwnerId) return command.run(client, message, args);
     if(command?.ownerOnly) return;
     if(command?.guildWhitelist?.length && !command?.guildWhitelist?.includes(message.guild.id)) return;
     if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
@@ -68,7 +67,7 @@ client.on("messageCreate", async message => {
         const text = channels.map(channel => `<#${channel.id}>`).join(`, `);
         return await deleteMessage(`The command, **${command.name}**, can only be used in following channels: ${text}`, message, 10000);
     }
-
+    
     //Handling cooldowns
     if(!client.guildUsedCommandRecently.has(message.guild.id)) 
         client.guildUsedCommandRecently.set(message.guild.id, new Guild_used_command_recently(message.guild.id));

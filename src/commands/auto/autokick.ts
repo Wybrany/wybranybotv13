@@ -14,7 +14,7 @@ export default class implements Command{
     description = "Autokicks a user from the server until stopped.";
     usage = "autokick <@mention>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
         await message.delete();
@@ -28,7 +28,7 @@ export default class implements Command{
 
         const channel = message.channel as TextChannel;
         const invite = await channel.createInvite({reason: `Created for autokick command.`});
-
+        
         mention.send({content: "."})
             .then(m => {
                 if(!message.guild) throw new Error("Ouch, no guild.");

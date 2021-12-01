@@ -53,7 +53,7 @@ export default class implements Command{
 
         if(!client.music.get(message.guild.id))
             return deleteMessage(`Something went wrong. Please try again later.`, message, 5000);
-
+        
         if(!client.music.get(message.guild.id)?.get_current_channel()) 
             client.music.get(message.guild.id)?.set_current_channel(message.member.voice.channel as VoiceChannel);
         
@@ -62,5 +62,6 @@ export default class implements Command{
         else 
             deleteMessage(`✅ Successfully added **${songs[0].title}** to the queue.`, message, 5000);
         client.music.get(message.guild.id)?.add_queue(songs, true);
+        if(!client.music.get(message.guild.id)?.playing) return client.music.get(message.guild.id)?.play();
     }
 }

@@ -11,7 +11,7 @@ export default class implements Command{
     description = "Autochanges the users name until stopped.";
     usage = "autoname <@mention> <name>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
         await message.delete();
