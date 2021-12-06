@@ -54,7 +54,7 @@ client.on("messageCreate", async message => {
 
     if(message.author.id === OwnerId) return command.run(client, message, args);
     if(command?.ownerOnly) return;
-    if(command?.guildWhitelist?.length && !command?.guildWhitelist?.includes(message.guild.id)) return;
+    if(command?.guildWhitelist && !command.guildWhitelist.includes(message.guild.id)) return;
     if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
     if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
 

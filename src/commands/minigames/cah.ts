@@ -20,6 +20,7 @@ export default class implements Command{
     channelWhitelist = ["cah-lobby"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
     guildWhitelist = ["456094195187449868"];
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         

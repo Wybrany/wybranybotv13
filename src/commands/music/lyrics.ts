@@ -11,6 +11,7 @@ export default class implements Command{
     description = "Searches for lyrics on the current track.";
     usage = "lyrics <ARTISTNAME - SONGNAME>";
     permission = Permissions.FLAGS.SEND_MESSAGES;
+    params = true;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

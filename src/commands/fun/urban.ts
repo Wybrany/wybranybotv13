@@ -19,6 +19,7 @@ export default class implements Command {
     permission = Permissions.FLAGS.SEND_MESSAGES;
     developerMode = true;
     guildWhitelist = ["456094195187449868"];
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

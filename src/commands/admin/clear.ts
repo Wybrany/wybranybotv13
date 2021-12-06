@@ -38,6 +38,7 @@ export default class implements Command {
                 message.channel.bulkDelete(reFetch);
             }
             else message.channel.bulkDelete(amount);
+            
             if(amount === newAmount){
                 amount--;
                 const messageReply = amount === 1 ? `Cleared ${amount} message!` : `Cleared ${amount} messages!` 

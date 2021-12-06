@@ -12,7 +12,7 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "music";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode=false;
+    developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         

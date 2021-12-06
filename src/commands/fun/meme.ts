@@ -18,7 +18,7 @@ export default class implements Command {
     aliases = [];
     category = "fun";
     description = "Sends dank memes";
-    usage = "_meme";
+    usage = "meme";
     channelWhitelist = ["media", "memes", "meme", "images", "private"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
     developerMode = true;

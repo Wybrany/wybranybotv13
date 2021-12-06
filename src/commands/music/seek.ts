@@ -13,6 +13,7 @@ export default class implements Command{
     usage = "seek <timestamp>, eg 1m20s or 20s";
     permission = Permissions.FLAGS.ADMINISTRATOR;
     developerMode = true;
+    params = true;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

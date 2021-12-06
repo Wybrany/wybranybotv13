@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
+import { Message, MessageEmbed, Collection, GuildMember, Permissions, EmbedField } from "discord.js";
 import Modified_Client from "../../methods/client/Client";
 import { Command } from "../../interfaces/client.interface";
 
@@ -10,10 +10,22 @@ interface CategoryCommands {
     commands: Collection<string, Command>
 }
 
+class Field implements EmbedField {
+    public name: string;
+    public value: string;
+    public inline: boolean;
+
+    constructor(name: string, value: string, inline: boolean){
+        this.name = name;
+        this.value = value;
+        this.inline = inline;
+    }
+}
+
 export default class implements Command {
     name = "help";
     aliases = [];
-    category = "admin";
+    category = "misc";
     description = "Returns all available commands, depending on permission, to the user. Alternatively, returning description/usage of a specific command.";
     permission = Permissions.FLAGS.SEND_MESSAGES;
     usage = "help [command]";
@@ -27,14 +39,16 @@ export default class implements Command {
 
 //Helper functions
 
-const getCommands = (commands: Collection<string, Command>, member: GuildMember) => {
-    return commands
-        .filter(command =>
-               (command?.guildWhitelist?.length ? command?.guildWhitelist?.includes(member.guild.id) : true) 
-            || (command?.permission ? member?.permissions.has(command.permission) : true)
-            || (command.developerMode === true && member.id !== ownerId)
-            || (command.ownerOnly === true && member.id !== ownerId)
-            )
+const getCommands = (commands: Collection<string, Command>, member: GuildMember): Collection<string, Command> => {
+    const filteredCommands: Collection<string, Command> = new Collection();
+    for(const command of [...commands.values()]){
+        if(command.guildWhitelist && !command.guildWhitelist.includes(member.guild.id)) continue;
+        if(command.permission && !member.permissions.has(command.permission)) continue;
+        if(command.developerMode && member.id !== ownerId) continue;
+        if(command.ownerOnly && member.id !== ownerId) continue;
+        filteredCommands.set(command.name, command);
+    }
+    return filteredCommands;
 }
 
 const filterCommandsByCategory = (commands: Collection<string, Command>, categories: string[]) => {
@@ -49,65 +63,77 @@ const filterCommandsByCategory = (commands: Collection<string, Command>, categor
     return filteredCommands;
 }
 
-const getChunkBorders = (commands: CategoryCommands[]): string => {
-    let text = "";
-
+const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] => {
+    const Fields: Field[] = [];
     for(const chunk of commands){
-        const category = `${chunk.category.toUpperCase()}`
+        //Old logic
+        /*const category = `${chunk.category.toUpperCase()}`
         const categoryBorder = `${Array(10).fill("-").join("")}${category}${Array(15 - category.length).fill("-").join("")}`
         const parsedCommand = chunk.commands.map(c => `\`- ${c.name}${Array(categoryBorder.length - c.name.length - 2).fill('\xa0').join("")}\``).join("\n");
         if(!parsedCommand) continue;
-        text += `\`${categoryBorder}\`\n${parsedCommand}\n`
+        text += `\`${categoryBorder}\`\n${parsedCommand}\n`*/
+        const categoryName = chunk.category.toUpperCase();
+        const commands = [...chunk.commands.values()];
+        const generateName = (name: string, flag?: boolean | undefined): string => `\`${prefix}${name}${flag ? ` ❗` : ``}${new Array(12 - name.length - (flag ? 2 : 0)).fill(" ").join("")}:\``; 
+        const commandField = new Field(
+                `**${categoryName}**`, 
+                commands.map(c => `${c.name.length >= 10 ? c.aliases.length ? generateName(c.aliases[0], c.params) : generateName(c.name.substring(0, 10), c.params) : generateName(c.name, c.params)} ${c.description.length >= 50 ? (c.description.substring(0, 50) + "...") : c.description}`).join("\n"),
+                false
+            );
+        Fields.push(commandField);
     }
-    return text;
+    return Fields;
 }
+
 //Main functions
 
 function getAllCommands(client: Modified_Client, message: Message){
-    if(!message.guild) return;
-    const title = `Available commands for: **${message.author.tag}**`;
+    if(!message.guild) return message.reply(`Something went wrong. Please try again later.`);
     const member = message.guild?.members.cache.get(message.author.id);
     const categories = client.categories?.length ? client.categories : [];
     const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
+    if(!member || !member.user) return message.reply(`Something went wrong. Please try again later.`);
 
     const allCommandsEmbed = new MessageEmbed()
+        .setAuthor(`Available commands for: ${member.user.tag}`, member.user.avatarURL() ?? member.user.defaultAvatarURL)
         .setColor("BLUE")
-        .setTitle(title)
         .setTimestamp();
 
     const getAvailableCommands = member ? getCommands(client.commands, member) : null;
     const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
 
-    let info = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands) : "No commands are available for you...\n\n";
+    const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, guildprefix) : null;
 
-    info += `\nUse ${guildprefix}help <command> to see more information.`
-    allCommandsEmbed.setDescription(`${info}`);
+    if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("RED");
+    else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${guildprefix}help <command> to see more information.`)
+
     return message.channel.send({embeds: [allCommandsEmbed]});
 }
 
+
 function getCommand(client: Modified_Client, message: Message, input: string){
+    if(!message.guild) return message.reply(`Something went wrong. Please try again later.`);
     const commandEmbed = new MessageEmbed()
-    const cmd = client.commands.get(input.toLowerCase()) || client.commands.get(client.aliases.get(input.toLowerCase()) ?? "");
     const member = message.guild?.members.cache.get(message.author.id);
+    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
+
+    if(!member) return message.reply(`Something went wrong. Please try again later.`);
+    const availableCommands = getCommands(client.commands, member);
+    const cmd = availableCommands.get(input.toLowerCase()) || availableCommands.get(client.aliases.get(input.toLowerCase()) ?? "");
 
     let info = `No information found for command **${input.toLowerCase()}**`;
 
-    if (!cmd) {
+    if(!cmd) {
         commandEmbed.setColor("RED").setDescription(info)
         message.channel.send({embeds: [commandEmbed]});
         return;
-    } 
-
-    if(!(cmd?.permission ? member?.permissions.has(cmd.permission) : true) || cmd.developerMode === true && message.author.id !== ownerId || cmd.ownerOnly === true && message.author.id !== ownerId){
-        info = `You don't have permission to view: **${cmd.name}**`
-        commandEmbed.setColor("RED").setDescription(info)
-        return message.channel.send({embeds: [commandEmbed]});
     }
-    if (cmd.name) info = `**Command**: ${cmd.name}`;
-    if (cmd.aliases) info += `\n**Aliases**: ${cmd.aliases.map(a => `"${a}"`).join(", ")}`;
-    if (cmd.category) info += `\n**Category**: ${cmd.category}`;
-    if (cmd.description) info += `\n**Description**: ${cmd.description}`;
-    if (cmd.usage) info += `\n**Usage**: ${cmd.usage}`
+
+    if(cmd.name) info = `**Command**: ${cmd.name}`;
+    if(cmd.aliases) info += `\n**Aliases**: ${cmd.aliases.map(a => `"${a}"`).join(", ")}`;
+    if(cmd.category) info += `\n**Category**: ${cmd.category}`;
+    if(cmd.description) info += `\n**Description**: ${cmd.description}`;
+    if(cmd.usage) info += `\n**Usage**: ${guildprefix}${cmd.usage}`
     commandEmbed
         .addField("**Syntax**", `<> = required\n[] = optional\n| = or`)
         .setColor("GREEN")

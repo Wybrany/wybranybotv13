@@ -10,7 +10,7 @@ export default class implements Command {
     aliases = [];
     category = "dbd";
     description ="Randomises a survivor setup for Dead by Daylight.";
-    usage = "_survivor";
+    usage = "survivor";
     channelWhitelist = ["dbd-bot"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
     guildWhitelist = ["456094195187449868"];

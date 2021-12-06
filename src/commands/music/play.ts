@@ -12,6 +12,7 @@ export default class implements Command{
     usage = "music < URL | ID | SEARCH_TERM >";
     permission = Permissions.FLAGS.SEND_MESSAGES;
     developerMode=false;
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

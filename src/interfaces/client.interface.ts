@@ -13,6 +13,7 @@ export interface Command {
     nsfw?: boolean;
     channelWhitelist?: string[];
     guildWhitelist?: string[];
+    params?: boolean;
 
     run(client: Client, message: Message , args?: string[]): void;
 }

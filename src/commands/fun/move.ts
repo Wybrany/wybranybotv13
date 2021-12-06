@@ -8,8 +8,9 @@ export default class implements Command {
     aliases = [];
     category = "fun";
     description = "Moves a target across multiple channels.";
-    usage = "_move <mention> <amount (MAX 10)>";
+    usage = "move <mention> [amount <= 4]";
     permission = Permissions.FLAGS.MANAGE_CHANNELS;
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

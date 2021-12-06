@@ -8,8 +8,9 @@ export default class implements Command{
     aliases = ["sp"];
     category = "misc";
     description = "Change the current prefix to something else.";
-    usage = "!settings <category> <value>";
+    usage = "settings <category> <value>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

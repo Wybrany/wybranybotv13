@@ -15,6 +15,7 @@ export default class implements Command {
     usage = "autodisconnect <@mention>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
     developerMode = false;
+    params = true;
 
     run = async (client: Modified_Client, message: Message, args?: string[]) => {
         await message.delete();
