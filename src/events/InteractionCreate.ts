@@ -1,10 +1,10 @@
 import { Interaction } from "discord.js";
-import Modified_Client from "../client/Client";
-import { MusicButtons } from "../../interfaces/music.interface";
-import { VoteButtons } from "../../interfaces/vote.interface";
-import { MusicConstructor } from "../music/music";
+import Modified_Client from "../methods/client/Client";
+import { MusicButtons } from "../interfaces/music.interface";
+import { VoteButtons } from "../interfaces/vote.interface";
+import { MusicConstructor } from "../methods/music/music";
 import { ButtonInteraction, SelectMenuInteraction } from "discord.js";
-import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../../interfaces/cah.interface";
+import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../interfaces/cah.interface";
 
 export const InteractionCreate = async (client: Modified_Client, interaction: Interaction) => {
         //Should split up the code here later and check for different commands that utilizes different buttons.

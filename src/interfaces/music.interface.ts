@@ -97,7 +97,7 @@ export interface MusicConstructorInterface {
     set_current_channel: (channel: VoiceChannel) => void;
 }
 
-export type search_type = "YOUTUBE" | "PLAYLIST" | "SEARCH";
+export type search_type = "YOUTUBE" | "YOUTUBE_PLAYLIST" | "YOUTUBE_SEARCH" | "SOUNDCLOUD" | "SPOTIFY";
 
 export interface Song {
     unique_id: string;

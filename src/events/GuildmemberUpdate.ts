@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { Autokick_Interface, Autoname_Interface } from "../../interfaces/auto.interface";
-import Modified_Client from "../client/Client";
+import { Autokick_Interface, Autoname_Interface } from "../interfaces/auto.interface";
+import Modified_Client from "../methods/client/Client";
 
 export const GuildmemberUpdate = async (client: Modified_Client, guildMemberOld: GuildMember | PartialGuildMember, guildMemberNew: GuildMember) => {
     if(!client.member_troll_list.has(guildMemberNew.id)) return;

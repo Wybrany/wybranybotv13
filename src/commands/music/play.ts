@@ -58,7 +58,7 @@ export default class implements Command{
         if(!client.music.get(message.guild.id)?.get_current_channel()) 
             client.music.get(message.guild.id)?.set_current_channel(message.member.voice.channel as VoiceChannel);
         
-        if(validateSearch === "PLAYLIST") 
+        if(validateSearch === "YOUTUBE_PLAYLIST") 
             deleteMessage(`✅ Successfully added playlist **${songs[0]?.playlistname ?? "Unknown"}** with **${songs.length}** songs to the queue.`, message, 5000);
         else 
             deleteMessage(`✅ Successfully added **${songs[0].title}** to the queue.`, message, 5000);

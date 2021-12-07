@@ -122,6 +122,7 @@ export class MusicConstructor implements MusicConstructorInterface {
         }
         //Also check for spotify and create a different resource here.
         else resource = await probeAndCreateResource(current_song);
+
         if(!resource) return this.play();
 
         /*connection.on(VoiceConnectionStatus.Disconnected, () => {
@@ -306,30 +307,25 @@ export class MusicConstructor implements MusicConstructorInterface {
     }
 
     queue_page(state: "FIRST" | "NEXT" | "PREV" | "LAST", interaction?: Interaction){
-        console.log(state, this.currentQueuePage);
         switch(state){
             case 'FIRST':
                 if(this.currentQueuePage === 0) return; 
                 this.currentQueuePage = 0;
-                console.log(this.currentQueuePage)
             break;
 
             case 'NEXT':
                 if((this.currentQueuePage + 1) > (this.queue.length - 1) || this.currentQueuePage === (this.queue.length - 1)) return;
                 this.currentQueuePage += 1;
-                console.log(this.currentQueuePage)
             break;
 
             case 'PREV':
                 if(this.currentQueuePage === 0 || (this.currentQueuePage - 1) < 0) return;
                 this.currentQueuePage -= 1;
-                console.log(this.currentQueuePage)
             break;
 
             case 'LAST':
                 if(this.currentQueuePage === (this.queue.length - 1)) return; 
                 this.currentQueuePage = this.queue.length - 1;
-                console.log(this.currentQueuePage)
             break;
         }
         if(interaction) this.update_embed("NOWPLAYING");
@@ -710,9 +706,9 @@ export async function probeAndCreateResource(song: Song): Promise<AudioResource<
 }
 
 export const validate_search = (search_term: string): search_type => {
-    if (validateID(search_term)) return "PLAYLIST";
+    if (validateID(search_term)) return "YOUTUBE_PLAYLIST";
     else if(validateURL(search_term)) return "YOUTUBE";
-    else return "SEARCH";
+    else return "YOUTUBE_SEARCH";
 }
 
 export const getSongInfo = async (search_term: string, type: search_type, author: string): Promise<Song[] | null> => {
@@ -732,7 +728,7 @@ export const getSongInfo = async (search_term: string, type: search_type, author
     const songs: Song[] = [];
 
     switch(type){
-        case 'SEARCH':
+        case 'YOUTUBE_SEARCH':
             try{
                 console.time("search");
                 const stringSearch = await ytsr(search, {limit: 1});
@@ -763,8 +759,8 @@ export const getSongInfo = async (search_term: string, type: search_type, author
                 return null;
             }
         break;
-
-        case 'PLAYLIST':
+            
+        case 'YOUTUBE_PLAYLIST':
             try{
                 console.time("playlist")
                 const parsedId = await getPlaylistID(search);
@@ -774,7 +770,7 @@ export const getSongInfo = async (search_term: string, type: search_type, author
                 const { items, continuation } = playList;
                 for(const item of items){
                     const { title, shortUrl, duration, durationSec } = item;
-                    songs.push({title, link: shortUrl, length: duration as string, details: {lengthSeconds: `${durationSec}`}, looped: false, search_type: "PLAYLIST", unique_id: "", who_queued_id: author, playlistname: playList.title});
+                    songs.push({title, link: shortUrl, length: duration as string, details: {lengthSeconds: `${durationSec}`}, looped: false, search_type: "YOUTUBE_PLAYLIST", unique_id: "", who_queued_id: author, playlistname: playList.title});
                 }
                 console.timeEnd("playlist");
             }

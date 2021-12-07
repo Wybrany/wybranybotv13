@@ -7,11 +7,11 @@ import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
 import { setMaxListeners } from "process";
 import { deleteMessage } from "./methods/deletemessage";
-import { InteractionCreate } from "./methods/events/InteractionCreate";
-import { GuildmemberAdd } from "./methods/events/GuildmemberAdd";
-import { GuildmemberUpdate } from "./methods/events/GuildmemberUpdate";
-import { VoicestateUpdate } from "./methods/events/VoicestateUpdate";
-import { MessageDelete } from "./methods/events/MessageDelete";
+import { InteractionCreate } from "./events/InteractionCreate";
+import { GuildmemberAdd } from "./events/GuildmemberAdd";
+import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
+import { VoicestateUpdate } from "./events/VoicestateUpdate";
+import { MessageDelete } from "./events/MessageDelete";
 
 setMaxListeners(100);
 dotenv.config();
