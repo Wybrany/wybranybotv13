@@ -1,6 +1,4 @@
-import { ColorResolvable, Message, MessageEmbed, ReplyOptions, MessageOptions, MessageResolvable } from "discord.js";
-import { RawMessageData } from "discord.js/typings/rawDataTypes";
-import Modified_Client from "./Client";
+import { ColorResolvable, Message, MessageEmbed, MessageOptions, MessageResolvable } from "discord.js";
 
 interface MessageSendOptions {
     content: string;

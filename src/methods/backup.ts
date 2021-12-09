@@ -35,7 +35,10 @@ export const loadfiledata = (client: Modified_Client) => {
 
     for(const guildid of availableGuildFolder){
         const finalPath = join(backupPath, guildid, "guilddata.json");
-        if(!existsSync(finalPath)) return console.warn(`Missing file while loading => ${finalPath}`);
+        if(!existsSync(finalPath)) {
+            console.warn(`Missing file while loading => ${finalPath}`);
+            continue;
+        }
         const data: Guildsettings = JSON.parse(readFileSync(finalPath, "utf-8"));
         const { prefix = `${process.env.PREFIX as string}`, musicChannel = null, cahsettings = null } = data;
         const newData = {
