@@ -12,9 +12,9 @@ import { GuildmemberAdd } from "./events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
 import { VoicestateUpdate } from "./events/VoicestateUpdate";
 import { MessageDelete } from "./events/MessageDelete";
-import { generateMessage } from "./methods/client/Message";
-import { RawMessageData } from "discord.js/typings/rawDataTypes";
 
+
+import "./methods/client/Message";
 setMaxListeners(100);
 dotenv.config();
 
@@ -40,9 +40,7 @@ client.on('guildMemberAdd', async member => await GuildmemberAdd(client, member)
 client.on('guildMemberUpdate', async (guildMemberOld, guildMemberNew) => await GuildmemberUpdate(client, guildMemberOld, guildMemberNew));
 client.on('messageDelete', async message => MessageDelete(client, message));
 
-client.on("messageCreate", async messageBefore => {
-    //const message = generateMessage(client, messageBefore);
-    const message = messageBefore;
+client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
 
