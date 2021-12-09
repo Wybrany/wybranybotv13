@@ -3,6 +3,7 @@ import { ColorResolvable, Message, MessageEmbed, MessageOptions, MessageResolvab
 interface MessageSendOptions {
     content: string;
     title?: string | null;
+    disableTitle?: boolean;
     reply?: MessageResolvable | null;
     timed?: number | null;
     colorOverride?: ColorResolvable | null;
@@ -28,8 +29,8 @@ const generateMessageEmbed = (content: string, color: ColorResolvable, title?: s
 }
 
 Message.prototype.info = async function(options: MessageSendOptions){
-    const { content, reply = null, timed = null, colorOverride = null, title = null } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "BLUE", title ?? `Info`);
+    const { content, reply = null, timed = null, colorOverride = null, title = null, disableTitle = false } = options;
+    const embed = generateMessageEmbed(content, colorOverride ?? "BLUE", !disableTitle ? title ?? `Info` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -40,8 +41,8 @@ Message.prototype.info = async function(options: MessageSendOptions){
 }
 
 Message.prototype.warn = async function(options: MessageSendOptions){
-    const { content, reply = null, timed = 0, colorOverride = null, title = null } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "YELLOW", title ?? `Info`);
+    const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
+    const embed = generateMessageEmbed(content, colorOverride ?? "YELLOW", !disableTitle ? title ?? `Info` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -52,8 +53,8 @@ Message.prototype.warn = async function(options: MessageSendOptions){
 }
 
 Message.prototype.success = async function(options: MessageSendOptions){
-    const { content, reply = null, timed = 0, colorOverride = null, title = null } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "GREEN", title ?? `Info`);
+    const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
+    const embed = generateMessageEmbed(content, colorOverride ?? "GREEN", !disableTitle ? title ?? `Info` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -64,8 +65,8 @@ Message.prototype.success = async function(options: MessageSendOptions){
 }
 
 Message.prototype.error = async function(options: MessageSendOptions){
-    const { content, reply = null, timed = 0, colorOverride = null, title = null } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "RED", title ?? `Info`);
+    const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
+    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Info` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -76,8 +77,8 @@ Message.prototype.error = async function(options: MessageSendOptions){
 }
 
 Message.prototype.editEmbed = async function(options: MessageSendOptions){
-    const { content, reply = null, timed = 0, colorOverride = null, title = null } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "RED", title ? title : undefined);
+    const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false  } = options;
+    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Info` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
