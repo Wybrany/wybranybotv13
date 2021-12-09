@@ -4,7 +4,7 @@ import { Command } from "../../interfaces/client.interface";
 
 export default class implements Command{
     name = "ping";
-    aliases = ["pong"];
+    aliases = [];
     category = "admin";
     description = "Ping pong!";
     usage = "ping";
