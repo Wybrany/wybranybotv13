@@ -15,20 +15,20 @@ export default class implements Command{
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
         const [ target, time ] = args;
-        if(!message.guild || !client.user) return message.reply({content: 'Something went wrong. Please try again later.'});
+        if(!message.guild || !client.user) return message.error({content: 'Something went wrong. Please try again later.', timed: 5000});
         if(!message.guild.members.cache.get(message.author.id)?.voice.channel)
-            return message.reply({content: 'You must be in a voicechannel to use this command.'});
+            return message.error({content: 'You must be in a voicechannel to use this command.', timed: 5000});
         
         const mention = message.mentions.users.first() || message.guild.members.cache.get(target) || null;
-        if(!mention) return message.reply({content: "You need to tag a member or provide an id."});
+        if(!mention) return message.error({content: "You need to tag a member or provide an id.", timed: 5000});
 
         const member = message.guild.members.cache.get(mention.id);
-        if(!member) return message.reply({content: `That user isn't in this server`});
+        if(!member) return message.error({content: `That user isn't in this server`, timed: 5000});
 
-        if(client.currentVote.size && client.currentVote.has(member.id)) return message.reply({content: `**${member.user.tag}** already has a pending vote.`});
+        if(client.currentVote.size && client.currentVote.has(member.id)) return message.error({content: `**${member.user.tag}** already has a pending vote.`, timed: 5000});
 
         const inChannel = member.voice.channel as VoiceChannel | null;
-        if(!inChannel) return message.reply({content: "User must be in a voicechannel."});
+        if(!inChannel) return message.error({content: "User must be in a voicechannel.", timed: 5000});
 
         const members = [...inChannel.members.values()].filter(m => m.id !== member.id || m.id !== client.user?.id);
         
