@@ -1,21 +1,20 @@
 import dotenv from "dotenv";
 import { readdirSync } from "fs";
-import Modified_Client from "./methods/client/Client";
+import Modified_Client from "./client/Client";
 import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
-import { setMaxListeners } from "process";
 import { deleteMessage } from "./methods/deletemessage";
 import { InteractionCreate } from "./events/InteractionCreate";
 import { GuildmemberAdd } from "./events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
 import { VoicestateUpdate } from "./events/VoicestateUpdate";
 import { MessageDelete } from "./events/MessageDelete";
+import { Player } from "discord-music-player";
 
-
-import "./methods/client/Message";
-setMaxListeners(100);
+import "./client/Message";
+import "./client/Guild";
 dotenv.config();
 
 const discord_token = process.env.TOKEN as string;const base_path = process.env.BASE_PATH as string;
@@ -27,6 +26,14 @@ if(!discord_token || !base_path) {console.log(`No "TOKEN" was submitted as a dis
 const client = new Modified_Client();
 client.categories = readdirSync(`./${base_path}/commands`);
 Load_Commands(client, base_path);
+
+const player = new Player(client, {
+    leaveOnEmpty: false, // This options are optional.
+});
+
+client.player = player;
+import { PlayerEvents } from "./events/Player";
+PlayerEvents(client);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);
@@ -44,9 +51,9 @@ client.on("messageCreate", async message => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
 
-    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
+    const guildprefix = message.guild.prefix;
     if(!message.content.startsWith(guildprefix)) return checkForMention(message, client, guildprefix);
-
+    
     const args = message.content.slice(prefix.length).trim().split(' ');
     const cmd = args.shift()?.toLowerCase() ?? null;
     if (!cmd) return checkForMention(message, client, guildprefix);

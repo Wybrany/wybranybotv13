@@ -1,5 +1,5 @@
 import { Message, Permissions } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
 import { Autoclass_Interface, Autokick_Interface } from "src/interfaces/auto.interface";
@@ -11,7 +11,7 @@ const find_user_by_name = (client: Modified_Client, user: string) => {
 }
 
 export default class implements Command{
-    name = "stop";
+    name = "stopauto";
     aliases = [];
     category = "auto";
     description = "Stops current autocommand on a user";

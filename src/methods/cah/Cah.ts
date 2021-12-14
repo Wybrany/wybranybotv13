@@ -3,7 +3,7 @@ import { PlayerConstructor, Game, Deck, BlackCard, Gamestate, CurrentSettings, P
 import { readFileSync } from "fs";
 import { join } from "path";
 import { shuffle } from "../shuffle";
-import Modified_Client from "../client/Client";
+import Modified_Client from "../../client/Client";
 
 
 export class CAHGame implements Game {

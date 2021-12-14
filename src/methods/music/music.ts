@@ -1,4 +1,4 @@
-import { Guild, VoiceChannel, Interaction, TextChannel, MessageButton, MessageActionRow, MessageSelectMenu } from "discord.js";
+/*import { Guild, VoiceChannel, Interaction, TextChannel, MessageButton, MessageActionRow, MessageSelectMenu } from "discord.js";
 import { 
     joinVoiceChannel, 
     getVoiceConnection, 
@@ -21,11 +21,12 @@ import {
 import ytsr from "ytsr";
 import ytdl, { validateURL, getBasicInfo } from "ytdl-core-discord";
 import ytpl, { validateID, getPlaylistID } from "ytpl";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { shuffle } from "../shuffle";
 import ffmpeg from "fluent-ffmpeg";
 import internal from "stream";
 import { Writable } from "stream";
+//@ts-ignore
 import lyricsFinder from "lyrics-finder";
 
 export class MusicConstructor implements MusicConstructorInterface {
@@ -54,7 +55,7 @@ export class MusicConstructor implements MusicConstructorInterface {
     public current_song: Song | null;
     public resource: AudioResource<Song> | null;
 
-    constructor(client: Modified_Client,guild: Guild, musicChannel: MusicChannel){
+    constructor(client: Modified_Client, guild: Guild, musicChannel: MusicChannel){
         this.client = client;
         this.guild = guild;
         this.musicChannel = musicChannel;
@@ -85,7 +86,7 @@ export class MusicConstructor implements MusicConstructorInterface {
         let connection = getVoiceConnection(this.guild.id);
         if(!connection && this.channel) connection = joinVoiceChannel({
             channelId: this.channel.id,
-            guildId: this.guild.id,
+            guildId: this.guild.id
             adapterCreator: this.channel.guild.voiceAdapterCreator
         });
         if(!connection || !this.queue.length || !checkQueueLength(this.queue)) return this.stop(undefined, true);
@@ -125,10 +126,10 @@ export class MusicConstructor implements MusicConstructorInterface {
 
         if(!resource) return this.play();
 
-        /*connection.on(VoiceConnectionStatus.Disconnected, () => {
+        connection.on(VoiceConnectionStatus.Disconnected, () => {
             console.log(`VoiceConnectionStatus.Disconnected`)
             this.stop(undefined, true);
-        })*/
+        })
 
         const player = createAudioPlayer({
             behaviors: {
@@ -242,11 +243,11 @@ export class MusicConstructor implements MusicConstructorInterface {
 
     seek(time_s: number){
         if(!this.current_song || !this.player) return;
-        /*this.seeking = true;
+        this.seeking = true;
         this.seek_time = time_s;
         this.update_embed("SEEKING");
         this.queue.unshift(this.current_song);
-        this.skip();*/
+        this.skip();
 
         console.log("Now seeking")
     }
@@ -279,14 +280,14 @@ export class MusicConstructor implements MusicConstructorInterface {
         // 1 -> 0
         if(this.currentQueuePage > (this.queue.length - 1)) this.currentQueuePage = (this.queue.length - 1);
         console.log(`addQueue, 2dqueue length: ${this.queue.length}`);
-        /*if(!this.player && !this.current_song && !this.playing){
+        if(!this.player && !this.current_song && !this.playing){
             this.playing = true;
             return await this.play();
         }
         if(update) {
             console.log("Now updating!");
             this.update_embed("NOWPLAYING");
-        }*/
+        }
     }
 
     swap_songs(song1: number, song2: number){
@@ -809,3 +810,5 @@ export const process_basic_info = (info: any): any => {
         details: videoDetails ?? null
     }
 }
+
+*/

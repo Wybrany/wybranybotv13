@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { CategoryChannel, Message, Permissions, VoiceChannel } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { AvailablePack, AvailablePacks, Deck, Pack } from "src/interfaces/cah.interface";
 import { existsSync, readFileSync } from "fs";

@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
-import Modified_Client from "./client/Client";
+import Modified_Client from "../client/Client";
 import { join } from "path";
 import { Guildsettings } from "../interfaces/guildsettings.interface";
+import MusicEmbed from "./music/MusicEmbed";
 
 const backupPath = "./backup";
 
@@ -13,13 +14,13 @@ export const savefiledata = (client: Modified_Client, guildid: string) => {
             mkdirSync(guildFolderPath);
             console.log(`Creating new guildfolder => ${guildFolderPath}`);
         }
-        const settings = client.guildsettings.get(guildid);
-        const cahsettings = client.cahsettings.get(guildid);
+        const guild = client.guilds.cache.get(guildid);
+        if(!guild) return console.error(`Can't find guild when saving.`);
         const newData = {
             guildid: guildid,
-            prefix: settings?.prefix ?? null,
-            musicChannel: settings?.musicChannel ?? null,
-            cahsettings: cahsettings ?? null
+            prefix: guild?.prefix ?? null,
+            musicChannel: guild?.musicChannel ?? null,
+            cahsettings: guild.cahsettings ?? null
         }
         const filePath = join(guildFolderPath, "guilddata.json");
         writeFileSync(filePath, JSON.stringify(newData, null, "\t"));
@@ -40,14 +41,18 @@ export const loadfiledata = (client: Modified_Client) => {
             continue;
         }
         const data: Guildsettings = JSON.parse(readFileSync(finalPath, "utf-8"));
-        const { prefix = `${process.env.PREFIX as string}`, musicChannel = null, cahsettings = null } = data;
-        const newData = {
-             guildid,
-             prefix
+        const guild = client.guilds.cache.get(guildid) || client.guilds.cache.find(g => g.id === guildid);
+        if(!guild) {
+            console.error(`Can't find guild => ${guildid} when loading data.`);
+            continue;
         }
-        if(musicChannel !== null) Object.assign(newData, {musicChannel});
-        if(cahsettings !== null) client.cahsettings.set(guildid, cahsettings);
-        client.guildsettings.set(guildid, newData);
+        guild.prefix = data?.prefix ?? process.env.PREFIX as string;
+        guild.musicChannel = data?.musicChannel ?? null;
+        guild.cahsettings = data?.cahsettings ?? null;
+        if(guild.musicChannel && guild.musicChannel.embedid) {
+            //Should also check later whether the message actually exist or not.
+            guild.musicEmbed = new MusicEmbed(guild, guild.musicChannel);
+        }
     }
     console.log(`Successfully loaded some guilddata.`);
 }

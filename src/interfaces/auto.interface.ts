@@ -1,5 +1,5 @@
 import { Guild, GuildMember, Role, Message, Invite, GuildChannel } from "discord.js";
-import Modified_Client from "../methods/client/Client";
+import Modified_Client from "../client/Client";
 
 export type auto_state = "KICK" | "DISCONNECT" | "NAME" | "MOVE";
 

@@ -3,13 +3,12 @@ import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 
 export default class implements Command{
-    name = "play";
-    aliases = ["p"];
+    name = "playlist";
+    aliases = ["pl"];
     category = "music";
-    description = "Play a song with an url. You can use Youtube, Spotify or Apple Music.";
-    usage = "play <URL | Searchterm>";
+    description = "Play a playlist. You can use Youtube, Spotify or Apple Music.";
+    usage = "play <URL>";
     permission = Permissions.FLAGS.SEND_MESSAGES;
-    developerMode=false;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -21,13 +20,13 @@ export default class implements Command{
         if(!message.member?.voice.channel) return message.error({content: "You need to be in a voicechannel to use this command.", timed: 5000});
 
         //I should check whether it's a video url or a playlist before attempting to play this.
-
+        
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue){
             try{            
                 const queue = client.player?.createQueue(message.guild.id)
                 await queue?.join(message.member.voice.channel);
-                await queue?.play(search, {requestedBy: message.author}).catch(_ => {
+                const song = await queue?.playlist(search, {requestedBy: message.author}).catch(_ => {
                     if(!guildQueue) queue.stop();
                     message.error({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
                 });
@@ -37,7 +36,7 @@ export default class implements Command{
             }
         }
         else{
-            guildQueue.play(search, {requestedBy: message.author}).catch(_ => {
+            guildQueue.playlist(search, {requestedBy: message.author}).catch(_ => {
                 message.error({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
             });
         }

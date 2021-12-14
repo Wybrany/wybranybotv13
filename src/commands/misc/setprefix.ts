@@ -1,5 +1,5 @@
 import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { savefiledata } from "../../methods/backup";
 

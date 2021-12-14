@@ -1,5 +1,5 @@
 import { Guild, GuildMember } from "discord.js";
-import Modified_Client from "../client/Client";
+import Modified_Client from "../../client/Client";
 import { auto_state, Autoclass_Interface } from "../../interfaces/auto.interface";
 
 export const getRandomTimer = (time_ms: number) => {

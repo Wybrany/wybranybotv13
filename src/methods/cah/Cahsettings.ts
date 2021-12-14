@@ -1,6 +1,6 @@
 import { Guild, TextChannel, Message, MessageEmbed, MessageActionRow, MessageButton } from "discord.js";
 import { CAH_Settings, AvailablePack, AvailablePacks } from "../../interfaces/cah.interface";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { savefiledata } from "../../methods/backup";
 import { join } from "path";
 import { existsSync, readFileSync } from "fs";

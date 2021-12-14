@@ -1,8 +1,8 @@
 import { Message, Permissions } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
-import { joinVoiceChannel } from "@discordjs/voice";
+import { joinVoiceChannel, DiscordGatewayAdapterCreator } from "@discordjs/voice";
 
 export default class implements Command{
     name = "join";
@@ -27,7 +27,7 @@ export default class implements Command{
         return joinVoiceChannel({
             channelId: message.member.voice.channel.id,
             guildId: message.guild.id,
-            adapterCreator: message.guild.voiceAdapterCreator
+            adapterCreator: message.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         })
     }
 }

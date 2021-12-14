@@ -1,6 +1,6 @@
 import { Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { type } from "os";
-import Modified_Client from "src/methods/client/Client";
+import Modified_Client from "src/client/Client";
 
 export type VoteButtons =
     "buttonYes" |

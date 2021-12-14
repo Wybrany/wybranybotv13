@@ -1,5 +1,5 @@
 import { Command } from "src/interfaces/client.interface";
-import Client from "../client/Client";
+import Client from "../../client/Client";
 import { readdirSync } from "fs";
 //Fix declaration for this module later.
 //import ascii from "ascii-table";

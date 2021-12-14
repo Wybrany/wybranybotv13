@@ -1,6 +1,6 @@
 import { CategoryChannel, Guild, GuildMember, Interaction, Message, OverwriteResolvable, Role, TextChannel } from "discord.js";
 import { embed_state } from "src/methods/cah/Cahsettings";
-import Modified_Client from "../methods/client/Client";
+import Modified_Client from "../client/Client";
 
 export type Gamestate = "SETUP" | "SELECT" | "VOTE" | "ROUNDWON" | "PAUSE" | "GAMEOVER";
 

@@ -1,7 +1,6 @@
 import { Guild, GuildMember, Invite, Message, Role } from "discord.js";
-import Modified_Client from "../client/Client";
+import Modified_Client from "../../client/Client";
 import { Autoclass } from "./Autoclass";
-import { auto_state } from "../../interfaces/auto.interface";
 
 export class Autokick extends Autoclass {
 

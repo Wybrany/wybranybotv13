@@ -1,5 +1,5 @@
 import { Message, PermissionResolvable } from "discord.js";
-import Client from "../methods/client/Client";
+import Client from "../client/Client";
 
 export interface Command {
     name: string;

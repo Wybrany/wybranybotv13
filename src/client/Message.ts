@@ -42,7 +42,7 @@ Message.prototype.info = async function(options: MessageSendOptions){
 
 Message.prototype.warn = async function(options: MessageSendOptions){
     const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "YELLOW", !disableTitle ? title ?? `Info` : undefined);
+    const embed = generateMessageEmbed(content, colorOverride ?? "YELLOW", !disableTitle ? title ?? `Warning` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -54,7 +54,7 @@ Message.prototype.warn = async function(options: MessageSendOptions){
 
 Message.prototype.success = async function(options: MessageSendOptions){
     const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "GREEN", !disableTitle ? title ?? `Info` : undefined);
+    const embed = generateMessageEmbed(content, colorOverride ?? "GREEN", !disableTitle ? title ?? `Success` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -66,7 +66,7 @@ Message.prototype.success = async function(options: MessageSendOptions){
 
 Message.prototype.error = async function(options: MessageSendOptions){
     const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Info` : undefined);
+    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Error` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }
@@ -78,7 +78,7 @@ Message.prototype.error = async function(options: MessageSendOptions){
 
 Message.prototype.editEmbed = async function(options: MessageSendOptions){
     const { content, reply = null, timed = 0, colorOverride = null, title = null, disableTitle = false  } = options;
-    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Info` : undefined);
+    const embed = generateMessageEmbed(content, colorOverride ?? "RED", !disableTitle ? title ?? `Error` : undefined);
     const messageOptions: MessageOptions = {
         embeds: [embed]
     }

@@ -1,5 +1,5 @@
 import { Message, Permissions } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
 import { getVoiceConnection } from "@discordjs/voice";
@@ -21,10 +21,6 @@ export default class implements Command{
             return deleteMessage("You need to be in a voice channel to summon me.", message);
         
         const connection = getVoiceConnection(message.guild.id);
-        if(connection) {
-            const music = client.music.get(message.guild.id);
-            if(music) music?.stop(undefined, true);
-            else connection.destroy();
-        }
+        if(connection) connection.destroy();
     }
 }

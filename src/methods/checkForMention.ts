@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
-import Modified_Client from "./client/Client";
+import Modified_Client from "../client/Client";
 import { createMessageEmbed } from "./createMessageEmbed";
 
 export const checkForMention = (message: Message, client: Modified_Client , guildPrefix: string): void => {

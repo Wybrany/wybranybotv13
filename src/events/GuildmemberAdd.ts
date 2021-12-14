@@ -1,6 +1,6 @@
 import { GuildMember } from "discord.js";
 import { Autokick_Interface } from "src/interfaces/auto.interface";
-import Modified_Client from "../methods/client/Client";
+import Modified_Client from "../client/Client";
 
 export const GuildmemberAdd = async (client: Modified_Client, member: GuildMember) => {
     if(!client.member_troll_list.has(member.id)) return;

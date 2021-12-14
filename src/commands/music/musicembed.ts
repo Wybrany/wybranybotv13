@@ -1,46 +1,44 @@
 import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, TextChannel, MessageSelectMenu } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import MusicEmbed from "../../methods/music/MusicEmbed";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { MusicChannel } from "../../interfaces/music.interface";
 import { savefiledata } from "../../methods/backup";
 import { deleteMessage } from "../../methods/deletemessage";
 
 export default class implements Command{
-    name = "music";
-    aliases = [];
+    name = "musicembed";
+    aliases = ["music"];
     category = "music";
     description = "The channel this command is used on will become your music channel.";
-    usage = "music";
+    usage = "musicembed";
     permission = Permissions.FLAGS.ADMINISTRATOR;
     developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
         await message.delete();
-        if(!message.guild || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
-        const music = client.music.has(message.guild.id) ? client.music.get(message.guild.id) : null;
-        if(music) return deleteMessage(`You can't use this command while playing music.`, message, 5000);
-        const guildSettings = client.guildsettings.get(message.guild.id);
+        if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+
         
         //If there was a previous musicChannel, delete that message
         //Because we don't want conflicting buttons, not that it really matter tho but anyways;
-        if(guildSettings?.musicChannel && message.guild.channels.cache.has(guildSettings?.musicChannel?.channelid ?? "")){
-            const { channelid, embedid } = guildSettings.musicChannel;
+        if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid ?? "")){
+            const { channelid, embedid } = message.guild.musicChannel;
             const channel = message.guild.channels.cache.get(channelid) as TextChannel;
             const prevMessage = channel.messages.cache.get(embedid) || await channel.messages.fetch(embedid).catch(e => {}) || null;
-            if(prevMessage) prevMessage.delete();
+            if(prevMessage) {
+                await prevMessage.delete();
+                message.guild.musicEmbed = null;
+            }
         }
-        
+
         const musicEmbed = new MessageEmbed()
             .setTitle(`Idle - Not playing anything`)
             .setDescription(`
-                Use ${guildSettings?.prefix ?? process.env.PREFIX}help music to display all available commands.
+                Use ${message.guild.prefix}play or ${message.guild.prefix}playlist commands to start playing music. The buttons below will help you navigate through your queue and give you live feedback.
                 
-                To play something, use the play command as usual! The buttons will help you navigate through songs easier.
-                
-                You can pause/resume, skip and stop the bot. You can also toggle Loop and shuffle with the buttons! 
-                
-                The Song Queue will show songs queued up to 25 songs. Use the buttons below the Song Queue to toggle Select, Remove or Swap. 
+                See ${message.guild.prefix}help to see available commands for your server.
             `)
             .setColor("BLUE")
             .setFooter(``)
@@ -121,29 +119,15 @@ export default class implements Command{
             .addComponents(selectMenu)
 
         const newMessage = await message.channel.send({embeds: [musicEmbed], components: [firstButtons, songQueue, selectButtons]});
-        const musicChannel: MusicChannel = {
+
+        const newMusicChannel: MusicChannel = {
             guildid: message.guild.id,
             channelid: message.channel.id,
-            embedid: newMessage.id,
-            buttons: {
-                playpausebutton: playPauseButton.customId as string, 
-                skipbutton: skipButton.customId as string, 
-                stopbutton: stopButton.customId as string, 
-                loopbutton: loopButton.customId as string, 
-                shufflebutton: shuffleButton.customId as string
-            },
-            songqueue: {
-                songqueue: selectMenu.customId as string
-            },
-            selectButtons: {
-                selectButton: selectButton.customId as string,
-                removeButton: removeButton.customId as string,
-                swapButton: swapButton.customId as string
-            }
+            embedid: newMessage.id
         }
 
-        if(guildSettings) client.guildsettings.set(message.guild.id, {...guildSettings, musicChannel});
-        else client.guildsettings.set(message.guild.id, {guildid: message.guild.id, musicChannel});
+        message.guild.musicChannel = newMusicChannel;
+        message.guild.musicEmbed = new MusicEmbed(message.guild, newMusicChannel);
         savefiledata(client, message.guild.id);
     }
 }

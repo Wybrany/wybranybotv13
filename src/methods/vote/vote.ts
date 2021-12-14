@@ -1,7 +1,7 @@
 import { ColorResolvable, GuildManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { promisify } from "util";
 import { Vote, CurrentVotes } from "../../interfaces/vote.interface";
-import Modified_Client from "../client/Client";
+import Modified_Client from "../../client/Client";
 
 const wait = promisify(setTimeout);
 

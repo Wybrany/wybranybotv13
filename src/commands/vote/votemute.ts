@@ -1,5 +1,5 @@
 import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, VoiceChannel } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { Vote } from "../../interfaces/vote.interface";
 import { Vote_Class } from "../../methods/vote/vote";

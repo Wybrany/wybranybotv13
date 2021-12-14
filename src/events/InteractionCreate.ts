@@ -1,8 +1,7 @@
 import { Interaction } from "discord.js";
-import Modified_Client from "../methods/client/Client";
+import Modified_Client from "../client/Client";
 import { MusicButtons } from "../interfaces/music.interface";
 import { VoteButtons } from "../interfaces/vote.interface";
-import { MusicConstructor } from "../methods/music/music";
 import { ButtonInteraction, SelectMenuInteraction } from "discord.js";
 import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../interfaces/cah.interface";
 
@@ -10,7 +9,9 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
         //Should split up the code here later and check for different commands that utilizes different buttons.
     //Eg. with customid that I split up with command-buttonname-id, where id could either be guild or member.
     if(!interaction.guild) return;
-    const music = client.music.has(interaction.guild.id) ? client.music.get(interaction.guild.id) as MusicConstructor : null;
+    const guildQueue = client.player?.getQueue(interaction.guild.id);
+    console.log(guildQueue?.songs.length);
+    const musicEmbed = interaction.guild.musicEmbed;
     const cahsettings = client.cah_settings_embed.has(interaction.guild.id) ? client.cah_settings_embed.get(interaction.guild.id) : null;
 	const cahgame = client.cahgame.has(interaction.guild.id) ? client.cahgame.get(interaction.guild.id) : null;
     const member = interaction.guild.members.cache.get(interaction.member?.user.id as string) ?? null;
@@ -34,20 +35,28 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
             break;
     
             //MUSIC
-            case 'buttonLoop':      if(music) music.toggle_loop(interaction);    break;
-            case 'buttonShuffle':   if(music) music.toggle_shuffle(interaction); break;
-            case 'buttonSkip':      if(music) music.skip(interaction);           break;
-            case 'buttonStop':      if(music) music.stop(interaction, true);     break;
-            case 'buttonPlayPause': if(music) music.toggle_pause(interaction);   break;
+            case 'buttonLoop':
+                //Code some logic for loop.
 
-            case 'buttonSelect': if(music) music.queue_state("SELECT", interaction); break;
-            case 'buttonRemove': if(music) music.queue_state("REMOVE", interaction); break;
-            case 'buttonSwap' : if(music) music.queue_state("SWAP", interaction);    break;
+            break;
 
-            case 'buttonFirstPageQueue': if(music) music.queue_page("FIRST", interaction); break;
-            case 'buttonNextPageQueue':  if(music) music.queue_page("NEXT", interaction);   break;
-            case 'buttonPrevPageQueue':  if(music) music.queue_page("PREV", interaction);   break;
-            case 'buttonLastPageQueue':  if(music) music.queue_page("LAST", interaction);   break;
+            //Koda logic för shuffle, måste spara queuen och stora den någon annan stans ifall man vill unshuffla.
+            //case 'buttonShuffle':   if(guildQueue) guildQueue.shuffle() break;
+
+            case 'buttonSkip':      if(musicEmbed) musicEmbed.skip(client, interaction);         break;
+            case 'buttonStop':      if(musicEmbed) musicEmbed.stop(client, interaction);         break;
+            case 'buttonPlayPause': if(musicEmbed) musicEmbed.toggle_pause(client, interaction); break;
+
+            //Koda om logic för embeden.
+            /*case 'buttonSelect': if(guildQueue) guildQueue.queue_state("SELECT", interaction); break;
+            case 'buttonRemove': if(guildQueue) guildQueue.queue_state("REMOVE", interaction); break;
+            case 'buttonSwap' : if(guildQueue) guildQueue.queue_state("SWAP", interaction);    break;*/
+
+            //Koda om dessa.
+            /*case 'buttonFirstPageQueue': if(guildQueue) guildQueue.queue_page("FIRST", interaction); break;
+            case 'buttonNextPageQueue':  if(guildQueue) guildQueue.queue_page("NEXT", interaction);   break;
+            case 'buttonPrevPageQueue':  if(guildQueue) guildQueue.queue_page("PREV", interaction);   break;
+            case 'buttonLastPageQueue':  if(guildQueue) guildQueue.queue_page("LAST", interaction);   break;*/
 
             //CAH SETTINGS EMBED
             case 'buttonSaveSettings':           if(cahsettings) cahsettings.save(); break;
@@ -80,7 +89,7 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
         console.log(type);
         
         switch(type as "selectSongQueue" | "removeSongQueue" |"swapSongQueue" | CAHSelectMenu){
-            case 'selectSongQueue':{
+            /*case 'selectSongQueue':{
                 const firstSong = interaction.values.shift() as string;
                 const [ index, songLink ] = firstSong.split("-");
                 const songIndex = parseFloat(index);
@@ -105,7 +114,7 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
                 const [ song1, song2 ] = selectedSongs.map(v => parseFloat(v.split("-")[0]));
                 music?.swap_songs(song1, song2);
             }
-            break;
+            break;*/
 
             //CAH GAME
 
@@ -132,7 +141,6 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
                 if(cahgame && member) cahgame.select_cards("SWAP", [card1, card2], member, interaction);
             break;
         }
-        //Handle queue/skip/remove menus for music
         await interaction.deferUpdate();
     }
 }

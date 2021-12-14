@@ -1,10 +1,10 @@
 import { VoiceState, VoiceChannel } from "discord.js";
 import { Autodisconnect } from "../methods/auto/Autodisconnect";
 import { Automove } from "../methods/auto/Automove";
-import Modified_Client from "../methods/client/Client";
+import Modified_Client from "../client/Client";
 
 export const VoicestateUpdate = async (client: Modified_Client, oldState: VoiceState, newState: VoiceState) => {
-    if(!newState.member || !client.user) return;
+    /*if(!newState.member || !client.user) return;
     const newchannel = newState.channel as VoiceChannel | null;
 
     if(client.music.has(newState.guild.id) && (newState.member.id === client.user.id)){
@@ -33,5 +33,5 @@ export const VoicestateUpdate = async (client: Modified_Client, oldState: VoiceS
             default:
             break;
         }
-    }
+    }*/
 }

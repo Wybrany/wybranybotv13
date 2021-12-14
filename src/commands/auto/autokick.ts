@@ -1,9 +1,9 @@
 import { Message, Permissions, TextChannel } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
 import { Autokick } from "../../methods/auto/Autokick";
-
+//@ts-ignore
 import htms from "human-to-milliseconds";
 const regex = new RegExp(/(\d+[s,m,h])/, "g");
 

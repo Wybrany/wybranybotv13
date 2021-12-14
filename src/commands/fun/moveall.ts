@@ -1,5 +1,5 @@
 import { GuildChannel, Message, Permissions, VoiceChannel } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
 import { shuffle } from "../../methods/shuffle"

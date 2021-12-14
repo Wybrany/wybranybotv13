@@ -1,5 +1,5 @@
 import { Message, Permissions } from "discord.js";
-import Modified_Client from "../../methods/client/Client";
+import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { deleteMessage } from "../../methods/deletemessage";
 //@ts-ignore
@@ -17,39 +17,30 @@ export default class implements Command{
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
-        /*await message.delete();
+        await message.delete();
+        if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+        if(!message.member?.voice.channel) return message.error({content: "You need to be in a voicechannel to use this command.", timed: 5000});
 
-        if(!message.guild || !message.member || !client.user) 
-            return deleteMessage(`Something went wrong. Please try again later.`, message);
-            
         const [ input ] = args;
-        console.log(input);
-        const time_ms = htms(input);
-        if(!input || !time_ms) return deleteMessage(`You need to give me a valid timestamp. Eg. 1m20s or 20s`, message, 5000);
-        const time_in_seconds = time_ms ? Math.floor((time_ms / 1000)) : null;
-        if(!time_in_seconds || !Number.isInteger(time_in_seconds)) return deleteMessage(`You did not give me a proper timestamp. See following examples: **1m20s** or **20s**`, message, 5000);
 
-        if(!client.music.has(message.guild.id))
-            return deleteMessage(`I need to be playing music to use this command.`, message);
+        const seekMessage = await message.info({content: `Attemping to seek to **${input}**. Please wait, this might take a while.`})
+        try{
+            const time_ms = htms(input);
+            if(!input || !time_ms || !Number.isInteger(time_ms)) return seekMessage.editEmbed({content: `You did not give me a proper timestamp. See following examples: **1m20s** or **20s**`, timed: 5000, colorOverride: "RED", title: "Error"});
 
-        const musicChannel = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id) : null;
+            const queue = client.player?.getQueue(message.guild.id);
+            if(!queue) return seekMessage.editEmbed({content: `There are currently no songs playing.`, timed: 5000, colorOverride: "RED", title: "Error"});
 
-        if(!client.guildsettings.size || !client.guildsettings.has(message.guild.id) || !musicChannel?.musicChannel){
-            const guildPrefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? process.env.PREFIX : process.env.PREFIX;
-            return deleteMessage(`You need to create create a music channel. Use the command **${guildPrefix}music** in a channel dedicated specifically for music commands.`, message, 10000);
+            const seek = await queue.seek(time_ms).catch(_ => {
+                seekMessage.editEmbed({content: `Something went wrong with seeking. Please try again later.`, timed: 5000, colorOverride: "RED", title: "Error"});
+            }) as boolean;
+
+            if(seek){
+                //seekMessage.editEmbed({content: `Successfully seeked to **${input}**. Enjoy!`, timed: 5000, colorOverride: "GREEN", title: "Sucess"});
+            }
+
+        }catch(e){
+            return seekMessage.editEmbed({content: `Something went wrong. Please check your inputs. Please try again later.`, colorOverride: "RED", title: "Error", timed: 5000});
         }
-        
-        if(!message.member?.voice.channel) 
-            return deleteMessage(`You need to be in a voicechannel to use this command.`, message, 5000);
-        
-        const permissions = message.member.voice.channel.permissionsFor(client.user);
-        if(!permissions?.has("CONNECT") || !permissions.has("SPEAK"))
-            return deleteMessage(`I need permissions to join and speak in your voicechannel.`, message, 5000);
-
-        if(musicChannel?.musicChannel?.channelid !== message.channel.id)
-            return deleteMessage(`You can only use this command at <#${client.guildsettings.get(message.guild.id)?.musicChannel?.channelid}>`, message, 5000);
-
-        client.music.get(message.guild.id)?.seek(time_in_seconds);*/
-
     }
 }
