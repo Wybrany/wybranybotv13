@@ -1,7 +1,6 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { deleteMessage } from "../../methods/deletemessage";
 import { getVoiceConnection } from "@discordjs/voice";
 
 export default class implements Command{
@@ -15,10 +14,10 @@ export default class implements Command{
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
         await message.delete();
-        if(!message.guild || !message.member || !client.user) return deleteMessage(`Something went wrong. Please try again later.`, message);
+        if(!message.guild || !message.member || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
 
         if (!message.member.voice.channel) 
-            return deleteMessage("You need to be in a voice channel to summon me.", message);
+            return message.error({content: "You need to be in a voice channel to summon me.", timed: 5000});
         
         const connection = getVoiceConnection(message.guild.id);
         if(connection) connection.destroy();

@@ -19,7 +19,7 @@ export default class implements Command {
         const [ usage, ...spoil] = args;
 
         if(!usage || !spoil.length)
-            return message.reply({content: "You are missing arguments. Usage: command <char | word | sentence> <text>"});
+            return message.error({content: "You are missing arguments. Usage: command <char | word | sentence> <text>", timed: 7500});
 
         switch(usage){
             case 'word':
@@ -39,7 +39,7 @@ export default class implements Command {
             break;
 
             default:
-                message.reply({content: `The type you submitted did not match anything. You can use "char", "word" or "sentance".`});
+                message.error({content: `The type you submitted did not match anything. You can use "char", "word" or "sentance".`, timed: 7500});
             break;
 
         } 

@@ -1,8 +1,6 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { deleteMessage } from "../../methods/deletemessage";
-
 
 export default class implements Command {
     name ="clear";
@@ -19,7 +17,7 @@ export default class implements Command {
         let amount = parseInt(deleteCount, 10) + 1;
         let newAmount = amount;
         if(!amount || amount < 1 || amount > 100){
-            deleteMessage("Please provide a number between 1 and 99 for the number of messages to delete", message);
+            message.error({content: "Please provide a number between 1 and 99 for the number of messages to delete", timed: 5000});
             return;
         } 
 
@@ -27,7 +25,7 @@ export default class implements Command {
         try{
             const fetched = await message.channel.messages.fetch({limit: amount});
             if(!fetched.size) {
-                deleteMessage("I can't read any messages for some unknown reason. Please try again later.", message);
+                message.error({content: "I can't read any messages for some unknown reason. Please try again later.", timed: 5000});
                 return;
             }
             const timeStamps = fetched.map(m => (message.createdTimestamp - m.createdTimestamp));
@@ -42,12 +40,12 @@ export default class implements Command {
             if(amount === newAmount){
                 amount--;
                 const messageReply = amount === 1 ? `Cleared ${amount} message!` : `Cleared ${amount} messages!` 
-                deleteMessage(messageReply, message)
+                message.success({content: messageReply, timed: 5000});
             }
-            else deleteMessage(`I can't bulkdelete messages that are older than 14 days old. ${newAmount === 1 ? `` : `I could however delete ${newAmount -= 1 } messages.` }`, message, 7500)
+            else message.error({content: `I can't bulkdelete messages that are older than 14 days old. ${newAmount === 1 ? `` : `I could however delete ${newAmount -= 1 } messages.` }`, timed: 5000});
             return;
         } catch(e){
-            deleteMessage(`Something went wrong. Please try again later.`, message);
+            message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
             console.log(`Clear error: ${e}`);
             return;
         }

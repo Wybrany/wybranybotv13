@@ -88,11 +88,10 @@ const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] 
 //Main functions
 
 function getAllCommands(client: Modified_Client, message: Message){
-    if(!message.guild) return message.reply(`Something went wrong. Please try again later.`);
+    if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
     const member = message.guild?.members.cache.get(message.author.id);
     const categories = client.categories?.length ? client.categories : [];
-    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
-    if(!member || !member.user) return message.reply(`Something went wrong. Please try again later.`);
+    if(!member || !member.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
 
     const allCommandsEmbed = new MessageEmbed()
         .setAuthor(`Available commands for: ${member.user.tag}`, member.user.avatarURL() ?? member.user.defaultAvatarURL)
@@ -102,22 +101,21 @@ function getAllCommands(client: Modified_Client, message: Message){
     const getAvailableCommands = member ? getCommands(client.commands, member) : null;
     const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
 
-    const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, guildprefix) : null;
+    const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, message.guild.prefix) : null;
 
     if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("RED");
-    else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${guildprefix}help <command> to see more information.`)
+    else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
 
     return message.channel.send({embeds: [allCommandsEmbed]});
 }
 
 
 function getCommand(client: Modified_Client, message: Message, input: string){
-    if(!message.guild) return message.reply(`Something went wrong. Please try again later.`);
+    if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
     const commandEmbed = new MessageEmbed()
     const member = message.guild?.members.cache.get(message.author.id);
-    const guildprefix = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id)?.prefix ?? prefix : prefix;
 
-    if(!member) return message.reply(`Something went wrong. Please try again later.`);
+    if(!member) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
     const availableCommands = getCommands(client.commands, member);
     const cmd = availableCommands.get(input.toLowerCase()) || availableCommands.get(client.aliases.get(input.toLowerCase()) ?? "");
 
@@ -133,7 +131,7 @@ function getCommand(client: Modified_Client, message: Message, input: string){
     if(cmd.aliases) info += `\n**Aliases**: ${cmd.aliases.map(a => `"${a}"`).join(", ")}`;
     if(cmd.category) info += `\n**Category**: ${cmd.category}`;
     if(cmd.description) info += `\n**Description**: ${cmd.description}`;
-    if(cmd.usage) info += `\n**Usage**: ${guildprefix}${cmd.usage}`
+    if(cmd.usage) info += `\n**Usage**: ${message.guild.prefix}${cmd.usage}`
     commandEmbed
         .addField("**Syntax**", `<> = required\n[] = optional\n| = or`)
         .setColor("GREEN")

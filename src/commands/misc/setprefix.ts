@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
+import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { savefiledata } from "../../methods/backup";
@@ -17,14 +17,12 @@ export default class implements Command{
         if(!message.guild) return;
         const [ prefix ] = args;
         //Fixa en lista
-        if(!prefix) return message.reply({content: "Please submit a prefix."});
+        if(!prefix) return message.error({content: "Please submit a prefix.", timed: 5000});
         const reg = new RegExp("[A-Za-z0-9]", "g");
-        if(prefix.length != 1) return message.reply({content: `Your prefix can only be one character long.`});
-        if(reg.test(prefix)) return message.reply({content: `Your prefix can only be a special character.`});
-        const previousSettings = client.guildsettings.has(message.guild.id) ? client.guildsettings.get(message.guild.id) : {};
-        const combined = { ...previousSettings, guildid: message.guild.id, prefix };
-        client.guildsettings.set(message.guild.id, combined);
-        message.reply({content: `Sucessfully changed PREFIX => **${prefix}**`});
+        if(prefix.length != 1) return message.error({content: `Your prefix can only be one character long.`, timed: 5000});
+        if(reg.test(prefix)) return message.error({content: `Your prefix can only be a special character.`, timed: 5000});
+        message.guild.prefix = prefix;
+        message.success({content: `Sucessfully changed PREFIX => **${prefix}**`, timed: 10000});
         savefiledata(client, message.guild.id);
     }
 }

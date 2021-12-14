@@ -36,7 +36,7 @@ Message.prototype.info = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.channel.send(messageOptions);
-    if(timed) setTimeout(async() => await message.delete(), timed);
+    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
     return message;
 }
 
@@ -48,7 +48,7 @@ Message.prototype.warn = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.channel.send(messageOptions);
-    if(timed) setTimeout(async() => await message.delete(), timed);
+    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
     return message;
 }
 
@@ -60,7 +60,7 @@ Message.prototype.success = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.channel.send(messageOptions);
-    if(timed) setTimeout(async() => await message.delete(), timed);
+    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
     return message;
 }
 
@@ -72,7 +72,7 @@ Message.prototype.error = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.channel.send(messageOptions);
-    if(timed) setTimeout(async() => await message.delete(), timed);
+    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
     return message;
 }
 
@@ -84,6 +84,6 @@ Message.prototype.editEmbed = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.edit(messageOptions);
-    if(timed) setTimeout(async() => await message.delete(), timed);
+    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
     return message;
 }

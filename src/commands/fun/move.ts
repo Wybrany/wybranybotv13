@@ -19,13 +19,13 @@ export default class implements Command {
         const [ target, amount ] = args;
 
         const mention = message.mentions.users.first() || message.guild.members.cache.get(target) || null;
-        if(!mention) return message.reply({content: "You need to tag a member or provide an id."});
+        if(!mention) return message.error({content: "You need to tag a member or provide an id.", timed: 5000});
 
         const member = message.guild.members.cache.get(mention.id);
-        if(!member) return message.reply({content: `That user isn't in this server`});
+        if(!member) return message.error({content: `That user isn't in this server`, timed: 5000});
 
         const inChannel = member.voice.channel;
-        if(!inChannel) return message.reply({content: "User must be in a channel."});
+        if(!inChannel) return message.error({content: "User must be in a channel.", timed: 5000});
 
         const AvailableChannels = [...message.guild.channels.cache.filter(c => c.type === "GUILD_VOICE" && c.id !== inChannel.id).values()];
         const Moves = !amount ? 4 : amount === "1" ? 2 : parseInt(amount, 10) - 1;

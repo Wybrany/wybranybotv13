@@ -354,7 +354,7 @@ export default class implements Command {
 
         //Sending
         await message.author.send({embeds: [killerEmbed], files}).catch(error => {
-            message.reply({content: `I could not DM you. Please check your privacy settings!`});
+            message.error({content: `I could not DM you. Please check your privacy settings!`, timed: 10000});
             console.log(error)
         }); 
     }

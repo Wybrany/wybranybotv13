@@ -1,7 +1,6 @@
 import { GuildChannel, Message, Permissions, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { deleteMessage } from "../../methods/deletemessage";
 import { shuffle } from "../../methods/shuffle"
 
 export default class implements Command{
@@ -57,7 +56,7 @@ export default class implements Command{
             break;
         }
         const all_members = allAvailableChannels.filter(c => c.members.size && c.id !== selectedChannelID).map(c => [...c.members.values()]);
-        if(!selectedChannelID || !all_members.length) return deleteMessage(`I could not find a channel to move people to.`, message, 15000);
+        if(!selectedChannelID || !all_members.length) return message.error({content: `I could not find a channel to move people to.`, timed: 5000})
         for(const member of all_members.flat()){
             await member.voice.setChannel(selectedChannelID)
                 .catch(e => console.error(`Moveall: ${e}`));

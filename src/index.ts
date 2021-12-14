@@ -5,7 +5,6 @@ import { Load_Commands } from "./methods/commandhandler/Command";
 import { loadfiledata } from "./methods/backup";
 import { Guild_used_command_recently } from "./methods/cooldown";
 import { checkForMention } from "./methods/checkForMention";
-import { deleteMessage } from "./methods/deletemessage";
 import { InteractionCreate } from "./events/InteractionCreate";
 import { GuildmemberAdd } from "./events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
@@ -64,17 +63,26 @@ client.on("messageCreate", async message => {
     if(message.author.id === OwnerId) return command.run(client, message, args);
     if(command?.ownerOnly) return;
     if(command?.guildWhitelist && !command.guildWhitelist.includes(message.guild.id)) return;
-    if(command?.developerMode) return await deleteMessage(`This command is currently being developed. You can't use this now.`, message, 5000);
-    if(!message.member.permissions.has(command.permission)) return await deleteMessage(`You don't have permission to use this command.`, message, 5000);
+    if(command?.developerMode) {
+        await message.error({content: `This command is currently being developed. You can't use this now.`, timed: 5000});
+        return;
+    }
+    if(!message.member.permissions.has(command.permission)){ 
+        await message.error({content: `You don't have permission to use this command.`, timed: 5000});
+        return;
+    }
 
     if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name.toLowerCase())){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
         const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT" && channelWhiteList.includes(channel.name));
-        if(!channels.size)
-            return await deleteMessage(`This command is only whitelisted in following channelnames: **${channelWhiteList.join(", ")}**, please create such channels to make **${command.name}** command work.`, message, 10000)
+        if(!channels.size){
+            await message.error({content: `This command is only whitelisted in following channelnames: **${channelWhiteList.join(", ")}**, please create such channels to make **${command.name}** command work.`, timed: 5000});
+            return;
+        }
         
         const text = channels.map(channel => `<#${channel.id}>`).join(`, `);
-        return await deleteMessage(`The command, **${command.name}**, can only be used in following channels: ${text}`, message, 10000);
+        await message.error({content: `The command, **${command.name}**, can only be used in following channels: ${text}`, timed: 5000});
+        return;
     }
     
     //Handling cooldowns

@@ -1,7 +1,6 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { deleteMessage } from "../../methods/deletemessage";
 import { Autoclass_Interface, Autokick_Interface } from "src/interfaces/auto.interface";
 
 const find_user_by_name = (client: Modified_Client, user: string) => {
@@ -26,9 +25,9 @@ export default class implements Command{
 
         const [ user ] = args;
         const mention = message.mentions.members?.first() || message.guild.members.cache.get(user) || find_user_by_name(client, user) || { id: user } || null;
-        if(!mention) return deleteMessage(`You must mention someone for me to autoban!`, message, 5000);
-        if(!client.member_troll_list.has(mention.id)) return deleteMessage(`This member is not being trolled right now.`, message, 5000);
-        if(mention.id === message.author.id) return deleteMessage(`You can't stop yourself, silly! :)`, message, 5000);
+        if(!mention) return message.error({content: `You need to mention a user.`, timed: 5000});
+        if(client.member_troll_list.has(mention.id)) return message.error({content: `This member is already being autotrolled.`, timed: 5000});
+        if(mention.id === message.author.id) return message.error({content: `You can't troll yourself silly!`, timed: 5000});
         const trolled = client.member_troll_list.get(mention.id) as Autoclass_Interface;
         trolled.stop_timer();
 
@@ -40,8 +39,8 @@ export default class implements Command{
             const troll = trolled as Autokick_Interface;
             troll.give_roles_back = true;
         }
-
+        
         if(!["KICK"].includes(trolled.state)) client.member_troll_list.delete(mention.id);
-        deleteMessage(`Sucessfully stopped trolling => ${trolled.target.user.username} (${trolled.target.user.id})`, message, 7500);
+        message.error({content: `Sucessfully stopped trolling => ${trolled.target.user.username} (${trolled.target.user.id})`, timed: 5000});
     }
 }
