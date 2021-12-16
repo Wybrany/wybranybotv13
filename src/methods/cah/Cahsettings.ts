@@ -28,8 +28,8 @@ export class CAH_SETTINGS implements CAH_Settings {
         this.embed = null;
 
         this.currentPage = 0;
-        this.selectedPacks = client.cahsettings.get(this.guild.id)?.packs ?? [];
-        this.winstate = client.cahsettings.get(this.guild.id)?.wincondition ?? 10;
+        this.selectedPacks = guild.cahsettings?.packs ?? [];
+        this.winstate = guild.cahsettings?.wincondition ?? 10;
     }
 
     async create_embed() {
@@ -86,11 +86,11 @@ export class CAH_SETTINGS implements CAH_Settings {
     }
 
     save(){
-        this.client.cahsettings.set(this.guild.id, {
+        this.guild.cahsettings = {
             guildId: this.guild.id, 
             packs: this.selectedPacks, 
             wincondition: this.winstate
-        });
+        };
         savefiledata(this.client, this.guild.id);
         this.update_embed("SAVE");
         this.client.cah_settings_embed.delete(this.guild.id);

@@ -1,5 +1,31 @@
-import { CategoryChannel, Guild, GuildChannelCreateOptions, GuildMember, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, OverwriteResolvable, TextChannel } from "discord.js";
-import { PlayerConstructor, Game, Deck, BlackCard, Gamestate, CurrentSettings, Pack, Selected_Cards, AvailablePack, Update_Embed, Player_Cards_State } from "../../interfaces/cah.interface";
+import { 
+    CategoryChannel, 
+    Guild, 
+    GuildChannelCreateOptions, 
+    GuildMember, 
+    Interaction, 
+    Message, 
+    MessageActionRow, 
+    MessageButton, 
+    MessageEmbed, 
+    MessageSelectMenu, 
+    OverwriteResolvable, 
+    TextChannel 
+} from "discord.js";
+import { 
+    PlayerConstructor, 
+    Game, 
+    Deck, 
+    BlackCard, 
+    Gamestate, 
+    CurrentSettings, 
+    Pack, 
+    Selected_Cards, 
+    AvailablePack, 
+    Update_Embed, 
+    Player_Cards_State, 
+    Stop_Reason
+} from "../../interfaces/cah.interface";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { shuffle } from "../shuffle";
@@ -65,13 +91,14 @@ export class CAHGame implements Game {
         for(const player of this.players){
             await this.update_embed("SELECT", player);
         }
-        console.log(this.players.map(p => p.previous_roles));
+        //console.log(this.players.map(p => p.previous_roles));
         return true;
     }
 
-    async stop(command?: boolean){
+    async stop(options: {message?: boolean, reason?: Stop_Reason}){
         this.gamestate = "GAMEOVER";
         //Update the game with gameover texts.
+        const { message = true, reason = null} = options;
         for(const player of this.players){
             try{
                 const member = this.guild.members.cache.get(player.member.id);
@@ -81,18 +108,29 @@ export class CAHGame implements Game {
                 console.error(err);
             }
         }
-        if(command) return;
+        if(!message) return;
+
+        const stopReason = reason && reason === "FORCED" ? `Someone forced me to stop.`
+            : reason === "NO_BLACK_CARDS"                ? `Ran out of black cards.`
+            : reason === "PLAYER_RAN_OUT_OF_CARDS"       ? `A player ran out of cards.`
+            : reason === "WINCONDITION"                  ? `Someone reached the win condition.`
+            : `Unknown Reason`;
         //Should also create a txtfile that logs everything, send this as well when possible.
         const embed = new MessageEmbed()
-            .setTitle(`Game over!`)
+            .setTitle(`Game over. ${stopReason}`)
             .setDescription(`
+            Scoreboard:
+            ${this.players.map(p => `${p.member.user.username} - ${p.points}p`).join("\n")}
+        `)
+            .setColor(`RANDOM`)
+            .setTimestamp();
+        if(reason !== "FORCED")
+            embed.setDescription(`
                 ${this.roundWon?.member.user.username} has won this round of CAH!
 
                 Scoreboard:
                 ${this.players.map(p => `${p.member.user.username} - ${p.points}p`).join("\n")}
             `)
-            .setColor(`RANDOM`)
-            .setTimestamp();
         try{
             const cahLobby = this.guild.channels.cache.find(c => c.name === "cah-lobby") as TextChannel | null;
             if(cahLobby) await cahLobby.send({embeds: [embed]});
@@ -184,7 +222,7 @@ export class CAHGame implements Game {
     }
 
     select_blackcard(){
-        if(!this.deck || !this.deck?.deckblackcards) return this.stop();
+        if(!this.deck || !this.deck?.deckblackcards) return this.stop({reason: "NO_BLACK_CARDS"});
         const randomIndex = shuffle(this.deck.deckblackcards.length, 1) as number;
         this.blackcard = this.deck.deckblackcards.splice(randomIndex, 1)[0];
     }
@@ -194,9 +232,9 @@ export class CAHGame implements Game {
         if(player) {
             player.points++;
             this.roundWon = player;
-            if(player.points >= this.wincondition) return this.stop()
+            if(player.points >= this.wincondition) return this.stop({reason: "WINCONDITION"})
         }
-        if(!this.deck?.deckblackcards.length) return this.stop();
+        if(!this.deck?.deckblackcards.length) return this.stop({reason: "NO_BLACK_CARDS"});
         for(const player of this.players){
             player.replacedcards = false;
             player.ready = false;
@@ -212,7 +250,7 @@ export class CAHGame implements Game {
             this.currentcardzar = this.select_cardczar();
             this.roundWon = null;
             this.select_blackcard();
-            if(!this.blackcard) return this.stop();
+            if(!this.blackcard) return this.stop({reason: "NO_BLACK_CARDS"});
             for(const player of this.players){
                 this.update_embed("SELECT", player);
                 if(!player.whiteCards.length || player.whiteCards.length < this.blackcard.pick) player.ready = true;
@@ -261,6 +299,7 @@ export class CAHGame implements Game {
         if(this.guild.channels.cache.has(player.channel.id)) {
             try{
                 await player.channel.delete();
+                if(member && player.previous_roles.length) await member.roles.add(player.previous_roles);
             }catch(err){
                 console.error(err);
             }
@@ -374,7 +413,7 @@ export class CAHGame implements Game {
         this.update_embed("SELECT", this.players[player_index]);
     }
 
-    async update_embed(state: Update_Embed, player: PlayerConstructor){
+    async update_embed(state: Update_Embed, player: PlayerConstructor): Promise<void>{
         const embed = generate_embeds(state, player, this.players, this.blackcard as BlackCard, this.selected_cards, this.roundWon as PlayerConstructor, this.currentcardzar as PlayerConstructor);
         const select_menu = generate_select_menu(state, player, this.currentcardzar as PlayerConstructor, this.selected_cards as Selected_Cards[], this.blackcard as BlackCard);
         const buttons = generate_buttons(state, player, this.currentcardzar as PlayerConstructor, this.blackcard as BlackCard, this.deck as Deck);
@@ -492,9 +531,9 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
                 .setDisabled(false);
             if(player.player_cards_state === "SELECT") select_menu
                 .addOptions(player.whiteCards.map((card, i) => ({
-                    label: `${i+1}.) ${card?.substring(0, 90) ?? "Unkown"}`,
-                    value: `${i}-${card?.substring(0, 90) ?? "Unkown"}`,
-                    description: `${card?.substring(0, 99) ?? "Unkown"}`
+                    label: `${i+1}.) ${card?.substring(0, 90) ?? "Unknown"}`,
+                    value: `${i}-${card?.substring(0, 90) ?? "Unknown"}`,
+                    description: `${card?.substring(0, 99) ?? "Unknown"}`
                 })))
                 .setMinValues(blackCard.pick)
                 .setMaxValues(blackCard.pick)
@@ -502,18 +541,18 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
                 .setMinValues(1)
                 .setMaxValues(player.whiteCards.length)
                 .addOptions(player.whiteCards.map((card, i) => ({
-                    label: `${i+1}.) ${card?.substring(0, 90) ?? "Unkown"}`,
-                    value: `${i}-${card?.substring(0, 90) ?? "Unkown"}`,
-                    description: `${card?.substring(0, 99) ?? "Unkown"}`
+                    label: `${i+1}.) ${card?.substring(0, 90) ?? "Unknown"}`,
+                    value: `${i}-${card?.substring(0, 90) ?? "Unknown"}`,
+                    description: `${card?.substring(0, 99) ?? "Unknown"}`
                 })));
             if(player.player_cards_state === "SWAP") {
                 if(player.selected_white_cards.length && blackCard.pick >= 2)
                     select_menu
                         .setCustomId(`WhiteCardsSwap-${player.guild.id}`)
                         .addOptions(player.selected_white_cards.map((c, i) => ({
-                            label: `${i+1}.) ${c?.substring(0, 90) ?? "Unkown"}`,
-                            value: `${i}-${c?.substring(0, 90) ?? "Unkown"}`,
-                            description: `${c?.substring(0, 99) ?? "Unkown"}`
+                            label: `${i+1}.) ${c?.substring(0, 90) ?? "Unknown"}`,
+                            value: `${i}-${c?.substring(0, 90) ?? "Unknown"}`,
+                            description: `${c?.substring(0, 99) ?? "Unknown"}`
                         })))
                         .setMinValues(2)
                         .setMaxValues(2);

@@ -1,9 +1,9 @@
-//@ts-nocheck
 
-import { CategoryChannel, Message, Permissions, VoiceChannel } from "discord.js";
+
+import { CategoryChannel, Message, Permissions, TextChannel, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
-import { CAH_SETTINGS } from "../../methods/cah/Cahsettings";
+import { CAH_SETTINGS, embed_state } from "../../methods/cah/Cahsettings";
 import { CAHGame } from "../../methods/cah/Cah"
 
 type arg_state = "settings" | "start" | "stop" | "join" | "leave";
@@ -18,12 +18,14 @@ export default class implements Command{
     usage = "cah <SETTINGS | START | STOP>";
     channelWhitelist = ["cah-lobby"];
     permission = Permissions.FLAGS.SEND_MESSAGES;
-    guildWhitelist = ["456094195187449868"];
+    guildWhitelist = ["456094195187449868", "715123274719297566"];
+    developerMode = true;
     params = true;
+
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
-        if(!message.guild || !client.user || !message.member) 
+        if(!message.guild || message.channel.type !== "GUILD_TEXT" || !client.user || !message.member) 
             return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
 
         const voiceChannel = message.member.voice.channel as VoiceChannel | null;
@@ -39,15 +41,15 @@ export default class implements Command{
         switch(state.toLowerCase() as arg_state){
             case 'settings':
                 console.log("settings");
-                const cah_settings = new CAH_SETTINGS(client, message.guild, message.channel);
+                const cah_settings = new CAH_SETTINGS(client, message.guild, message.channel as TextChannel);
                 client.cah_settings_embed.set(message.guild.id, cah_settings);
                 client.cah_settings_embed.get(message.guild.id)?.create_embed();
             break;
 
-            case 'start':
+            case 'start':{
                 if(client.cahgame.has(message.guild.id)) return message.error({content: `A game is already running.`, timed: 5000});
 
-                const settings = client.cahsettings.has(message.guild.id) ? client.cahsettings.get(message.guild.id) : null;
+                const settings = message.guild.cahsettings;
                 if(!settings) return message.error({content: `You need to configure your settings. Use the command **cah settings** to do so.`, timed: 5000});
 
                 const parentCategory = message.guild.channels.cache.find(c => c.name === "CAH-game") as CategoryChannel | null;
@@ -60,38 +62,36 @@ export default class implements Command{
                 const cahGame = new CAHGame(client, message.guild, players, settings);
                 client.cahgame.set(message.guild.id, cahGame);
 
-                const started = client.cahgame.get(message.guild.id).start();
+                const started = client.cahgame.get(message.guild.id)?.start() ?? false;
                 if(!started) {
-                    client.cahgame.get(message.guild.id).stop();
+                    client.cahgame.get(message.guild.id)?.stop({message: false});
                     client.cahgame.delete(message.guild.id);
                     return message.error({content: `Something went wrong with creating the game. Please try again later.`, timed: 5000});
                 }
-
+            }
             break;
             
             case'stop':
-                if(!client.cahgame.has(message.guild.id)) return message.error({content: `There is no game running atm.`, timed: 5000});
-                //Return all roles and delete channels
-                for(const player of client.cahgame.get(message.guild.id)?.players){
-                    const member = message.guild.members.cache.get(player.member.id);
-                    if(member && player.previous_roles.length) await member.roles.add(player.previous_roles);
-                    await player.channel.delete();
-                }
-                client.cahgame.delete(message.guild.id);
-                //Maybe return a scoreboard for the stopped game.
-                return message.success({content: `Successfully stopped the current game.`, timed: 5000});
+                if(!client.cahgame.has(message.guild.id)) 
+                    return message.error({content: `There is no game running atm.`, timed: 5000});
+                client.cahgame.get(message.guild.id)?.stop({reason: "FORCED"});
+            break;
             
             case 'join': {
                 if(!client.cahgame.has(message.guild.id)) return message.error({content: `There is no game running atm.`, timed: 5000});
-                const user = message.mentions.members.first() || message.guild.members.cache.get(mention) || null;
+                const user = message.mentions.members?.first() ?? message.guild.members.cache.get(mention) ?? null;
                 if(!user) return message.error({content: `You need to mention someone to join the game.`, timed: 5000});
+
+                if(client.cahgame.get(message.guild.id)?.gamestate !== "SELECT") 
+                    return message.error({content: "Players can only join during select state.", timed: 7500});
+
                 const joined = await client.cahgame.get(message.guild.id)?.player_join(user);
-                if(!joined) 
-                    return message.error({content: `Something went wrong making the player join. Please try again later.`, timed: 5000});
+                if(!joined) return message.error({content: `Something went wrong making the player join. Please try again later.`, timed: 5000});
                 else {
                     client.cahgame.get(message.guild.id)?.players.push(joined);
-                    for(const player of client.cahgame.get(message.guild.id)?.players){
-                        await client.cahgame.get(message.guild.id)?.update_embed(client.cahgame.get(message.guild.id).gamestate, player);
+                    const players = client.cahgame.get(message.guild.id)?.players ?? [];
+                    for(const player of players){
+                        await client.cahgame.get(message.guild.id)?.update_embed("SELECT", player);
                     }
                     return message.success({content: `Successfully added **${user.user.username}** to the game.`, timed: 5000});
                 }
@@ -99,7 +99,8 @@ export default class implements Command{
             
             case 'leave':{
                 if(!client.cahgame.has(message.guild.id)) return message.error({content: `There is no game running atm.`, timed: 5000});
-                const user = message.mentions.members.first() || message.guild.members.cache.get(mention) || null;
+
+                const user = message.mentions.members?.first() ?? message.guild.members.cache.get(mention) ?? null;
                 if(!user) return message.error({content: `You need to mention someone to join the game.`, timed: 5000});
                 if(client.cahgame.get(message.guild.id)?.gamestate !== "SELECT")
                     return message.error({content: `A player can only leave during the selection state.`, timed: 5000});

@@ -11,7 +11,7 @@ const find_user_by_name = (client: Modified_Client, user: string) => {
 
 export default class implements Command{
     name = "stopauto";
-    aliases = [];
+    aliases = ["autostop", "as"];
     category = "auto";
     description = "Stops current autocommand on a user";
     usage = "stop <@mention>";
@@ -26,8 +26,7 @@ export default class implements Command{
         const [ user ] = args;
         const mention = message.mentions.members?.first() || message.guild.members.cache.get(user) || find_user_by_name(client, user) || { id: user } || null;
         if(!mention) return message.error({content: `You need to mention a user.`, timed: 5000});
-        if(client.member_troll_list.has(mention.id)) return message.error({content: `This member is already being autotrolled.`, timed: 5000});
-        if(mention.id === message.author.id) return message.error({content: `You can't troll yourself silly!`, timed: 5000});
+        if(mention.id === message.author.id) return message.error({content: `You can't stop yourself silly!`, timed: 5000});
         const trolled = client.member_troll_list.get(mention.id) as Autoclass_Interface;
         trolled.stop_timer();
 

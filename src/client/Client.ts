@@ -1,10 +1,8 @@
-import { Client, Collection, Guild, Intents, Message } from "discord.js";
+import { Client, Collection, Intents, Snowflake } from "discord.js";
 import { Command } from "../interfaces/client.interface";
-import { Guildsettings } from "../interfaces/guildsettings.interface";
 import { Cooldown } from "../interfaces/cooldown.interface";
-import { Game, CurrentSettings, CAH_Settings } from "../interfaces/cah.interface";
+import { Game, CAH_Settings } from "../interfaces/cah.interface";
 import { Vote } from "../interfaces/vote.interface";
-import { MusicConstructorInterface } from "../interfaces/music.interface";
 import { Autoclass_Interface } from "../interfaces/auto.interface";
 import { Player } from "discord-music-player"
 
@@ -15,13 +13,13 @@ export default class extends Client {
     public categories: string[] | null;
     public player: Player | null;
 
-    public guildUsedCommandRecently: Map<string, Cooldown>
+    public guildUsedCommandRecently: Map<Snowflake, Cooldown>
 
-    public member_troll_list: Map<string, Autoclass_Interface>
+    public member_troll_list: Map<Snowflake, Autoclass_Interface>
 
-    public cah_settings_embed: Map<string, CAH_Settings>
-    public cahgame: Map<string, Game>;
-    public cahlog: string[];
+    public cah_settings_embed: Map<Snowflake, CAH_Settings>
+    public cahgame: Map<Snowflake, Game>;
+    public cahlog: Map<Snowflake, string>;
 
     public currentVote: Map<string, Vote>
 
@@ -51,7 +49,7 @@ export default class extends Client {
         //CAH
         this.cah_settings_embed = new Map();
         this.cahgame = new Map();
-        this.cahlog = [];
+        this.cahlog = new Map();
 
         //Votecommands
         this.currentVote = new Map();

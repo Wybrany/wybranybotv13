@@ -3,6 +3,9 @@ import { embed_state } from "src/methods/cah/Cahsettings";
 import Modified_Client from "../client/Client";
 
 export type Gamestate = "SETUP" | "SELECT" | "VOTE" | "ROUNDWON" | "PAUSE" | "GAMEOVER";
+export type Player_Cards_State = "SELECT" | "REMOVE" | "SWAP";
+export type Update_Embed = "SELECT" | "VOTE" | "ROUNDWON" | "PAUSE" | "GAMEOVER";
+export type Stop_Reason = "NO_BLACK_CARDS" | "PLAYER_RAN_OUT_OF_CARDS" | "WINCONDITION" | "FORCED";
 
 export interface CurrentSettings {
     guildId: string;
@@ -53,8 +56,8 @@ export interface Game {
     roundTimeLimit: number;
     timer: NodeJS.Timeout | null;
 
-    start: () => void;
-    stop: (command?: boolean) => void;
+    start: () => Promise<boolean>;
+    stop: (options: {message?: boolean, reason?: Stop_Reason}) => void;
 
     create_channel: (member: GuildMember, parent: CategoryChannel) => Promise<TextChannel | null>
     create_embed: (member: GuildMember, channel: TextChannel) => Promise<Message | null>;
@@ -75,11 +78,8 @@ export interface Game {
     player_join: (member: GuildMember) => Promise<PlayerConstructor | null>;
     player_leave: (member: GuildMember) => void;
 
-    update_embed: (state: Update_Embed, player: PlayerConstructor) => void;
+    update_embed: (state: Update_Embed, player: PlayerConstructor) => Promise<void>;
 }
-
-export type Player_Cards_State = "SELECT" | "REMOVE" | "SWAP";
-export type Update_Embed = "SELECT" | "VOTE" | "ROUNDWON" | "PAUSE" | "GAMEOVER";
 
 export interface Deck {
     packnames: string[];

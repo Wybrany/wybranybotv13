@@ -13,7 +13,7 @@ export default class implements Command {
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
         if(message.channel.type !== "GUILD_TEXT") return;
-        const [ deleteCount = "0" ] = args;
+        const [ deleteCount = "1" ] = args;
         let amount = parseInt(deleteCount, 10) + 1;
         let newAmount = amount;
         if(!amount || amount < 1 || amount > 100){
