@@ -20,25 +20,31 @@ export default class implements Command{
         if(!message.member?.voice.channel) return message.error({content: "You need to be in a voicechannel to use this command.", timed: 5000});
 
         //I should check whether it's a video url or a playlist before attempting to play this.
-        
+        const searchingMessage = await message.info({content: `Searching for "**${search}**"...`})
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue){
             try{            
-                const queue = client.player?.createQueue(message.guild.id)
+                const queue = client.player?.createQueue(message.guild.id, {data: {
+                    queueInitMessage: message
+                }})
                 await queue?.join(message.member.voice.channel);
-                const song = await queue?.playlist(search, {requestedBy: message.author}).catch(_ => {
+                const playlist = await queue?.playlist(search, {requestedBy: message.author}).catch(_ => {
                     if(!guildQueue) queue.stop();
-                    message.error({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+                    searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
                 });
+                if(playlist)
+                    await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
             }
             catch(_){
-                message.error({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
             }
         }
         else{
-            guildQueue.playlist(search, {requestedBy: message.author}).catch(_ => {
-                message.error({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+            const playlist = await guildQueue.playlist(search, {requestedBy: message.author}).catch(_ => {
+                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
             });
+            if(playlist)
+                await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
         }
     }
 }

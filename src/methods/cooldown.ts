@@ -22,8 +22,7 @@ export class Guild_used_command_recently{
         if(this.commandremaining > 0) this.commandremaining--;
     }
     is_on_cooldown(){
-        if(this.commandremaining === 0) return true;
-        return false;
+        return this.commandremaining === 0 ? true : false
     }
     change_warning_message(value: boolean){
         this.sent_warning_message = value;
@@ -31,7 +30,7 @@ export class Guild_used_command_recently{
     async send_warning_message(message: Message){
         if(!this.sent_warning_message){
             this.sent_warning_message = true;
-            return message.reply({content: `You are on cooldown. You may only use ${maxCommands} commands per ${maxCommands * 5} seconds. Rechargerate is at 1 command per 5 sec.`});
+            return message.warn({content: `You are on cooldown. You may only use ${maxCommands} commands per ${maxCommands * 5} seconds. Rechargerate is at 1 command per 5 sec.`, timed: 5000});
         }
     }
     async start_timer(){

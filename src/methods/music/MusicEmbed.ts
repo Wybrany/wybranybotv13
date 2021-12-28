@@ -1,7 +1,7 @@
 import { Guild, Interaction, TextChannel, MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed, MessageOptions } from "discord.js";
 import { embedStates, MusicChannel, MusicEmbedInterface, QueuePageState, SelectStates } from "../../interfaces/music.interface";
 import Modified_Client from "../../client/Client";
-import { Song } from "discord-music-player";
+import { Queue, Song } from "discord-music-player";
 
 export default class MusicEmbed implements MusicEmbedInterface{
 
@@ -38,7 +38,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         const songQueue = client.player?.getQueue(interaction.guild?.id);
         if(!songQueue) return;
         songQueue.stop();
-        await this.updateEmbed(client, "STOPPED");
+        //await this.updateEmbed(client, "STOPPED");
     }
 
     async skip(client: Modified_Client, interaction: Interaction){
@@ -46,8 +46,8 @@ export default class MusicEmbed implements MusicEmbedInterface{
         const songQueue = client.player?.getQueue(interaction.guild?.id);
         if(!songQueue) return;
         songQueue.skip();
-        if(!songQueue.songs.length) await this.updateEmbed(client, "STOPPED");
-        else await this.updateEmbed(client, "CHANGING");
+        //if(!songQueue.songs.length) await this.updateEmbed(client, "STOPPED");
+        //else await this.updateEmbed(client, "CHANGING");
     }
 
     async toggle_pause(client: Modified_Client, interaction: Interaction){
@@ -56,7 +56,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         if(!songQueue) return;
         if(songQueue.paused) songQueue.setPaused(false);
         else songQueue.setPaused(true);
-        await this.updateEmbed(client, "NOWPLAYING");
+        //await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async swap_songs(client: Modified_Client, interaction: Interaction, songs: number[]){
@@ -68,7 +68,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         [queue[song1], queue[song2]] = [queue[song2], queue[song1]];
         songQueue.clearQueue();
         songQueue.setData(queue);
-        await this.updateEmbed(client, "NOWPLAYING");
+        //await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async remove_songs(client: Modified_Client, interaction: Interaction, songs: number[]){
@@ -78,7 +78,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         for(const song of songs){
             songQueue.remove(song);
         }
-        await this.updateEmbed(client, "NOWPLAYING");
+        //await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async toggle_shuffle(client: Modified_Client, interaction: Interaction){
@@ -88,7 +88,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         if(this.shuffle) this.shuffle = false;
         else this.shuffle = true;
         //Code some logic here later
-        await this.updateEmbed(client, "NOWPLAYING");
+        //await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async toggle_loop(client: Modified_Client, interaction: Interaction){
@@ -98,7 +98,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
         if(this.loop) this.loop = false;
         else this.loop = true;
         //Code some logic here later
-        await this.updateEmbed(client, "NOWPLAYING");
+        //await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async queue_page(client: Modified_Client, state: QueuePageState, interaction: Interaction){
@@ -130,7 +130,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
                 this.currentQueuePage = queuePages - 1;
             break;
         }
-        if(interaction) await this.updateEmbed(client, "NOWPLAYING");
+        //if(interaction) await this.updateEmbed(client, "NOWPLAYING");
     }
 
     async queue_state(client: Modified_Client, state: SelectStates, interaction: Interaction){
@@ -163,14 +163,14 @@ export default class MusicEmbed implements MusicEmbedInterface{
             default: return;
         }
 
-        if(queue.isPlaying) await this.updateEmbed(client, "NOWPLAYING");
+        //if(queue.isPlaying) await this.updateEmbed(client, "NOWPLAYING");
     }
 
-    async updateEmbed(client: Modified_Client, state: embedStates): Promise<void>{
+    async updateEmbed(client: Modified_Client, guildQueue: Queue, state: embedStates): Promise<void>{
         if(!this.musicChannel) return;
         if(!this.musicChannel.embedid || !this.musicChannel.channelid) return;
         try{
-            const options = this.generateMusicEmbeds(client, state);
+            const options = this.generateMusicEmbeds(client, guildQueue, state);
             if(!options) return;
             const channel = this.guild.channels.cache.get(this.musicChannel.channelid) as TextChannel | undefined;
             const message = channel?.messages.cache.get(this.musicChannel.embedid) ?? await channel?.messages.fetch(this.musicChannel.embedid);
@@ -180,10 +180,8 @@ export default class MusicEmbed implements MusicEmbedInterface{
         }
     }
 
-    generateMusicEmbeds(client: Modified_Client, state: embedStates): MessageOptions | null {
-
+    generateMusicEmbeds(client: Modified_Client, guildQueue: Queue, state: embedStates): MessageOptions | null {
         const messageEmbed = new MessageEmbed();
-        const guildQueue = client.player?.getQueue(this.guild.id);
         switch(state){
             case 'NOWPLAYING':{
                 if(!guildQueue) return null;

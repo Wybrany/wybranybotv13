@@ -11,6 +11,7 @@ import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
 import { VoicestateUpdate } from "./events/VoicestateUpdate";
 import { MessageDelete } from "./events/MessageDelete";
 import { Player } from "discord-music-player";
+import { PlayerEvents } from "./events/Player";
 
 import "./client/Message";
 import "./client/Guild";
@@ -31,8 +32,7 @@ const player = new Player(client, {
 });
 
 client.player = player;
-import { PlayerEvents } from "./events/Player";
-PlayerEvents(client);
+//PlayerEvents(client);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);

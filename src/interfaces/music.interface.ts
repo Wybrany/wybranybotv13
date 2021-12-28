@@ -1,6 +1,6 @@
 import { Guild, Interaction, MessageOptions, MessageActionRow } from "discord.js";
 import Modified_Client from "../client/Client";
-import { Song } from "discord-music-player";
+import { Song, Queue } from "discord-music-player";
 
 export type MusicButtons = 
     "buttonPlayPause" | 
@@ -49,8 +49,8 @@ export interface MusicEmbedInterface {
     toggle_loop(client: Modified_Client, interaction: Interaction): Promise<void>;
     queue_page(client: Modified_Client, state: QueuePageState, interaction: Interaction): Promise<void>;
     queue_state(client: Modified_Client, state: SelectStates, interaction: Interaction): Promise<void>;
-    updateEmbed(client: Modified_Client, state: embedStates): Promise<void>;
-    generateMusicEmbeds(client: Modified_Client, state: embedStates): MessageOptions | null;
+    updateEmbed(client: Modified_Client, guildQueue: Queue, state: embedStates): Promise<void>;
+    generateMusicEmbeds(client: Modified_Client, guildQueue: Queue, state: embedStates): MessageOptions | null;
     generateQueueButtons(queue: Song[], currentpage: number, guild: Guild): MessageActionRow | null;
     generateSelectButtons(buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, queue: Song[], currentPage: number, disabled: boolean): MessageActionRow;
     generateCurrentQueueList(queue: Song[], currentpage: number, guild: Guild, type: SelectStates): MessageActionRow;

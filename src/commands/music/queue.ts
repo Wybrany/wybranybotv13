@@ -4,7 +4,7 @@ import { Command } from "../../interfaces/client.interface";
 
 export default class implements Command{
     name = "queue";
-    aliases = [];
+    aliases = ["q"];
     category = "music";
     description = "Displays the current queue.";
     usage = "queue";

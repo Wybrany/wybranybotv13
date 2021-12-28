@@ -9,6 +9,7 @@ export default class implements Command {
     description = "Removes messages depending on the input.";
     usage = "_clear <integer between 2 and 100>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
+    developerMode = true
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

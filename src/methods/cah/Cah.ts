@@ -108,8 +108,9 @@ export class CAHGame implements Game {
                 console.error(err);
             }
         }
-        if(!message) return;
 
+        if(!message) return;
+        
         const stopReason = reason && reason === "FORCED" ? `Someone forced me to stop.`
             : reason === "NO_BLACK_CARDS"                ? `Ran out of black cards.`
             : reason === "PLAYER_RAN_OUT_OF_CARDS"       ? `A player ran out of cards.`

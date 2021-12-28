@@ -24,6 +24,6 @@ export default class implements Command{
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
         guildQueue.setPaused(false);
-        message.success({content: `Successfully paused the current track.`, timed: 5000});
+        message.success({content: `Successfully unpaused the current track.`, timed: 5000});
     }
 }

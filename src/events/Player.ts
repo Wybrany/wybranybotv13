@@ -1,3 +1,4 @@
+import { Message } from "discord.js"
 import { Queue } from "discord-music-player";
 import { embedStates } from "src/interfaces/music.interface";
 import Modified_Client from "../client/Client";
@@ -8,10 +9,10 @@ let interval: NodeJS.Timeout | null = null;
 
 //async function updateEveryTick(): Promise<void> => {}
 
-const checkForEmbed = async (client: Modified_Client, queue: Queue, state: embedStates) => {
+/*const checkForEmbed = async (client: Modified_Client, queue: Queue, state: embedStates) => {
     if(!client || !queue || !queue.guild.musicChannel || !queue.guild.musicEmbed) return;
     await queue.guild.musicEmbed.updateEmbed(client, state);
-}
+}*/
 
 export const PlayerEvents = (client: Modified_Client) => {
     if(!client.player) return console.error(`No clientplayer available.`);
@@ -38,7 +39,9 @@ export const PlayerEvents = (client: Modified_Client) => {
     })
     // Emitted when a first song in the queue started playing.
     .on('songFirst', async (queue, song) => {
-        console.log(`Song ${song} has started playing.`)
+        console.log(`Song ${song} has started playing.`);
+        const message = queue.data?.queueInitMessage as Message | undefined;
+        if(message) message.guild?.musicEmbed?.updateEmbed(client, queue, "NOWPLAYING");
         //await checkForEmbed(client, queue, "NOWPLAYING")
     })
     // Emitted when someone disconnected the bot from the channel.

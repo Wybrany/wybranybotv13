@@ -24,6 +24,6 @@ export default class implements Command{
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
         const song = guildQueue.skip();
-        message.success({content: `Skipped current track => **${song.name}**.`, timed: 5000});
+        message.success({content: `Skipped current track => **${song?.name ?? "Unknown track"}**.`, timed: 5000});
     }
 }

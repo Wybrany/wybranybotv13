@@ -4,7 +4,6 @@ import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { MusicChannel } from "../../interfaces/music.interface";
 import { savefiledata } from "../../methods/backup";
-import { deleteMessage } from "../../methods/deletemessage";
 
 export default class implements Command{
     name = "musicembed";
@@ -13,7 +12,7 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "musicembed";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = false;
+    developerMode = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
