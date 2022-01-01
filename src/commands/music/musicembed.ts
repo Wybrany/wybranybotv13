@@ -48,35 +48,35 @@ export default class implements Command{
             .setCustomId(`buttonPlayPause-${message.guild.id}`)
             .setLabel("Pause")
             .setStyle("PRIMARY")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("⏯️")
         
         const skipButton = new MessageButton()
             .setCustomId(`buttonSkip-${message.guild.id}`)
             .setLabel("Skip")
             .setStyle("PRIMARY")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("⏭️")
 
         const stopButton = new MessageButton()
             .setCustomId(`buttonStop-${message.guild.id}`)
             .setLabel("Stop")
             .setStyle("PRIMARY")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("⏹️")
         
         const loopButton = new MessageButton()
             .setCustomId(`buttonLoop-${message.guild.id}`)
             .setLabel(`Loop`)
             .setStyle("DANGER")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("🔁")
 
         const shuffleButton = new MessageButton()
             .setCustomId(`buttonShuffle-${message.guild.id}`)
             .setLabel(`Shuffle`)
             .setStyle("DANGER")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("🔀")
 
         const firstButtons = new MessageActionRow()
@@ -87,28 +87,28 @@ export default class implements Command{
             .setCustomId(`selectSongQueue-${message.guild.id}`)
             .setPlaceholder("Song Queue")
             .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
-            .setDisabled(true)
+            .setDisabled(false)
         
         //SelectButtons
         const selectButton = new MessageButton()
             .setCustomId(`buttonSelect-${message.guild.id}`)
             .setLabel("Select Song")
             .setStyle("SUCCESS")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("✅");
 
         const removeButton = new MessageButton()
             .setCustomId(`buttonRemove-${message.guild.id}`)
             .setLabel("Remove Songs")
             .setStyle("DANGER")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("❌");
 
         const swapButton = new MessageButton()
             .setCustomId(`buttonSwap-${message.guild.id}`)
             .setLabel("Swap Songs")
             .setStyle("DANGER")
-            .setDisabled(true)
+            .setDisabled(false)
             .setEmoji("🔃");
 
         const selectButtons = new MessageActionRow()

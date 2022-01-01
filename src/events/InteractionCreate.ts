@@ -4,15 +4,13 @@ import { MusicButtons } from "../interfaces/music.interface";
 import { VoteButtons } from "../interfaces/vote.interface";
 import { ButtonInteraction, SelectMenuInteraction } from "discord.js";
 import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../interfaces/cah.interface";
+import { RepeatMode } from "discord-music-player";
 
 export const InteractionCreate = async (client: Modified_Client, interaction: Interaction) => {
     if(!interaction.guild || !interaction.member) return;
-    //const guildQueue = client.player?.getQueue(interaction.guild.id);
-    //const initMessage = guildQueue?.data?.queueInitMessage as Message | undefined;
-    //const musicEmbed = initMessage?.guild?.musicEmbed ?? undefined;
-    //console.log(musicEmbed?.guild?.musicEmbed ?? "No musicembed")
-    //console.log(guildQueue?.songs.length ?? "No guildqueue")
-    //const musicEmbed = interaction.guild.musicEmbed;
+    const guildQueue = client.player?.getQueue(interaction.guild.id);
+    const musicEmbed = interaction.guild.musicEmbed;
+    console.log(guildQueue?.songs.length)
     const cahsettings = client.cah_settings_embed.has(interaction.guild.id) ? client.cah_settings_embed.get(interaction.guild.id) : null;
 	const cahgame = client.cahgame.has(interaction.guild.id) ? client.cahgame.get(interaction.guild.id) : null;
     const member = interaction.guild.members.cache.get(interaction.member.user.id) ?? null;
@@ -36,23 +34,33 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
             break;
     
             //MUSIC
-            //case 'buttonLoop':
-                //Code some logic for loop.
+            case 'buttonLoop': 
+                if(guildQueue) {
+                    switch(guildQueue.repeatMode){
+                        case RepeatMode.DISABLED:
+                            guildQueue.setRepeatMode(RepeatMode.SONG);
+                        break;
 
-            //break;
+                        case RepeatMode.SONG:
+                            guildQueue.setRepeatMode(RepeatMode.QUEUE);
+                        break;
 
-            //Koda logic för shuffle, måste spara queuen och stora den någon annan stans ifall man vill unshuffla.
-            //case 'buttonShuffle':   if(guildQueue) guildQueue.shuffle() break;
-
-            //case 'buttonSkip':      //if(musicEmbed && guildQueue) musicEmbed.skip(client, interaction);         break;
-            //case 'buttonStop':      //if(musicEmbed && guildQueue) musicEmbed.stop(client, interaction);         break;
-            //case 'buttonPlayPause': 
-            //    if(musicEmbed && guildQueue){
-            //        if(guildQueue.paused) guildQueue.setPaused(false);
-            //        else guildQueue.setPaused(true);
-            //        await musicEmbed.updateEmbed(client, guildQueue, "NOWPLAYING");
-            //    }
-            //break;
+                        case RepeatMode.QUEUE:
+                            guildQueue.setRepeatMode(RepeatMode.DISABLED);
+                        break;
+                    }
+                } 
+            break;
+            case 'buttonShuffle': if(guildQueue) guildQueue.shuffle(); break;
+            case 'buttonSkip':    if(musicEmbed && guildQueue) musicEmbed.skip(client, interaction);         break;
+            case 'buttonStop':    if(musicEmbed && guildQueue) musicEmbed.stop(client, interaction);         break;
+            case 'buttonPlayPause': 
+                if(musicEmbed && guildQueue){
+                    if(guildQueue.paused) guildQueue.setPaused(false);
+                    else guildQueue.setPaused(true);
+                    //await musicEmbed.updateEmbed(client, guildQueue, "NOWPLAYING");
+                }
+            break;
 
             //Koda om logic för embeden.
             /*case 'buttonSelect': if(guildQueue) guildQueue.queue_state("SELECT", interaction); break;
