@@ -4,7 +4,7 @@ import { join } from "path";
 import { Guildsettings } from "../interfaces/guildsettings.interface";
 import MusicEmbed from "./music/MusicEmbed";
 
-const backupPath = "./backup";
+const backupPath = join(process.cwd(), "./backup");
 
 export const savefiledata = (client: Modified_Client, guildid: string) => {
     try{
@@ -31,6 +31,10 @@ export const savefiledata = (client: Modified_Client, guildid: string) => {
 }
 
 export const loadfiledata = (client: Modified_Client) => {
+
+    if(!existsSync(backupPath))
+        mkdirSync(backupPath);
+
     const availableGuildFolder = readdirSync(backupPath);
     if(!availableGuildFolder.length) return console.log(`There are no guildfolders to load!`);
 
