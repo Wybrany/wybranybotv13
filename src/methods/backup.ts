@@ -44,7 +44,7 @@ export const loadfiledata = (client: Modified_Client) => {
             console.warn(`Missing file while loading => ${finalPath}`);
             continue;
         }
-        const data: Guildsettings = JSON.parse(readFileSync(finalPath, "utf-8"));
+        const data = JSON.parse(readFileSync(finalPath, "utf-8")) as Guildsettings | undefined;
         const guild = client.guilds.cache.get(guildid) || client.guilds.cache.find(g => g.id === guildid);
         if(!guild) {
             console.error(`Can't find guild => ${guildid} when loading data.`);
