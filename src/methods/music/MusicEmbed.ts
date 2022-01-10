@@ -27,7 +27,7 @@ export default class MusicEmbed implements MusicEmbedInterface{
     async skip(client: Modified_Client, interaction: Interaction, index?: number){
         if(!interaction || !interaction.guild) return;
         const guildQueue = client.player?.getQueue(interaction.guild?.id);
-        if(guildQueue) guildQueue.skip(index ?? 0);
+        if(guildQueue) guildQueue.playSongFromIndex(index ?? 0);
     }
 
     async toggle_pause(client: Modified_Client, interaction: Interaction){

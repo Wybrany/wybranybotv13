@@ -83,7 +83,7 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
             case SelectMenuNames.SELECT:{
                 const firstSong = interaction.values.shift();
                 const [ index, songLink ] = firstSong!.split("-");
-                const songIndex = (parseFloat(index) - 1);
+                const songIndex = parseFloat(index);
                 if(guildQueue && musicEmbed) musicEmbed.skip(client, interaction, songIndex);
             }
             break;
