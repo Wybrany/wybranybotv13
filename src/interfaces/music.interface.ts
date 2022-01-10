@@ -1,24 +1,18 @@
-import { Guild, Interaction, MessageOptions, MessageActionRow } from "discord.js";
+import { Interaction } from "discord.js";
 import Modified_Client from "../client/Client";
-import { Song, Queue } from "discord-music-player";
+import { EmbedState, ButtonSelectState, EmbedOptions, ActionRowOptions } from "discord-music-player";
 
-export type MusicButtons = 
-    "buttonPlayPause" | 
-    "buttonSkip" | 
-    "buttonStop" | 
-    "buttonLoop" |
-    "buttonShuffle" |
-    "buttonSelect" |
-    "buttonRemove" |
-    "buttonSwap" |
-    "buttonFirstPageQueue" |
-    "buttonNextPageQueue" | 
-    "buttonPrevPageQueue" |
-    "buttonLastPageQueue";
+export enum QueuePageState {
+    FIRST,
+    PREV,
+    NEXT,
+    LAST
+}
 
-export type QueuePageState = "FIRST" | "NEXT" | "PREV" | "LAST";
-export type SelectStates = "SELECT" | "REMOVE" | "SWAP";
-export type embedStates = "NOWPLAYING" | "STOPPED" | "CHANGING" | "SEEKING"
+export interface MusicOptions {
+    embedOptions?: EmbedOptions;
+    actionRowOptions?: ActionRowOptions;
+}
 
 export interface MusicChannel {
     guildid: string;
@@ -27,33 +21,17 @@ export interface MusicChannel {
 }
 
 export interface MusicEmbedInterface {
-    guild: Guild;
-    musicChannel: MusicChannel | null;
-
     currentQueuePage: number;
-    unshuffledQueue: Song[];
-
-    select: boolean;
-    remove: boolean;
-    swap: boolean;
-
-    shuffle: boolean;
-    loop: boolean;
+    selectState: ButtonSelectState;
 
     stop(client: Modified_Client, interaction: Interaction): Promise<void>;
-    skip(client: Modified_Client, interaction: Interaction): Promise<void>;
+    skip(client: Modified_Client, interaction: Interaction, index?: number): Promise<void>;
     toggle_pause(client: Modified_Client, interaction: Interaction): Promise<void>;
     swap_songs(client: Modified_Client, interaction: Interaction, songs: number[]): Promise<void>;
     remove_songs(client: Modified_Client, interaction: Interaction, songs: number[]): Promise<void>;
     toggle_shuffle(client: Modified_Client, interaction: Interaction): Promise<void>;
     toggle_loop(client: Modified_Client, interaction: Interaction): Promise<void>;
     queue_page(client: Modified_Client, state: QueuePageState, interaction: Interaction): Promise<void>;
-    queue_state(client: Modified_Client, state: SelectStates, interaction: Interaction): Promise<void>;
-    updateEmbed(client: Modified_Client, guildQueue: Queue, state: embedStates): Promise<void>;
-    generateMusicEmbeds(client: Modified_Client, guildQueue: Queue, state: embedStates): MessageOptions | null;
-    generateQueueButtons(queue: Song[], currentpage: number, guild: Guild): MessageActionRow | null;
-    generateSelectButtons(buttonSelect: boolean, buttonRemove: boolean, buttonSwap: boolean, guild: Guild, queue: Song[], currentPage: number, disabled: boolean): MessageActionRow;
-    generateCurrentQueueList(queue: Song[], currentpage: number, guild: Guild, type: SelectStates): MessageActionRow;
-    generateMusicButtons(paused: boolean, loop: boolean, shuffle: boolean, queue: Song[], guild: Guild, disabled: boolean): MessageActionRow;
-    generate_progress_bar(song: Song): string;
+    queue_state(client: Modified_Client, state: ButtonSelectState, interaction: Interaction): Promise<void>;
+    updateEmbed(client: Modified_Client, state: EmbedState): Promise<void>;
 }

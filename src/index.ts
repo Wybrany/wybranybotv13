@@ -15,6 +15,7 @@ import { PlayerEvents } from "./events/Player";
 
 import "./client/Message";
 import "./client/Guild";
+import "./client/Player"
 dotenv.config();
 
 const discord_token = process.env.TOKEN as string;const base_path = process.env.BASE_PATH as string;
@@ -32,7 +33,7 @@ const player = new Player(client, {
 });
 
 client.player = player;
-//PlayerEvents(client);
+PlayerEvents(client);
 
 client.on("ready", async () => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);

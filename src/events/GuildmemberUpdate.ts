@@ -1,5 +1,5 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { Autokick_Interface, Autoname_Interface } from "../interfaces/auto.interface";
+import { Autoname_Interface } from "../interfaces/auto.interface";
 import Modified_Client from "../client/Client";
 
 export const GuildmemberUpdate = async (client: Modified_Client, guildMemberOld: GuildMember | PartialGuildMember, guildMemberNew: GuildMember) => {

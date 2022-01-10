@@ -17,11 +17,3 @@ export const GuildmemberAdd = async (client: Modified_Client, member: GuildMembe
     get_member_troll_list.change_troll_state(true);
     get_member_troll_list.start_timer();
 }
-
-/*
-import Modified_Client from "../client/Client";
-
-export const InteractionCreate = async (client: Modified_Client) => {
-
-}
-*/

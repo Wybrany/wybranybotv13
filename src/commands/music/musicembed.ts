@@ -4,6 +4,7 @@ import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
 import { MusicChannel } from "../../interfaces/music.interface";
 import { savefiledata } from "../../methods/backup";
+import { ButtonSelectState, EmbedState } from "discord-music-player";
 
 export default class implements Command{
     name = "musicembed";
@@ -12,17 +13,16 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "musicembed";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
         await message.delete();
         if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-
         
         //If there was a previous musicChannel, delete that message
         //Because we don't want conflicting buttons, not that it really matter tho but anyways;
-        if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid ?? "")){
+        if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid)){
             const { channelid, embedid } = message.guild.musicChannel;
             const channel = message.guild.channels.cache.get(channelid) as TextChannel;
             const prevMessage = channel.messages.cache.get(embedid) || await channel.messages.fetch(embedid).catch(e => {}) || null;
@@ -32,99 +32,19 @@ export default class implements Command{
             }
         }
 
-        const musicEmbed = new MessageEmbed()
-            .setTitle(`Idle - Not playing anything`)
-            .setDescription(`
-                Use ${message.guild.prefix}play or ${message.guild.prefix}playlist commands to start playing music. The buttons below will help you navigate through your queue and give you live feedback.
-                
-                See ${message.guild.prefix}help to see available commands for your server.
-            `)
-            .setColor("BLUE")
-            .setFooter(``)
-            .setTimestamp()
-        
-        //Songbuttons
-        const playPauseButton = new MessageButton()
-            .setCustomId(`buttonPlayPause-${message.guild.id}`)
-            .setLabel("Pause")
-            .setStyle("PRIMARY")
-            .setDisabled(false)
-            .setEmoji("⏯️")
-        
-        const skipButton = new MessageButton()
-            .setCustomId(`buttonSkip-${message.guild.id}`)
-            .setLabel("Skip")
-            .setStyle("PRIMARY")
-            .setDisabled(false)
-            .setEmoji("⏭️")
+        let guildQueue = client.player?.getQueue(message.guild.id);
+        if(!guildQueue) guildQueue = client.player?.createQueue(message.guild.id);
+        const { embed } = guildQueue!.createMessageEmbed({embedState: guildQueue!.isPlaying ? EmbedState.NOWPLAYING : EmbedState.STOPPED});
+        const { buttons } = guildQueue!.createMessageButtons({currentQueuePage: 0, selectState: ButtonSelectState.SELECT, disabled: guildQueue!.isPlaying ? false : true});
 
-        const stopButton = new MessageButton()
-            .setCustomId(`buttonStop-${message.guild.id}`)
-            .setLabel("Stop")
-            .setStyle("PRIMARY")
-            .setDisabled(false)
-            .setEmoji("⏹️")
-        
-        const loopButton = new MessageButton()
-            .setCustomId(`buttonLoop-${message.guild.id}`)
-            .setLabel(`Loop`)
-            .setStyle("DANGER")
-            .setDisabled(false)
-            .setEmoji("🔁")
-
-        const shuffleButton = new MessageButton()
-            .setCustomId(`buttonShuffle-${message.guild.id}`)
-            .setLabel(`Shuffle`)
-            .setStyle("DANGER")
-            .setDisabled(false)
-            .setEmoji("🔀")
-
-        const firstButtons = new MessageActionRow()
-            .addComponents(playPauseButton, stopButton, skipButton, loopButton, shuffleButton);
-
-        //SelectMenu
-        const selectMenu = new MessageSelectMenu()
-            .setCustomId(`selectSongQueue-${message.guild.id}`)
-            .setPlaceholder("Song Queue")
-            .addOptions({label: "placeholder", description: "placeholder description", value: "placeholder_value"})
-            .setDisabled(false)
-        
-        //SelectButtons
-        const selectButton = new MessageButton()
-            .setCustomId(`buttonSelect-${message.guild.id}`)
-            .setLabel("Select Song")
-            .setStyle("SUCCESS")
-            .setDisabled(false)
-            .setEmoji("✅");
-
-        const removeButton = new MessageButton()
-            .setCustomId(`buttonRemove-${message.guild.id}`)
-            .setLabel("Remove Songs")
-            .setStyle("DANGER")
-            .setDisabled(false)
-            .setEmoji("❌");
-
-        const swapButton = new MessageButton()
-            .setCustomId(`buttonSwap-${message.guild.id}`)
-            .setLabel("Swap Songs")
-            .setStyle("DANGER")
-            .setDisabled(false)
-            .setEmoji("🔃");
-
-        const selectButtons = new MessageActionRow()
-            .addComponents(selectButton, removeButton, swapButton)
-
-        const songQueue = new MessageActionRow()
-            .addComponents(selectMenu)
-
-        const newMessage = await message.channel.send({embeds: [musicEmbed], components: [firstButtons, songQueue, selectButtons]});
+        const newMessage = await message.channel.send({embeds: [embed], components: [...buttons]});
 
         const newMusicChannel: MusicChannel = {
             guildid: message.guild.id,
             channelid: message.channel.id,
             embedid: newMessage.id
         }
-
+        
         message.guild.musicChannel = newMusicChannel;
         message.guild.musicEmbed = new MusicEmbed(message.guild, newMusicChannel);
         savefiledata(client, message.guild.id);
