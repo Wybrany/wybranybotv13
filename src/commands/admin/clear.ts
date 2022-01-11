@@ -26,7 +26,7 @@ export default class implements Command {
     aliases = []
     category = "admin";
     description = "Removes messages depending on the input.";
-    usage = "_clear <integer between 2 and 100>";
+    usage = "_clear <integer between 1 and 99>";
     permission = Permissions.FLAGS.ADMINISTRATOR;
     developerMode = false;
     params = true;
