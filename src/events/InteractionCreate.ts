@@ -82,24 +82,30 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
             case SelectMenuNames.SELECT:{
                 const firstSong = interaction.values.shift();
                 const [ index, songLink ] = firstSong!.split("-");
-                const songIndex = parseFloat(index);
-                if(guildQueue && musicEmbed) musicEmbed.skip(client, interaction, songIndex);
+                if(guildQueue && musicEmbed) {
+                    const songIndex = (parseFloat(index) + (musicEmbed.currentQueuePage * 25) + 1);
+                    musicEmbed.skip(client, interaction, songIndex);
+                }
             }
             break;
             
             case SelectMenuNames.REMOVE:{
                 const selectedSongs = interaction.values as string[];
-                const sortedIndexes = selectedSongs
-                    .map(v => parseFloat(v.split("-")[0]))
-                    .sort((a,b) => b - a);
-                if(guildQueue && musicEmbed) musicEmbed.remove_songs(client, interaction, sortedIndexes);
+                if(guildQueue && musicEmbed){
+                    const sortedIndexes = selectedSongs
+                        .map(v => (parseFloat(v.split("-")[0]) + (musicEmbed.currentQueuePage * 25) + 1))
+                        .sort((a,b) => b - a);
+                    musicEmbed.remove_songs(client, interaction, sortedIndexes);
+                }
             }
             break;
             
             case SelectMenuNames.SWAP: {
                 const selectedSongs = interaction.values as string[];
-                const [ song1, song2 ] = selectedSongs.map(v => parseFloat(v.split("-")[0]));
-                if(guildQueue && musicEmbed) musicEmbed.swap_songs(client, interaction, [ song1, song2 ]);
+                if(guildQueue && musicEmbed){
+                    const [ song1, song2 ] = selectedSongs.map(v => (parseFloat(v.split("-")[0]) + (musicEmbed.currentQueuePage * 25) + 1));
+                    musicEmbed.swap_songs(client, interaction, [ song1, song2 ]);
+                }
             }
             break;
 

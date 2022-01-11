@@ -11,7 +11,7 @@ export default class implements Command{
     description = "Seeks to a timestamp on a song that\'s current playing";
     usage = "seek <timestamp>, eg 1m20s or 20s";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
     params = true;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {

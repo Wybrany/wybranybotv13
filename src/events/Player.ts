@@ -4,7 +4,7 @@ import Modified_Client from "../client/Client";
 
 const updateEmbed = (client: Modified_Client, queue: Queue, state: EmbedState) => {
     const musicEmbed = queue.guild.musicEmbed;
-    if(queue.guild.musicEmbed) musicEmbed?.updateEmbed(client, state);
+    if(queue.guild.musicEmbed && queue.guild.musicChannel) musicEmbed?.updateEmbed(client, state);
 }
 
 export const PlayerEvents = (client: Modified_Client) => {

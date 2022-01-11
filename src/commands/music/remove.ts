@@ -9,7 +9,7 @@ export default class implements Command{
     description = "Removes a song from the queue. ";
     usage = "remove <Name | Number>";
     permission = Permissions.FLAGS.SEND_MESSAGES;
-    developerMode=true;
+    developerMode=false;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {

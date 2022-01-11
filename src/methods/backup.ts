@@ -3,10 +3,11 @@ import Modified_Client from "../client/Client";
 import { join } from "path";
 import { Guildsettings } from "../interfaces/guildsettings.interface";
 import MusicEmbed from "./music/MusicEmbed";
+import { Snowflake, TextChannel } from "discord.js";
 
 const backupPath = join(process.cwd(), "./backup");
 
-export const savefiledata = (client: Modified_Client, guildid: string) => {
+export const savefiledata = (client: Modified_Client, guildid: Snowflake) => {
     try{
         const availableGuildfolders = readdirSync(backupPath);
         const guildFolderPath = join(backupPath, guildid);
@@ -30,7 +31,7 @@ export const savefiledata = (client: Modified_Client, guildid: string) => {
     }
 }
 
-export const loadfiledata = (client: Modified_Client) => {
+export const loadfiledata = async (client: Modified_Client) => {
 
     if(!existsSync(backupPath))
         mkdirSync(backupPath);
@@ -45,7 +46,7 @@ export const loadfiledata = (client: Modified_Client) => {
             continue;
         }
         const data = JSON.parse(readFileSync(finalPath, "utf-8")) as Guildsettings | undefined;
-        const guild = client.guilds.cache.get(guildid) || client.guilds.cache.find(g => g.id === guildid);
+        const guild = client.guilds.cache.get(guildid) ?? client.guilds.cache.find(g => g.id === guildid);
         if(!guild) {
             console.error(`Can't find guild => ${guildid} when loading data.`);
             continue;
@@ -54,7 +55,13 @@ export const loadfiledata = (client: Modified_Client) => {
         guild.musicChannel = data?.musicChannel ?? null;
         guild.cahsettings = data?.cahsettings ?? null;
         if(guild.musicChannel && guild.musicChannel.embedid) {
-            //Should also check later whether the message actually exist or not.
+            const channel = (guild.channels.cache.get(guild.musicChannel.channelid) ?? guild.channels.cache.find(c => c.id === guild.musicChannel!.channelid)) as TextChannel | undefined;
+            if(!channel) continue;
+            const message = channel.messages.cache.get(guild.musicChannel.embedid) ?? channel.messages.cache.find(m => m.id === guild.musicChannel?.embedid) ?? await channel.messages.fetch(guild.musicChannel.embedid);
+            if(!message){
+                guild.musicChannel = null;
+                continue;
+            }
             guild.musicEmbed = new MusicEmbed(guild, guild.musicChannel);
         }
     }

@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, TextChannel, MessageSelectMenu } from "discord.js";
+import { Message, Permissions, TextChannel } from "discord.js";
 import MusicEmbed from "../../methods/music/MusicEmbed";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../interfaces/client.interface";
@@ -23,13 +23,13 @@ export default class implements Command{
         //If there was a previous musicChannel, delete that message
         //Because we don't want conflicting buttons, not that it really matter tho but anyways;
         if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid)){
-            const { channelid, embedid } = message.guild.musicChannel;
-            const channel = message.guild.channels.cache.get(channelid) as TextChannel;
-            const prevMessage = channel.messages.cache.get(embedid) || await channel.messages.fetch(embedid).catch(e => {}) || null;
-            if(prevMessage) {
-                await prevMessage.delete();
-                message.guild.musicEmbed = null;
+            try {
+                const { channelid, embedid } = message.guild.musicChannel;
+                const channel = message.guild.channels.cache.get(channelid) as TextChannel;
+                const prevMessage = channel.messages.cache.get(embedid) ?? await channel.messages.fetch(embedid) ?? null;
+                if(prevMessage) await prevMessage.delete();
             }
+            catch(_){}
         }
 
         let guildQueue = client.player?.getQueue(message.guild.id);

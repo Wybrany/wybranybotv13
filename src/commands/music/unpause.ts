@@ -4,7 +4,7 @@ import { Command } from "../../interfaces/client.interface";
 
 export default class implements Command{
     name = "unpause";
-    aliases = [];
+    aliases = ["resume", "up"];
     category = "music";
     description = "Unpauses the current track.";
     usage = "unpause";

@@ -9,7 +9,7 @@ export default class implements Command{
     description = "This command toggles a shuffle on this queue.";
     usage = "shuffle";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

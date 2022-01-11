@@ -10,7 +10,7 @@ export default class implements Command{
     description = "Changes looping state. Toggles between \"No loop\", \"Loop Current Song\" or \"Loop Queue\"";
     usage = "loop";
     permission = Permissions.FLAGS.ADMINISTRATOR;
-    developerMode = true;
+    developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
