@@ -40,6 +40,6 @@ export default class implements Command{
         }
         
         if(!["KICK"].includes(trolled.state)) client.member_troll_list.delete(mention.id);
-        message.error({content: `Sucessfully stopped trolling => ${trolled.target.user.username} (${trolled.target.user.id})`, timed: 5000});
+        message.success({content: `Sucessfully stopped trolling => ${trolled.target.user.username} (${trolled.target.user.id})`, timed: 5000});
     }
 }

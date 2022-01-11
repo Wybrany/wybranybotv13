@@ -20,7 +20,7 @@ export default class implements Command{
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
         guildQueue.shuffle();
-        const content = `Successfully ${guildQueue.toggleShuffle ? `shuffled` : `unshuffled`} the queue.`;
+        const content = `Successfully ${guildQueue.shuffled ? `shuffled` : `unshuffled`} the queue.`;
         message.success({content, timed: 5000});
     }
 }

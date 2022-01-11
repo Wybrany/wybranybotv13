@@ -13,15 +13,15 @@ export default class extends Client {
     public categories: string[] | null;
     public player: Player | null;
 
-    public guildUsedCommandRecently: Map<Snowflake, Cooldown>
+    public guildUsedCommandRecently: Collection<Snowflake, Cooldown>
 
-    public member_troll_list: Map<Snowflake, Autoclass_Interface>
+    public member_troll_list: Collection<Snowflake, Autoclass_Interface>
 
-    public cah_settings_embed: Map<Snowflake, CAH_Settings>
-    public cahgame: Map<Snowflake, Game>;
-    public cahlog: Map<Snowflake, string>;
+    public cah_settings_embed: Collection<Snowflake, CAH_Settings>
+    public cahgame: Collection<Snowflake, Game>;
+    public cahlog: Collection<Snowflake, string>;
 
-    public currentVote: Map<string, Vote>
+    public currentVote: Collection<Snowflake, Vote>
 
     constructor(){
         super({
@@ -41,17 +41,17 @@ export default class extends Client {
         //Here I use my global variables.
 
         //GUILDSTUFF
-        this.guildUsedCommandRecently = new Map();
+        this.guildUsedCommandRecently = new Collection();
 
         //Autotroll
-        this.member_troll_list = new Map();
+        this.member_troll_list = new Collection();
         
         //CAH
-        this.cah_settings_embed = new Map();
-        this.cahgame = new Map();
-        this.cahlog = new Map();
+        this.cah_settings_embed = new Collection();
+        this.cahgame = new Collection();
+        this.cahlog = new Collection();
 
         //Votecommands
-        this.currentVote = new Map();
+        this.currentVote = new Collection();
     }
 }

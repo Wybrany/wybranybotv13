@@ -77,7 +77,6 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
     else if(interaction.isSelectMenu()){
         const { user, customId } = interaction as SelectMenuInteraction;
         const [ type, id ] = customId.split("-");
-        console.log(type);
         
         switch(type as CAHSelectMenu | SelectMenuNames){
             case SelectMenuNames.SELECT:{
@@ -87,7 +86,7 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
                 if(guildQueue && musicEmbed) musicEmbed.skip(client, interaction, songIndex);
             }
             break;
-
+            
             case SelectMenuNames.REMOVE:{
                 const selectedSongs = interaction.values as string[];
                 const sortedIndexes = selectedSongs
