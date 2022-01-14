@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import Modified_Client from "../client/Client";
 import { join } from "path";
-import { Guildsettings } from "../interfaces/guildsettings.interface";
-import MusicEmbed from "./music/MusicEmbed";
+import { Guildsettings } from "../types/guildsettings.interface";
+import MusicEmbed from "./MusicEmbed";
 import { Snowflake, TextChannel } from "discord.js";
 
 const backupPath = join(process.cwd(), "./backup");

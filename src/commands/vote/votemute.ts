@@ -1,8 +1,8 @@
 import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { Vote } from "../../interfaces/vote.interface";
-import { Vote_Class } from "../../methods/vote/vote";
+import { Command } from "../../types/client.interface";
+import { Vote } from "../../types/vote.interface";
+import { Vote_Class } from "../../managers/vote";
 
 export default class implements Command{
     name = "votemute";

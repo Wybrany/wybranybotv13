@@ -25,11 +25,11 @@ import {
     Update_Embed, 
     Player_Cards_State, 
     Stop_Reason
-} from "../../interfaces/cah.interface";
+} from "../types/cah.interface";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { shuffle } from "../shuffle";
-import Modified_Client from "../../client/Client";
+import { shuffle } from "../utils/utils";
+import Modified_Client from "../client/Client";
 
 
 export class CAHGame implements Game {

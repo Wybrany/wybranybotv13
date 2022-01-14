@@ -1,5 +1,5 @@
 import { Guild, GuildMember, Invite, Message, Role } from "discord.js";
-import Modified_Client from "../../client/Client";
+import Modified_Client from "../client/Client";
 import { Autoclass } from "./Autoclass";
 
 export class Autokick extends Autoclass {

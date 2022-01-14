@@ -1,9 +1,9 @@
 import { Client, Collection, Intents, Snowflake } from "discord.js";
-import { Command } from "../interfaces/client.interface";
-import { Cooldown } from "../interfaces/cooldown.interface";
-import { Game, CAH_Settings } from "../interfaces/cah.interface";
-import { Vote } from "../interfaces/vote.interface";
-import { Autoclass_Interface } from "../interfaces/auto.interface";
+import { Command } from "../types/client.interface";
+import { Cooldown } from "../types/cooldown.interface";
+import { Game, CAH_Settings } from "../types/cah.interface";
+import { Vote } from "../types/vote.interface";
+import { Autoclass_Interface } from "../types/auto.interface";
 import { Player } from "discord-music-player"
 
 export default class extends Client {

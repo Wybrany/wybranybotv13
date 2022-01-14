@@ -1,6 +1,6 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
+import { Command } from "../../types/client.interface";
 import { joinVoiceChannel, DiscordGatewayAdapterCreator } from "@discordjs/voice";
 
 export default class implements Command{

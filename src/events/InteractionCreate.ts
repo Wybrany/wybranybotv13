@@ -1,9 +1,9 @@
 import { Interaction, Message } from "discord.js";
 import Modified_Client from "../client/Client";
-import { QueuePageState } from "../interfaces/music.interface";
-import { VoteButtons } from "../interfaces/vote.interface";
+import { QueuePageState } from "../types/music.interface";
+import { VoteButtons } from "../types/vote.interface";
 import { ButtonInteraction, SelectMenuInteraction } from "discord.js";
-import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../interfaces/cah.interface";
+import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../types/cah.interface";
 import { ButtonNames, ButtonSelectState, RepeatMode, SelectMenuNames } from "discord-music-player";
 
 export const InteractionCreate = async (client: Modified_Client, interaction: Interaction) => {

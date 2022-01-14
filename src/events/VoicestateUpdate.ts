@@ -1,6 +1,6 @@
 import { VoiceState, VoiceChannel } from "discord.js";
-import { Autodisconnect } from "../methods/auto/Autodisconnect";
-import { Automove } from "../methods/auto/Automove";
+import { Autodisconnect } from "../managers/Autodisconnect";
+import { Automove } from "../managers/Automove";
 import Modified_Client from "../client/Client";
 
 export const VoicestateUpdate = async (client: Modified_Client, oldState: VoiceState, newState: VoiceState) => {

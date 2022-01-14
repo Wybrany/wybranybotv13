@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import { Message } from "discord.js";
 import Modified_Client from "../client/Client";
-import { Guild_used_command_recently } from "../methods/cooldown";
-import { checkForMention } from "../methods/checkForMention";
+import { Guild_used_command_recently } from "../managers/cooldown";
+import { checkForMention } from "../utils/utils";
 
 dotenv.config();
 

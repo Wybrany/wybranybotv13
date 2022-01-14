@@ -2,9 +2,9 @@
 
 import { CategoryChannel, Message, Permissions, TextChannel, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { CAH_SETTINGS, embed_state } from "../../methods/cah/Cahsettings";
-import { CAHGame } from "../../methods/cah/Cah"
+import { Command } from "../../types/client.interface";
+import { CAH_SETTINGS, embed_state } from "../../managers/Cahsettings";
+import { CAHGame } from "../../managers/Cah"
 
 type arg_state = "settings" | "start" | "stop" | "join" | "leave";
 

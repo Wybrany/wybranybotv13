@@ -1,5 +1,5 @@
 import Modified_Client from "../client/Client";
-import { loadfiledata } from "../methods/backup"
+import { loadfiledata } from "../managers/backup"
 
 export const Ready = (client: Modified_Client) => {
     console.log(`Successfully Logged in as ${client.user?.username}! (${client.user?.id})\nCurrently serving: ${client.guilds.cache.size} servers.`);

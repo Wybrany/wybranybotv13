@@ -1,7 +1,7 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { Automove } from "../../methods/auto/Automove";
+import { Command } from "../../types/client.interface";
+import { Automove } from "../../managers/Automove";
 //@ts-ignore
 import htms from "human-to-milliseconds";
 const regex = new RegExp(/(\d+[s,m,h])/, "g");

@@ -1,6 +1,6 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
+import { Command } from "../../types/client.interface";
 //@ts-ignore
 import htms from "human-to-milliseconds";
 

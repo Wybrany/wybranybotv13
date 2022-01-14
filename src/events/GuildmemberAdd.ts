@@ -1,5 +1,5 @@
 import { GuildMember } from "discord.js";
-import { Autokick_Interface } from "src/interfaces/auto.interface";
+import { Autokick_Interface } from "src/types/auto.interface";
 import Modified_Client from "../client/Client";
 
 export const GuildmemberAdd = async (client: Modified_Client, member: GuildMember) => {

@@ -1,9 +1,9 @@
 import { Message, Permissions, TextChannel } from "discord.js";
-import MusicEmbed from "../../methods/music/MusicEmbed";
+import MusicEmbed from "../../managers/MusicEmbed";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { MusicChannel } from "../../interfaces/music.interface";
-import { savefiledata } from "../../methods/backup";
+import { Command } from "../../types/client.interface";
+import { MusicChannel } from "../../types/music.interface";
+import { savefiledata } from "../../managers/backup";
 import { ButtonSelectState, EmbedState } from "discord-music-player";
 
 export default class implements Command{

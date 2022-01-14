@@ -1,7 +1,7 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
+import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { shuffle } from "../../methods/shuffle";
+import { Command } from "../../types/client.interface";
+import { shuffle } from "../../utils/utils";
 
 export default class implements Command {
     name = "move";

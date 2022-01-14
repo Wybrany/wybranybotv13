@@ -1,6 +1,6 @@
 import { Guild, Interaction, TextChannel } from "discord.js";
-import { MusicChannel, MusicEmbedInterface, MusicOptions, QueuePageState } from "../../interfaces/music.interface";
-import Modified_Client from "../../client/Client";
+import { MusicChannel, MusicEmbedInterface, MusicOptions, QueuePageState } from "../types/music.interface";
+import Modified_Client from "../client/Client";
 import { EmbedState, ButtonSelectState, RepeatMode } from "discord-music-player";
 
 export default class MusicEmbed implements MusicEmbedInterface{

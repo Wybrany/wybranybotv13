@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { readdirSync } from "fs";
 import Modified_Client from "./client/Client";
-import { Load_Commands } from "./methods/commandhandler/Command";
+import { Load_Commands } from "./managers/Command";
 
 import { Ready } from "./events/Ready";
 import { InteractionCreate } from "./events/InteractionCreate";
@@ -23,7 +23,7 @@ const base_path = process.env.BASE_PATH as string;
 
 if(!discord_token || !base_path) {
     console.error(`No "TOKEN" was submitted as a discord token or missing "BASE_PATH". Now exiting`); 
-    process.exit(0)
+    process.exit(0);
 }
 
 const client = new Modified_Client();

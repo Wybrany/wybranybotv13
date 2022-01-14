@@ -1,7 +1,7 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { savefiledata } from "../../methods/backup";
+import { Command } from "../../types/client.interface";
+import { savefiledata } from "../../managers/backup";
 
 export default class implements Command{
     name = "setprefix";

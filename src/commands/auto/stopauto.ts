@@ -1,7 +1,7 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { Autoclass_Interface, Autokick_Interface } from "src/interfaces/auto.interface";
+import { Command } from "../../types/client.interface";
+import { Autoclass_Interface, Autokick_Interface } from "src/types/auto.interface";
 
 const find_user_by_name = (client: Modified_Client, user: string) => {
     const arrayify_troll_list = [...client.member_troll_list.values()];

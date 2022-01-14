@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
-import { CurrentSettings } from "../interfaces/cah.interface";
-import { MusicChannel, MusicEmbedInterface } from "../interfaces/music.interface";
+import { CurrentSettings } from "../types/cah.interface";
+import { MusicChannel, MusicEmbedInterface } from "../types/music.interface";
 
 const standardPrefix = process.env.PREFIX as string;
 

@@ -1,9 +1,9 @@
 import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { Survivor, Survivor_List, Offering, Offering_List, Perk, Standard_Survivor_Perks, Exception_Overloader, Item_Addons, Item_Addon } from "../../interfaces/dbd.interface";
+import { Command } from "../../types/client.interface";
+import { Survivor, Survivor_List, Offering, Offering_List, Perk, Standard_Survivor_Perks, Exception_Overloader, Item_Addons, Item_Addon } from "../../types/dbd.interface";
 import { readFileSync, existsSync } from "fs";
-import { shuffle } from "../../methods/shuffle";
+import { shuffle } from "../../utils/utils";
 
 export default class implements Command {
     name = "survivor";

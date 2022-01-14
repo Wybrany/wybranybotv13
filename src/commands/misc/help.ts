@@ -1,6 +1,6 @@
 import { Message, MessageEmbed, Collection, GuildMember, Permissions, EmbedField } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
+import { Command } from "../../types/client.interface";
 
 const ownerId = process.env.OWNERID as string;
 const prefix = process.env.PREFIX as string;

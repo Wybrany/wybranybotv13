@@ -1,7 +1,7 @@
 import { Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
-import { Command } from "../../interfaces/client.interface";
-import { Autoname } from "../../methods/auto/Autoname";
+import { Command } from "../../types/client.interface";
+import { Autoname } from "../../managers/Autoname";
 
 export default class implements Command{
     name = "autoname";

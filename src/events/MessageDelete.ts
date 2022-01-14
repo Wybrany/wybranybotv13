@@ -1,6 +1,6 @@
 import { PartialMessage, Message } from "discord.js";
 import Modified_Client from "../client/Client";
-import { savefiledata } from "../methods/backup";
+import { savefiledata } from "../managers/backup";
 
 export const MessageDelete = async(client: Modified_Client, message: Message | PartialMessage) => {
     if(!message.id || !message.guild) return;

@@ -1,8 +1,8 @@
 import { Guild, GuildChannel, GuildMember, Role, VoiceChannel } from "discord.js";
-import Modified_Client from "../../client/Client";
+import Modified_Client from "../client/Client";
 import { Autoclass, getRandomTimer } from "./Autoclass";
-import { auto_state } from "../../interfaces/auto.interface";
-import { shuffle } from "../shuffle";
+import { auto_state } from "../types/auto.interface";
+import { shuffle } from "../utils/utils";
 
 export class Automove extends Autoclass {
     constructor(client: Modified_Client, guild: Guild, target: GuildMember){
