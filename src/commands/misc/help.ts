@@ -66,12 +66,6 @@ const filterCommandsByCategory = (commands: Collection<string, Command>, categor
 const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] => {
     const Fields: Field[] = [];
     for(const chunk of commands){
-        //Old logic
-        /*const category = `${chunk.category.toUpperCase()}`
-        const categoryBorder = `${Array(10).fill("-").join("")}${category}${Array(15 - category.length).fill("-").join("")}`
-        const parsedCommand = chunk.commands.map(c => `\`- ${c.name}${Array(categoryBorder.length - c.name.length - 2).fill('\xa0').join("")}\``).join("\n");
-        if(!parsedCommand) continue;
-        text += `\`${categoryBorder}\`\n${parsedCommand}\n`*/
         const categoryName = chunk.category.toUpperCase();
         const commands = [...chunk.commands.values()];
         const generateName = (name: string, flag?: boolean | undefined): string => `\`${prefix}${name}${flag ? ` ❗` : ``}${new Array(12 - name.length - (flag ? 2 : 0)).fill(" ").join("")}:\``; 
@@ -88,25 +82,30 @@ const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] 
 //Main functions
 
 function getAllCommands(client: Modified_Client, message: Message){
-    if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-    const member = message.guild?.members.cache.get(message.author.id);
-    const categories = client.categories?.length ? client.categories : [];
-    if(!member || !member.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-
-    const allCommandsEmbed = new MessageEmbed()
-        .setAuthor(`Available commands for: ${member.user.tag}`, member.user.avatarURL() ?? member.user.defaultAvatarURL)
-        .setColor("BLUE")
-        .setTimestamp();
-
-    const getAvailableCommands = member ? getCommands(client.commands, member) : null;
-    const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
-
-    const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, message.guild.prefix) : null;
-
-    if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("RED");
-    else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
-
-    return message.channel.send({embeds: [allCommandsEmbed]});
+    try{
+        if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+        const member = message.guild?.members.cache.get(message.author.id);
+        const categories = client.categories?.length ? client.categories : [];
+        if(!member || !member.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+    
+        const allCommandsEmbed = new MessageEmbed()
+            .setAuthor(`Available commands for: ${member.user.tag}`, member.user.avatarURL() ?? member.user.defaultAvatarURL)
+            .setColor("BLUE")
+            .setTimestamp();
+    
+        const getAvailableCommands = member ? getCommands(client.commands, member) : null;
+        const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
+    
+        const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, message.guild.prefix) : null;
+    
+        if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("RED");
+        else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
+    
+        return message.channel.send({embeds: [allCommandsEmbed]});
+    }catch(e){
+        console.error(`Something went wrong.. ${e}`);
+        message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+    }
 }
 
 

@@ -37,7 +37,7 @@ export class Vote_Class implements Vote {
             this.embed = embed;
             this.interaction = interaction;
 
-            this.currentVotes = [];
+            this.currentVotes = [{member: this.target, vote: "NO"}];
             this.timerLength = 60000;
             this.timerStarted = false;
             this.timer = null;

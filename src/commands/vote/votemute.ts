@@ -35,7 +35,7 @@ export default class implements Command {
         const embed = new MessageEmbed()
             .setTitle(`Voting to mute ${member.user.tag}.`)
             .setThumbnail(member.user.displayAvatarURL())
-            .setDescription(`Vote "YES" or "NO" if you want to mute this user.\n\n0/${members.length} has voted.`)
+            .setDescription(`Vote "YES" or "NO" if you want to mute this user.\n\n1/${members.length} has voted.`)
             .setTimestamp();
 
         const buttonYes = new MessageButton()
