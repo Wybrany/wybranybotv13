@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { readdirSync } from "fs";
 import Modified_Client from "./client/Client";
 import { Load_Commands } from "./managers/Command";
+import { dirname, join } from "path";
 
 import { Ready } from "./events/Ready";
 import { InteractionCreate } from "./events/InteractionCreate";
@@ -19,16 +20,15 @@ import "./client/Guild";
 dotenv.config();
 
 const discord_token = process.env.TOKEN as string;
-const base_path = process.env.BASE_PATH as string;
 
-if(!discord_token || !base_path) {
+if(!discord_token) {
     console.error(`No "TOKEN" was submitted as a discord token or missing "BASE_PATH". Now exiting`); 
     process.exit(0);
 }
 
 const client = new Modified_Client();
-client.categories = readdirSync(`./${base_path}/commands`);
-Load_Commands(client, base_path);
+client.categories = readdirSync(join(dirname(require.main!.filename), "commands"));
+Load_Commands(client);
 
 client.player = new Player(client, {
     leaveOnEmpty: false, // This options are optional.

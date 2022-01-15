@@ -16,21 +16,8 @@ export const InteractionCreate = async (client: Modified_Client, interaction: In
     if (interaction.isButton()) {
         const { user, customId } = interaction as ButtonInteraction;
         const [ type, id ] = customId.split("-");
-        switch(type as VoteButtons | CAHSButtons | CAHGameButtons | ButtonNames){
-            //VOTEMUTE
-            case 'buttonYes':
-            case 'buttonNo':
-                if(client.currentVote.has(user.id) || !client.currentVote.size) return;
-                if(!client.currentVote.has(id)) return;
-                if(!member) return;
-                const currentVote = client.currentVote.get(id);
-                const answer = type === "buttonNo" ? "NO" : "YES";
-                const getVote = currentVote?.getVote(member);
-                if(!getVote) currentVote?.addVote(client, member, answer);
-                else if(getVote.vote !== answer) currentVote?.updateVote(member, answer);
-                
-            break;
-    
+        switch(type as | CAHSButtons | CAHGameButtons | ButtonNames){
+
             //MUSIC
             case ButtonNames.LOOP:      if(guildQueue && musicEmbed) musicEmbed.toggle_loop(client, interaction);    break;
             case ButtonNames.SHUFFLE:   if(guildQueue && musicEmbed) musicEmbed.toggle_shuffle(client, interaction); break;

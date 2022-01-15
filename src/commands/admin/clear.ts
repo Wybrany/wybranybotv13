@@ -2,7 +2,6 @@ import { Collection, Message, Permissions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
-const delayFunction = async (time_ms: number) => new Promise(promise => setTimeout(promise, time_ms));
 class CompareDate {
 
     private created: number;

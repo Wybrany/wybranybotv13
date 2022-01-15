@@ -2,9 +2,10 @@ import { Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageEm
 import { type } from "os";
 import Modified_Client from "src/client/Client";
 
-export type VoteButtons =
-    "buttonYes" |
-    "buttonNo"
+export enum VoteButtons {
+    ButtonNo = "ButtonNo",
+    ButtonYes = "ButtonYes"
+}
 
 export interface Vote {
     target: GuildMember;
