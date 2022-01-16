@@ -22,7 +22,7 @@ dotenv.config();
 const discord_token = process.env.TOKEN as string;
 
 if(!discord_token) {
-    console.error(`No "TOKEN" was submitted as a discord token or missing "BASE_PATH". Now exiting`); 
+    console.error(`No "TOKEN" was submitted as a discord token. Now exiting`); 
     process.exit(0);
 }
 
@@ -31,7 +31,7 @@ client.categories = readdirSync(join(dirname(require.main!.filename), "commands"
 Load_Commands(client);
 
 client.player = new Player(client, {
-    leaveOnEmpty: false, // This options are optional.
+    leaveOnEmpty: false,
 });
 PlayerEvents(client);
 
