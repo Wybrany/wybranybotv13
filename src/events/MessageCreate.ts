@@ -12,7 +12,7 @@ const OwnerId = process.env.OWNERID as string;
 export const MessageCreate = async (client: Modified_Client, message: Message) => {
     if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
     if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
-
+    
     const guildprefix = message.guild.prefix;
     if(!message.content.startsWith(guildprefix)) return checkForMention(message, client, guildprefix);
     
@@ -22,7 +22,7 @@ export const MessageCreate = async (client: Modified_Client, message: Message) =
     
     const command = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd) ?? "");
     if (!command) return checkForMention(message, client, guildprefix);
-
+    
     if(message.author.id === OwnerId) return command.run(client, message, args);
     if(command?.ownerOnly) return;
     if(command?.guildWhitelist && !command.guildWhitelist.includes(message.guild.id)) return;

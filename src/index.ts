@@ -16,6 +16,7 @@ import { Player } from "discord-music-player";
 
 import "./client/Message";
 import "./client/Guild";
+import "./client/GuildMember";
 
 dotenv.config();
 
