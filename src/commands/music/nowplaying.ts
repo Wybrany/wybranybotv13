@@ -21,13 +21,13 @@ export default class implements Command{
         if(!message.member?.voice.channel) return message.error({content: "You need to be in a voicechannel to use this command.", timed: 5000});
         
         const guildQueue = client.player?.getQueue(message.guild.id);
-        if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
+        if(!guildQueue || !guildQueue.isPlaying) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
-        const progressBar = guildQueue.createProgressBar({size: 40, block: "▬", arrow: "🔘", time: true}) ?? "No progressbar available."
+        const progressBar = guildQueue.createProgressBar({size: 25, block: "▬", arrow: "🔘", time: true, whitespace: false}) ?? "No progressbar available."
 
         const embed = new MessageEmbed()
             .setTitle(`🎵 Now playing 🎵`)
-            .setDescription(`ini\n▶️ ${guildQueue.nowPlaying?.name ?? "Unkown Title"} | ${guildQueue.nowPlaying?.duration ?? "Unknown Duration"}\n\n${progressBar}\n\n${guildQueue.songs.length === 1 ? `${guildQueue.songs.length} song remaining.` : `${guildQueue.songs.length} songs remaining.`}`)
+            .setDescription(`\n▶️ ${guildQueue.nowPlaying?.name ?? "Unkown Title"} | ${guildQueue.nowPlaying?.duration ?? "Unknown Duration"}\n\n${progressBar}\n\n${guildQueue.songs.length === 1 ? `${guildQueue.songs.length} song remaining.` : `${guildQueue.songs.length} songs remaining.`}`)
             .setColor("DARK_GREEN")
             .setFooter(`Requested by: ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown user"}`)
             .setTimestamp();
