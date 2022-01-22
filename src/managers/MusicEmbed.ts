@@ -1,7 +1,7 @@
 import { Guild, Interaction, TextChannel } from "discord.js";
 import { MusicChannel, MusicEmbedInterface, MusicOptions, QueuePageState } from "../types/music.interface";
 import Modified_Client from "../client/Client";
-import { EmbedState, ButtonSelectState, RepeatMode } from "discord-music-player";
+import { EmbedState, ButtonSelectState, RepeatMode, EmbedOptions, Queue } from "discord-music-player";
 
 export default class MusicEmbed implements MusicEmbedInterface{
 
@@ -10,6 +10,9 @@ export default class MusicEmbed implements MusicEmbedInterface{
 
     public currentQueuePage: number = 0;
     public selectState: ButtonSelectState = ButtonSelectState.SELECT;
+
+    public previousTime: number = 0;
+    public timeout: NodeJS.Timeout | null = null;
 
     constructor(guild: Guild, musicChannel: MusicChannel){
         this.guild = guild;
@@ -150,7 +153,8 @@ export default class MusicEmbed implements MusicEmbedInterface{
         try{
             let guildQueue = client.player?.getQueue(this.guild.id);
             if(!guildQueue) guildQueue = client.player?.createQueue(this.guild.id);
-            const { embed } = guildQueue!.createMessageEmbed({embedState: state, ...options?.embedOptions ?? {}});
+            const embedOptions = { progressBarOptions: {arrow: "🔘", block: "▬", whitespace: false, time: true, size: 25}} as EmbedOptions;
+            const { embed } = guildQueue!.createMessageEmbed({embedState: state, ...embedOptions, ...options?.embedOptions ?? {}});
             const { buttons } = guildQueue!.createMessageButtons({currentQueuePage: this.currentQueuePage, selectState: this.selectState, ...options?.actionRowOptions ?? {}});
 
             const channel = this.guild.channels.cache.get(this.musicChannel.channelid) as TextChannel | undefined;
@@ -160,4 +164,26 @@ export default class MusicEmbed implements MusicEmbedInterface{
             console.error(e);
         }
     }
+    
+    updateEveryTick = (client: Modified_Client, queue: Queue, state: EmbedState) => {
+        if(
+            !queue.isPlaying ||
+            !queue.nowPlaying ||
+            !queue.connection ||
+            !queue.paused 
+        ) {
+            console.log(`Exiting`);
+            if(this.timeout) clearInterval(this.timeout);
+            return;
+        }
+        console.log(`Here`)
+        const { connection } = queue;
+        const { milliseconds, seekTime } = queue.nowPlaying;
+        const size = 25;
+        const currentTime = seekTime + connection!.time;
+        
+        this.timeout = setTimeout(() => {
+            console.log(currentTime);
+        }, 5000);
+    } 
 }

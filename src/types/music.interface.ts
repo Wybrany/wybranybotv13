@@ -33,5 +33,5 @@ export interface MusicEmbedInterface {
     toggle_loop(client: Modified_Client, interaction: Interaction): Promise<void>;
     queue_page(client: Modified_Client, state: QueuePageState, interaction: Interaction): Promise<void>;
     queue_state(client: Modified_Client, state: ButtonSelectState, interaction: Interaction): Promise<void>;
-    updateEmbed(client: Modified_Client, state: EmbedState): Promise<void>;
+    updateEmbed(client: Modified_Client, state: EmbedState, options?: MusicOptions): Promise<void>;
 }

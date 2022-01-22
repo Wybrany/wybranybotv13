@@ -27,12 +27,12 @@ export default class implements Command{
 
         const embed = new MessageEmbed()
             .setTitle(`🎵 Now playing 🎵`)
-            .setDescription(`\`\`\`ini\n▶️ ${guildQueue.nowPlaying?.name ?? "Unkown Title"} | ${guildQueue.nowPlaying?.duration ?? "Unknown Duration"}\n\n${progressBar}\n\n${guildQueue.songs.length === 1 ? `${guildQueue.songs.length} song remaining.` : `${guildQueue.songs.length} songs remaining.`}\`\`\``)
+            .setDescription(`ini\n▶️ ${guildQueue.nowPlaying?.name ?? "Unkown Title"} | ${guildQueue.nowPlaying?.duration ?? "Unknown Duration"}\n\n${progressBar}\n\n${guildQueue.songs.length === 1 ? `${guildQueue.songs.length} song remaining.` : `${guildQueue.songs.length} songs remaining.`}`)
             .setColor("DARK_GREEN")
             .setFooter(`Requested by: ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown user"}`)
             .setTimestamp();
 
-        guildQueue.paused ? embed.setColor("DARK_RED").setTitle(`Track currently paused.`) : embed.setColor("DARK_GREEN").setTitle(`🎵 Now playing 🎵`);
+        guildQueue.paused ? embed.setColor("DARK_RED").setTitle(`Track currently paused.`) : embed.setColor("DARK_GREEN");
         
         message.channel.send({embeds: [embed]});
     }

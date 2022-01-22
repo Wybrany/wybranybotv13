@@ -23,7 +23,7 @@ export default class implements Command{
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
-        const song = guildQueue?.songs.find(s => s.name.toLowerCase().includes(search.toLowerCase())) || guildQueue?.songs.find((s,i) => i === (parseInt(search, 10) - 1));
+        const song = guildQueue?.songs.find((s,i) => i === (parseInt(search, 10))) ?? guildQueue?.songs.find(s => s.name.toLowerCase().includes(search.toLowerCase()));
         if(!song) return message.error({content: `I couldn't find the track you wanted me to remove. Please try enter a number or the name of the track.`, timed: 7500});
 
         try{

@@ -28,7 +28,11 @@ export default class implements Command{
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
-        
-        
+        try{
+            guildQueue.swapSongs(song1Index, song2Index);
+            message.success({content: `Successfully swapped *${guildQueue.songs[song1Index].name}* and ${guildQueue.songs[song2Index].name}.`, timed: 5000});
+        }catch(_){
+            message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+        }        
     }
 }

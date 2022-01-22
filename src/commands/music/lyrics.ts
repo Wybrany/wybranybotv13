@@ -23,11 +23,11 @@ export default class implements Command{
 
         const searchString = args.join(" ");
         let [ artistname, songname ] = searchString.split("-");
+        const queue = client.player?.getQueue(message.guild.id);
 
         if(!artistname || !songname) {
-            const queue = client.player?.getQueue(message.guild.id);
             if(!queue) return message.error({content: `No track is currently playing or you did not submit an **Artistname - Songname**`, timed: 10000});
-            [artistname, songname] = [queue.nowPlaying?.name.split("-")[0] ?? "", queue.nowPlaying?.name.split("-")[1] ?? ""];
+            [artistname, songname] = [queue.nowPlaying?.name.split("-")[0] ?? queue.nowPlaying?.author ?? "", queue.nowPlaying?.name.split("-")[1] ?? ""];
             if(!artistname || !songname) artistname = queue.nowPlaying?.name ?? "";
         }
 
@@ -39,6 +39,14 @@ export default class implements Command{
             .setColor(`BLUE`)
             .setDescription(lyrics)
             .setTimestamp()
-        message.channel.send({embeds: [embed]});
+
+        const lyricsEmbed = await message.channel.send({embeds: [embed]});
+
+        if(queue && queue.nowPlaying && queue.connection){
+            const { time } = queue.connection;
+            const { milliseconds, seekTime } = queue.nowPlaying;
+            const remainingTime = milliseconds - (time + seekTime);
+            setTimeout(async () => await lyricsEmbed.delete().catch(_ => _), remainingTime);
+        }
     }
 }

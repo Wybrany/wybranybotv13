@@ -1,10 +1,11 @@
-import { Message } from "discord.js"
-import { EmbedState, Queue } from "discord-music-player";
+import { EmbedState, Queue, SeekState } from "discord-music-player";
 import Modified_Client from "../client/Client";
 
 const updateEmbed = (client: Modified_Client, queue: Queue, state: EmbedState) => {
     const musicEmbed = queue.guild.musicEmbed;
-    if(queue.guild.musicEmbed && queue.guild.musicChannel) musicEmbed?.updateEmbed(client, state);
+    if(queue.guild.musicEmbed && queue.guild.musicChannel){
+        musicEmbed?.updateEmbed(client, state);
+    }
 }
 
 export const PlayerEvents = (client: Modified_Client) => {
@@ -17,6 +18,6 @@ export const PlayerEvents = (client: Modified_Client) => {
         .on('songFirst', async (queue, song) => updateEmbed(client, queue, EmbedState.NOWPLAYING))
         .on('error', (error, queue) => updateEmbed(client, queue, EmbedState.STOPPED))
         .on("paused", (queue, paused) => updateEmbed(client, queue, EmbedState.NOWPLAYING))
-        .on("seeking", (queue, seekState) => updateEmbed(client, queue, EmbedState.SEEKING))
+        .on("seeking", (queue, seekState) => seekState?.finishedSeeking ? updateEmbed(client, queue, EmbedState.NOWPLAYING) : updateEmbed(client, queue, EmbedState.SEEKING))
         .on("songPlaying", (queue, song) => updateEmbed(client, queue, EmbedState.NOWPLAYING));
 }
