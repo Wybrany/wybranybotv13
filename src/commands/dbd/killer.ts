@@ -25,7 +25,6 @@ export default class implements Command {
         //const globalSettings = existSync("./dbd/settings/killersettings.json") ? JSON.parse(readFileSync("./dbd/settings/killersettings.json", "utf8")) : [];
 
         if(!Object.entries(killers).length || !Object.entries(standardPerks).length || !Object.entries(offering).length) return message.reply(`Filedata is empty. Please contact an adminstrator.`);
-
         //Checking for any exceptions
         let useKillerAddons = true;
 

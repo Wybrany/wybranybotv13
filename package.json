@@ -21,6 +21,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.6.0",
+    "@types/mysql": "^2.15.21",
     "ascii-table": "^0.0.9",
     "common-tags": "^1.8.0",
     "discord-music-player": "^8.3.1",
@@ -33,6 +34,7 @@
     "jimp": "^0.16.1",
     "libsodium-wrappers": "^0.7.9",
     "lyrics-finder": "^21.7.0",
+    "mysql2": "^2.3.3",
     "opusscript": "^0.0.8",
     "path": "^0.12.7",
     "prism-media": "^1.3.2",
