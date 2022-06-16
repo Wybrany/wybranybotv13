@@ -20,7 +20,7 @@ export default class implements Command{
         if(!message.member?.voice.channel) return message.error({content: "You need to be in a voicechannel to use this command.", timed: 5000});
 
         //I should check whether it's a video url or a playlist before attempting to play this.
-        const searchingMessage = await message.info({content: `Searching for "**${search}**"...`})
+        const searchingMessage = await message.info({content: `Searching for "**${search}**"... If this is a long playlist, this might take a while. Have patience!!`})
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue){
             try{            
