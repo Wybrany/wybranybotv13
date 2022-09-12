@@ -4,7 +4,7 @@ import { Command } from "../../types/client.interface";
 
 export default class implements Command{
     name = "skip";
-    aliases = [];
+    aliases = ["s"];
     category = "music";
     description = "Skips the current track";
     usage = "skip";

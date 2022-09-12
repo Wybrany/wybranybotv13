@@ -21,8 +21,9 @@
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.6.0",
-    "@types/mysql": "^2.15.21",
     "ascii-table": "^0.0.9",
+    "better-logging": "^5.0.0",
+    "chalk": "^5.0.1",
     "common-tags": "^1.8.0",
     "discord-music-player": "^8.3.1",
     "discord.js": "^13.3.1",
@@ -52,6 +53,8 @@
     "@types/node": "^16.6.1",
     "@types/node-fetch": "^2.5.12",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "@types/chalk": "^2.2.0",
+    "@types/mysql": "^2.15.21"
   }
 }

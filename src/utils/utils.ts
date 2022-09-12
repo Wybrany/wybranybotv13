@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js";
+import { Message } from "discord.js";
 import Modified_Client from "../client/Client";
 
 export const shuffle = (range: number, push: number): number[] | number => {
@@ -20,4 +20,3 @@ export const checkForMention = (message: Message, client: Modified_Client , guil
 }
 
 export const delayFunction = (time_ms: number) => new Promise(resolve => setTimeout(resolve, time_ms));
-

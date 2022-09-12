@@ -14,13 +14,14 @@ import { MessageCreate } from "./events/MessageCreate";
 import { PlayerEvents } from "./events/Player";
 import { Player } from "discord-music-player";
 
+import { use_better_logging } from "./utils/logs"
 import "./client/Message";
 import "./client/Guild";
 import "./client/GuildMember";
 //import "./managers/Mysql";
 
 dotenv.config();
-
+use_better_logging();
 const discord_token = process.env.TOKEN as string;
 
 if(!discord_token) {
