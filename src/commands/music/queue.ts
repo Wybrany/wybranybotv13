@@ -1,4 +1,4 @@
-import { Button, Queue, RepeatMode, Utils } from "discord-music-player";
+import { Button, Queue, RepeatMode, Utils } from "../../player/index";
 import { Message, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
@@ -66,22 +66,27 @@ export default class implements Command{
 
 const generateEmbed = (guildQueue: Queue, page: number) => {
     const queueLength = Math.ceil(guildQueue.songs.length / 10);
-    const songs = guildQueue.getQueueFromIndex((10 * page), 10);
+    const songs = guildQueue.getQueueFromIndex((1 + (10 * page)), 10);
     const queueString = songs.map((s, i) => `${(i + 1) + (page*10)}.) [${s.name}](${s.url}) | \`${s.duration} - ${s.requestedBy?.username ?? "Unknown"}\``).join("\n\n");
     const songLoop = guildQueue.repeatMode === RepeatMode.SONG ? `✅` : `❌`;
     const queueLoop = guildQueue.repeatMode === RepeatMode.QUEUE ? `✅` : `❌`;
     const shuffled = guildQueue.shuffled ? `✅` : `❌`;
-    const songsInMs = guildQueue.songs.map(s => parseFloat(s.duration)).reduce((acc, red) => (acc + red), 0);
-    const duration = Utils.msToTime(songsInMs);
+
+    const songsInMs = (songs?.length && songs.length !== 0) && (songs.map(s => s.milliseconds).reduce((acc, red) => (acc + red), 0) ?? 0);
+    const duration = (songs?.length && songs.length !== 0) && Utils.msToTime(songsInMs);
+
+    const displaySongs = (songs?.length && songs.length !== 0) && `
+        *Up Next*
+        ${queueString}\n
+        **${songs.length} songs in queue | ${duration}**
+    `;
 
     return new EmbedBuilder()
         .setTitle(`🎵 Current Queue 🎵`)
         .setDescription(`
             *Now Playing:*
             [${guildQueue.nowPlaying?.name}](${guildQueue.nowPlaying?.url}) | \`${guildQueue.nowPlaying?.duration ?? "Unknown"} - ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown"}\`\n
-            *Up Next*
-            ${queueString}\n
-            **${guildQueue.songs.length - 1} songs in queue | ${duration}**
+            ${displaySongs}
         `)
         .setColor("DarkBlue")
         .setFooter({text: `Page ${page + 1}/${queueLength}. Song loop: ${songLoop} | Queue loop: ${queueLoop} | Shuffled: ${shuffled}`})

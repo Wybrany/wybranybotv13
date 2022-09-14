@@ -12,7 +12,7 @@ import { VoicestateUpdate } from "./events/VoicestateUpdate";
 import { MessageDelete } from "./events/MessageDelete";
 import { MessageCreate } from "./events/MessageCreate";
 import { PlayerEvents } from "./events/Player";
-import { Player } from "discord-music-player";
+import { Player } from "./player/index";
 
 import "./client/Message";
 import "./client/Guild";

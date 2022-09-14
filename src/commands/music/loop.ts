@@ -1,7 +1,7 @@
 import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
-import { RepeatMode } from "discord-music-player";
+import { RepeatMode } from "../../player/index";
 
 export default class implements Command{
     name = "loop";

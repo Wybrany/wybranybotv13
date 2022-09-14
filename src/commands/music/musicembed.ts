@@ -4,7 +4,7 @@ import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { MusicChannel } from "../../types/music.interface";
 import { savefiledata } from "../../managers/backup";
-import { ButtonSelectState, EmbedState } from "discord-music-player";
+import { ButtonSelectState, EmbedState } from "../../player/index";
 
 export default class implements Command{
     name = "musicembed";

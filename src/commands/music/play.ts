@@ -29,21 +29,21 @@ export default class implements Command{
                     queueInitMessage: message
                 }})
                 await queue?.join(message.member.voice.channel);
-                const song = await queue?.play(search, {requestedBy: message.author, }).catch(_ => {
+                const song = await queue?.play(search, {requestedBy: message.author, }).catch(e => {
                     if(!guildQueue) queue.stop();
-                    searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+                    searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.\n\nReason: ${e}`, timed: 5000});
                 });
                 if(song)
                     await searchingMessage.editEmbed({content: `Successfully queued: **${song?.name ?? search}**.`, timed: 5000, title: `Success`, colorOverride: "Green"})
 
             }
-            catch(_){
-                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+            catch(e){
+                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.\n\nReason: ${e}`, timed: 5000});
             }
         }
         else{
-            const song = await guildQueue.play(search, {requestedBy: message.author}).catch(_ => {
-                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
+            const song = await guildQueue.play(search, {requestedBy: message.author}).catch(e => {
+                searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.\n\nReason: ${e}`, timed: 5000});
             });
             if(song)
                 await searchingMessage.editEmbed({content: `Successfully queued: ${song?.name ?? search}.`, timed: 5000, title: `Success`, colorOverride: "Red"})

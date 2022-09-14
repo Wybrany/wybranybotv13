@@ -4,7 +4,7 @@ import { Cooldown } from "../types/cooldown.interface";
 import { Game, CAH_Settings } from "../types/cah.interface";
 import { Vote } from "../types/vote.interface";
 import { Autoclass_Interface } from "../types/auto.interface";
-import { Player } from "discord-music-player"
+import { Player } from "../player/index";
 
 export default class extends Client {
 

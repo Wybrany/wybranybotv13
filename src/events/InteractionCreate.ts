@@ -4,7 +4,7 @@ import { QueuePageState } from "../types/music.interface";
 import { VoteButtons } from "../types/vote.interface";
 import { ButtonInteraction, SelectMenuInteraction } from "discord.js";
 import { CAHSButtons, CAHGameButtons, CAHSelectMenu } from "../types/cah.interface";
-import { ButtonNames, ButtonSelectState, RepeatMode, SelectMenuNames } from "discord-music-player";
+import { ButtonNames, ButtonSelectState, RepeatMode, SelectMenuNames } from "../player/index";
 
 export const InteractionCreate = async (client: Modified_Client, interaction: Interaction) => {
     if(!interaction.guild || !interaction.member) return;
