@@ -39,10 +39,10 @@ PlayerEvents(client);
 
 client
     .on("ready", async () => Ready(client))
-    .on("voiceStateUpdate", async (oldState, newState) => await VoicestateUpdate(client, oldState as VoiceState, newState as VoiceState))
+    .on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState) => await VoicestateUpdate(client, oldState, newState))
     .on('interactionCreate', async interaction => await InteractionCreate(client, interaction))
     .on('guildMemberAdd', async member => await GuildmemberAdd(client, member))
-    .on('guildMemberUpdate', async (guildMemberOld, guildMemberNew) => await GuildmemberUpdate(client, guildMemberOld as GuildMember | PartialGuildMember, guildMemberNew as GuildMember))
+    .on('guildMemberUpdate', async (guildMemberOld: GuildMember | PartialGuildMember, guildMemberNew: GuildMember) => await GuildmemberUpdate(client, guildMemberOld, guildMemberNew))
     .on('messageDelete', async message => MessageDelete(client, message))
     .on("messageCreate", async message => MessageCreate(client, message))
 
