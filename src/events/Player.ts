@@ -11,13 +11,13 @@ const updateEmbed = (client: Modified_Client, queue: Queue, state: EmbedState) =
 export const PlayerEvents = (client: Modified_Client) => {
     if(!client.player) return console.error(`No clientplayer available.`);
     client.player
-        .on('songAdd',  (queue, song) => updateEmbed(client, queue, EmbedState.NOWPLAYING))
-        .on('playlistAdd',  (queue, playlist) => updateEmbed(client, queue, EmbedState.NOWPLAYING)) 
+        .on('songAdd',  (queue, song) => updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING))
+        .on('playlistAdd',  (queue, playlist) => updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING)) 
         .on('queueEnd',  (queue) => updateEmbed(client, queue, EmbedState.STOPPED))
-        .on('songChanged', async (queue, newSong, oldSong) => updateEmbed(client, queue, EmbedState.CHANGING))
-        .on('songFirst', async (queue, song) => updateEmbed(client, queue, EmbedState.NOWPLAYING))
-        .on('error', (error, queue) => updateEmbed(client, queue, EmbedState.STOPPED))
-        .on("paused", (queue, paused) => updateEmbed(client, queue, EmbedState.NOWPLAYING))
-        .on("seeking", (queue, seekState) => seekState?.finishedSeeking ? updateEmbed(client, queue, EmbedState.NOWPLAYING) : updateEmbed(client, queue, EmbedState.SEEKING))
-        .on("songPlaying", (queue, song) => updateEmbed(client, queue, EmbedState.NOWPLAYING));
+        .on('songChanged', async (queue, newSong, oldSong) => updateEmbed(client, queue as Queue, EmbedState.CHANGING))
+        .on('songFirst', async (queue, song) => updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING))
+        .on('error', (error, queue) => updateEmbed(client, queue as Queue, EmbedState.STOPPED))
+        .on("paused", (queue, paused) => updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING))
+        .on("seeking", (queue, seekState) => seekState.finishedSeeking as boolean ? updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING) : updateEmbed(client, queue as Queue, EmbedState.SEEKING))
+        .on("songPlaying", (queue, song) => updateEmbed(client, queue as Queue, EmbedState.NOWPLAYING));
 }

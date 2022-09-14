@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "This command toggles a shuffle on this queue.";
     usage = "shuffle";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {

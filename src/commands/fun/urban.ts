@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 //import urban from "urban";
@@ -16,7 +16,7 @@ export default class implements Command {
     category = "fun";
     description = "Urban dictionary.. Need I say more?";
     usage = "urban <random || search> [search-term]";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = true;
     guildWhitelist = ["456094195187449868"];
     params = true;
@@ -36,7 +36,7 @@ export default class implements Command {
 
             const { word = null, definition = null, example = null, thumbs_up = null, thumbs_down = null, permalink = null, author = null} = response
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor('#0080FF')
                 .setAuthor(`Urban dictionary | ${word}`, image)
                 .setThumbnail(image)

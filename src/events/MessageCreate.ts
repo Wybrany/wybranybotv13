@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { Message } from "discord.js";
+import { ChannelType, Message, MessageType } from "discord.js";
 import Modified_Client from "../client/Client";
 import { Guild_used_command_recently } from "../managers/cooldown";
 import { checkForMention } from "../utils/utils";
@@ -10,10 +10,10 @@ const prefix = process.env.PREFIX as string;
 const OwnerId = process.env.OWNERID as string;
 
 export const MessageCreate = async (client: Modified_Client, message: Message) => {
-    if(message.author.bot || !message.guild || !message.member || message.channel.type !== "GUILD_TEXT" || !message) return;
-    if(message.type === "THREAD_CREATED" || message.type === "THREAD_STARTER_MESSAGE") return;
-    
+    if(message.author.bot || !message.guild || !message.member || message.channel.type !== ChannelType.GuildText || !message) return;
+    if(message.type === MessageType.ThreadCreated || message.type === MessageType.ThreadStarterMessage) return;
     const guildprefix = message.guild.prefix;
+
     if(!message.content.startsWith(guildprefix)) return checkForMention(message, client, guildprefix);
     
     const args = message.content.slice(prefix.length).trim().split(' ');
@@ -37,7 +37,7 @@ export const MessageCreate = async (client: Modified_Client, message: Message) =
 
     if(command?.channelWhitelist?.length || command?.channelWhitelist?.includes(message.channel.name.toLowerCase())){
         const channelWhiteList: string[] = command?.channelWhitelist ?? [];
-        const channels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_TEXT" && channelWhiteList.includes(channel.name));
+        const channels = message.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText && channelWhiteList.includes(channel.name));
         if(!channels.size){
             await message.error({content: `This command is only whitelisted in following channelnames: **${channelWhiteList.join(", ")}**, please create such channels to make **${command.name}** command work.`, timed: 5000});
             return;

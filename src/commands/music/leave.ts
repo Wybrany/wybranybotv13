@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { getVoiceConnection } from "@discordjs/voice";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "music";
     description = "Leaves the current voicechannel ";
     usage = "leave";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 

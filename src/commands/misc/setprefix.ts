@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { savefiledata } from "../../managers/backup";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "misc";
     description = "Change the current prefix to something else.";
     usage = "settings <category> <value>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {

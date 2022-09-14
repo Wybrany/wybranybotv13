@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { ChannelType, Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { shuffle } from "../../utils/utils";
@@ -9,7 +9,7 @@ export default class implements Command {
     category = "fun";
     description = "Moves a target across multiple channels.";
     usage = "move <mention> [amount <= 4]";
-    permission = Permissions.FLAGS.MANAGE_CHANNELS;
+    permission = PermissionFlagsBits.ManageChannels;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -27,9 +27,9 @@ export default class implements Command {
         const inChannel = member.voice.channel;
         if(!inChannel) return message.error({content: "User must be in a channel.", timed: 5000});
 
-        const AvailableChannels = [...message.guild.channels.cache.filter(c => c.type === "GUILD_VOICE" && c.id !== inChannel.id).values()];
+        const AvailableChannels = [...message.guild.channels.cache.filter(c => c.type === ChannelType.GuildVoice && c.id !== inChannel.id).values()];
         const Moves = !amount ? 4 : amount === "1" ? 2 : parseInt(amount, 10) - 1;
-        const RanChannels = await <number[]>shuffle(AvailableChannels.length, Moves);
+        const RanChannels = <number[]>shuffle(AvailableChannels.length, Moves);
 
         if(Moves && AvailableChannels.length){
             for(const channel of RanChannels){

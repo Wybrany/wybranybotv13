@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { joinVoiceChannel, DiscordGatewayAdapterCreator } from "@discordjs/voice";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "music";
     description = "Joins the current voicechannel ";
     usage = "join";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
@@ -20,7 +20,7 @@ export default class implements Command{
             return message.error({content: "You need to be in a voice channel to summon me.", timed: 5000});
 
         const permissions = message.member.voice.channel.permissionsFor(client.user);
-        if(!permissions?.has("CONNECT") || !permissions.has("SPEAK"))
+        if(!permissions?.has(PermissionFlagsBits.Connect) || !permissions.has(PermissionFlagsBits.Speak))
             return message.error({content: `I need permissions to join and speak in your voicechannel.`, timed: 5000});
         
         return joinVoiceChannel({

@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "Play a song with an url. You can use Youtube, Spotify or Apple Music.";
     usage = "play <URL | Searchterm>";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode=false;
     params = true;
 
@@ -34,7 +34,7 @@ export default class implements Command{
                     searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
                 });
                 if(song)
-                    await searchingMessage.editEmbed({content: `Successfully queued: **${song?.name ?? search}**.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
+                    await searchingMessage.editEmbed({content: `Successfully queued: **${song?.name ?? search}**.`, timed: 5000, title: `Success`, colorOverride: "Green"})
 
             }
             catch(_){
@@ -46,7 +46,7 @@ export default class implements Command{
                 searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
             });
             if(song)
-                await searchingMessage.editEmbed({content: `Successfully queued: ${song?.name ?? search}.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
+                await searchingMessage.editEmbed({content: `Successfully queued: ${song?.name ?? search}.`, timed: 5000, title: `Success`, colorOverride: "Red"})
         }
     }
 }

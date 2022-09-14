@@ -1,4 +1,4 @@
-import { Message, Permissions, TextChannel } from "discord.js";
+import { Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Autokick } from "../../managers/Autokick";
@@ -12,7 +12,7 @@ export default class implements Command{
     category = "auto";
     description = "Autokicks a user from the server until stopped.";
     usage = "autokick <@mention>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     params = true;
 

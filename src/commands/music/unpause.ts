@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "Unpauses the current track.";
     usage = "unpause";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode=false;
     params = false;
 

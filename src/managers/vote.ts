@@ -1,4 +1,4 @@
-import { ColorResolvable, GuildManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { ColorResolvable, GuildManager, GuildMember, Message, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
 import { promisify } from "util";
 import { Vote, CurrentVotes } from "../types/vote.interface";
 import Modified_Client from "../client/Client";
@@ -9,11 +9,11 @@ export class Vote_Class implements Vote {
     public target: GuildMember;
     public members: GuildMember[];
     public message: Message;
-    public embed: MessageEmbed;
-    public buttonYes: MessageButton;
-    public buttonNo: MessageButton;
+    public embed: EmbedBuilder;
+    public buttonYes: ButtonBuilder;
+    public buttonNo: ButtonBuilder;
     public currentVotes: CurrentVotes[];
-    public interaction: MessageActionRow;
+    public interaction: ActionRowBuilder;
 
     private timerLength: number;
     private timerStarted: boolean;
@@ -24,10 +24,10 @@ export class Vote_Class implements Vote {
         target: GuildMember, 
         members: GuildMember[], 
         message: Message, 
-        embed: MessageEmbed, 
-        buttonYes: MessageButton, 
-        buttonNo: MessageButton, 
-        interaction: MessageActionRow
+        embed: EmbedBuilder, 
+        buttonYes: ButtonBuilder, 
+        buttonNo: ButtonBuilder, 
+        interaction: ActionRowBuilder
         ){
             this.target = target;
             this.members = members;
@@ -93,7 +93,7 @@ export class Vote_Class implements Vote {
             case 'VOTE':
                 const voteEmbed = createEmbed(
                     `Voting to mute ${this.target.user.tag}`,
-                    "DARK_BUT_NOT_BLACK",
+                    "DarkButNotBlack",
                     `Vote "YES" or "NO" if you want to mute this user.\n\n${this.currentVotes.length}/${this.members.length} has voted.`,
                     this.target
                 )
@@ -103,11 +103,11 @@ export class Vote_Class implements Vote {
             case 'FAILED':
                 const failedEmbed = createEmbed(
                     `VOTE HAS FAILED.`,
-                    "RED",
+                    "Red",
                     `Vote failed to mute ${this.target.user.tag}`,
                     this.target
                 )
-                const interactionFailed = new MessageActionRow()
+                const interactionFailed = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(this.buttonYes.setDisabled(true), this.buttonNo.setDisabled(true));
                 this.message.edit({embeds: [failedEmbed], components: [interactionFailed]})
             break;
@@ -115,11 +115,11 @@ export class Vote_Class implements Vote {
             case 'SUCCESS':
                 const successEmbed = createEmbed(
                     `VOTE WAS SUCCESSFUL.`,
-                    "GREEN",
+                    "Green",
                     `Successfully muted ${this.target.user.tag}`,
                     this.target
                 )
-                const interactionSuccess = new MessageActionRow()
+                const interactionSuccess = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(this.buttonYes.setDisabled(true), this.buttonNo.setDisabled(true));
                 this.message.edit({embeds: [successEmbed], components: [interactionSuccess]});
             break;
@@ -128,7 +128,7 @@ export class Vote_Class implements Vote {
 }
 
 const createEmbed = (title: string, color: ColorResolvable, description: string, target: GuildMember) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(title)
         .setColor(color)
         .setDescription(description)

@@ -1,4 +1,4 @@
-import { Message, Permissions, Snowflake } from "discord.js";
+import { Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "ownercommands";
     description = "Adds an amount to a users balance.";
     usage = "addbalance <number>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     params = true;
     ownerOnly = true;
 

@@ -1,7 +1,6 @@
-import { Guild, GuildChannel, GuildMember, Role, VoiceChannel } from "discord.js";
+import { ChannelType, Guild, GuildChannel, GuildMember, VoiceChannel } from "discord.js";
 import Modified_Client from "../client/Client";
 import { Autoclass, getRandomTimer } from "./Autoclass";
-import { auto_state } from "../types/auto.interface";
 import { shuffle } from "../utils/utils";
 
 export class Automove extends Autoclass {
@@ -21,7 +20,7 @@ export class Automove extends Autoclass {
         if(!this.startNextTroll || !this.guild.members.cache.has(this.target.id)) 
             return await this.start_timer(current_channel);
         
-        const voiceChannels = [...this.guild.channels.cache.filter(c => c.type === "GUILD_VOICE" && c.id !== current_channel.id).values()] as VoiceChannel[];
+        const voiceChannels = [...this.guild.channels.cache.filter(c => c.type === ChannelType.GuildVoice && c.id !== current_channel.id).values()] as VoiceChannel[];
         const randomChannelIndex = shuffle(voiceChannels.length, 1) as number;
         await this.target.voice.setChannel(voiceChannels[randomChannelIndex].id)
             .catch(async e => {

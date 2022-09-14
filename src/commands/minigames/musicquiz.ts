@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { deleteMessage } from "../../managers/deletemessage";
@@ -10,7 +10,7 @@ export default class implements Command{
     category = "minigames";
     description = "Starts a music quiz with members in a voicechannel";
     usage = "mq <settings | start | stop>";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = true;
     guildWhitelist = ["456094195187449868"];
     params = true;

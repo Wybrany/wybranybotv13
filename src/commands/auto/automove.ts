@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Automove } from "../../managers/Automove";
@@ -12,7 +12,7 @@ export default class implements Command{
     category = "auto";
     description = "Automoves a user to different channels until stopped.";
     usage = "automove <@mention>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     params = true;
 

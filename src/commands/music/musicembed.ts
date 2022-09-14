@@ -1,4 +1,4 @@
-import { Message, Permissions, TextChannel } from "discord.js";
+import { Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import MusicEmbed from "../../managers/MusicEmbed";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
@@ -12,7 +12,7 @@ export default class implements Command{
     category = "music";
     description = "The channel this command is used on will become your music channel.";
     usage = "musicembed";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {

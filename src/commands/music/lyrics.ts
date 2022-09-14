@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 //@ts-ignore
@@ -10,7 +10,7 @@ export default class implements Command{
     category = "music";
     description = "Searches for lyrics on the current track.";
     usage = "lyrics <ARTISTNAME - SONGNAME>";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     params = true;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -34,9 +34,9 @@ export default class implements Command{
         const lyrics = await lyricsFinder(artistname, songname);
         const title = artistname && songname ? `${artistname} - ${songname}` : artistname ? `${artistname}` : `${songname}`;
         if(!lyrics) return message.error({content: `I could not find any lyrics. Please be more accurate with your submission! Try **Artistname - Songname**`, timed: 10000});
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`Lyrics for ${title}`)
-            .setColor(`BLUE`)
+            .setColor("Blue")
             .setDescription(lyrics)
             .setTimestamp()
 

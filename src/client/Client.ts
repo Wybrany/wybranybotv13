@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, Snowflake } from "discord.js";
+import { Client, Collection, Snowflake, GatewayIntentBits, Partials } from "discord.js";
 import { Command } from "../types/client.interface";
 import { Cooldown } from "../types/cooldown.interface";
 import { Game, CAH_Settings } from "../types/cah.interface";
@@ -26,10 +26,16 @@ export default class extends Client {
     constructor(){
         super({
             intents: [
-                Intents.FLAGS.GUILDS, 
-                Intents.FLAGS.GUILD_MESSAGES, 
-                Intents.FLAGS.GUILD_VOICE_STATES,
-                Intents.FLAGS.GUILD_MEMBERS
+                GatewayIntentBits.Guilds, 
+                GatewayIntentBits.GuildMessages, 
+                GatewayIntentBits.GuildVoiceStates,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.MessageContent
+            ],
+            partials: [
+                Partials.Channel,
+                Partials.Message,
+                Partials.GuildMember
             ]
         });
 

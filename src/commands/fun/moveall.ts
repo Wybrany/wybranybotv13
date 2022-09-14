@@ -1,4 +1,4 @@
-import { Message, Permissions, VoiceChannel } from "discord.js";
+import { ChannelType, Message, PermissionFlagsBits, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { shuffle } from "../../utils/utils";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "fun";
     description = "Moves all members in a voicechannel to either a random one or selected one";
     usage = "moveall <random | voicechannelid | voicechannelname | @mention>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -19,7 +19,7 @@ export default class implements Command{
         const [ input ] = args;
 
         let selectedChannelID: string | null = null;
-        const allAvailableChannels = [...message.guild.channels.cache.filter(c => c.type === 'GUILD_VOICE').values()] as VoiceChannel[];
+        const allAvailableChannels = [...message.guild.channels.cache.filter(c => c.type === ChannelType.GuildVoice).values()] as VoiceChannel[];
         const randomChannel = shuffle(allAvailableChannels.length, 1) as number;
         switch(input){
             case 'random':

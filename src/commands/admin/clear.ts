@@ -1,4 +1,4 @@
-import { Collection, Message, Permissions } from "discord.js";
+import { ChannelType, Collection, Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -26,13 +26,13 @@ export default class implements Command {
     category = "admin";
     description = "Removes messages depending on the input.";
     usage = "_clear <integer between 1 and 99>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
-        if(message.channel.type !== "GUILD_TEXT") return;
+        if(message.channel.type !== ChannelType.GuildText) return;
         const [ deleteCount = "1" ] = args;
         let amount = parseInt(deleteCount, 10) + 1;
         if(!amount || amount < 1 || amount > 100){
@@ -51,7 +51,7 @@ export default class implements Command {
             }
             if(newerMessages.size) await message.channel.bulkDelete(newerMessages);
             if(messages.size) messages.forEach(async value => await value.delete());
-            deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "GREEN"});
+            deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "Green"});
         } catch(e){
             message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
             console.log(`Clear error: ${e}`);

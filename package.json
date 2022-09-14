@@ -1,6 +1,6 @@
 {
   "name": "wybranybotv13",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,14 +19,14 @@
   },
   "homepage": "https://github.com/Wybrany/wybranybotv13#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.5.3",
-    "@discordjs/voice": "^0.6.0",
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/voice": "^0.11.0",
     "ascii-table": "^0.0.9",
     "better-logging": "^5.0.0",
     "chalk": "^5.0.1",
     "common-tags": "^1.8.0",
     "discord-music-player": "^8.3.1",
-    "discord.js": "^13.3.1",
+    "discord.js": "^14.3.0",
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^4.4.0",
     "fluent-ffmpeg": "^2.1.2",
@@ -47,14 +47,14 @@
     "ytsr": "^3.5.3"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/common-tags": "^1.8.1",
     "@types/dotenv": "^8.2.0",
     "@types/fluent-ffmpeg": "^2.1.18",
+    "@types/mysql": "^2.15.21",
     "@types/node": "^16.6.1",
     "@types/node-fetch": "^2.5.12",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.3.5",
-    "@types/chalk": "^2.2.0",
-    "@types/mysql": "^2.15.21"
+    "typescript": "^4.3.5"
   }
 }

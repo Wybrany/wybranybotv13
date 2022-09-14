@@ -1,4 +1,4 @@
-import { Guild, TextChannel, Message, MessageEmbed, MessageActionRow, MessageButton } from "discord.js";
+import { Guild, TextChannel, Message, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { CAH_Settings, AvailablePack, AvailablePacks } from "../types/cah.interface";
 import Modified_Client from "../client/Client";
 import { savefiledata } from "./backup";
@@ -115,13 +115,13 @@ export class CAH_SETTINGS implements CAH_Settings {
     }
 }
 
-const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPacks: AvailablePack[], winstate: number, currentpage: number, guild: Guild): MessageEmbed => {
-    const embed = new MessageEmbed();
+const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPacks: AvailablePack[], winstate: number, currentpage: number, guild: Guild): EmbedBuilder => {
+    const embed = new EmbedBuilder();
     switch(state){
         case 'MENU':
             embed
                 .setTitle(`Current Settings for CAH`)
-                .setColor(`BLUE`)
+                .setColor(`Blue`)
                 .setTimestamp()
                 .setDescription(`
                     These are your current settings:
@@ -147,13 +147,13 @@ const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPac
 
                     Use the buttons below to navigate or select packs.
                 `)
-            selectedPacks.length && selectedPacks.map(p => p.id).includes(packs[currentpage].id) ? embed.setColor(`GREEN`) : embed.setColor(`RED`);
+            selectedPacks.length && selectedPacks.map(p => p.id).includes(packs[currentpage].id) ? embed.setColor(`Green`) : embed.setColor(`Red`);
         break;
 
         case 'WINSTATE':
             embed
                 .setTitle(`Current wincondition for CAH`)
-                .setColor(`BLUE`)
+                .setColor(`Blue`)
                 .setTimestamp()
                 .setDescription(`
                     To win you need to accumulate: ${winstate}p
@@ -165,7 +165,7 @@ const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPac
         case 'SAVE':
             embed
                 .setTitle(`Saved`)
-                .setColor(`GREEN`)
+                .setColor(`Green`)
                 .setTimestamp()
                 .setDescription(`
                     You have successfully saved your settings. You can either start playing the game with these settings or change them later.
@@ -175,7 +175,7 @@ const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPac
         case 'CLOSE':
             embed
                 .setTitle(`Cancelled`)
-                .setColor(`RED`)
+                .setColor(`Red`)
                 .setTimestamp()
                 .setDescription(`
                     You have cancelled any new changes. Your previous settings will remain.
@@ -185,26 +185,26 @@ const generate_embeds = (state: embed_state, packs: AvailablePack[], selectedPac
     return embed;
 }
 
-const generate_components = (state: embed_state, packs: AvailablePack[], selectedPacks: AvailablePack[], winstate: number, currentpage: number, guild: Guild): MessageActionRow => {
-    const actionRow = new MessageActionRow();
+const generate_components = (state: embed_state, packs: AvailablePack[], selectedPacks: AvailablePack[], winstate: number, currentpage: number, guild: Guild): ActionRowBuilder<ButtonBuilder> => {
+    const actionRow = new ActionRowBuilder<ButtonBuilder>();
 
     switch(state){
         case 'MENU':
-            const save = new MessageButton().setCustomId(`buttonSaveSettings-${guild.id}`).setLabel(`Save`).setStyle(`SUCCESS`).setEmoji("✅");
-            const close = new MessageButton().setCustomId(`buttonCloseSettings-${guild.id}`).setLabel(`Close`).setStyle(`DANGER`).setEmoji("❌");
-            const pack = new MessageButton().setCustomId(`buttonChoosePacksSettings-${guild.id}`).setLabel(`Choose Packs`).setStyle(`PRIMARY`);
-            const winstate = new MessageButton().setCustomId(`buttonChooseWinStateSettings-${guild.id}`).setLabel(`Choose Wincondition`).setStyle(`PRIMARY`);
+            const save = new ButtonBuilder().setCustomId(`buttonSaveSettings-${guild.id}`).setLabel(`Save`).setStyle(ButtonStyle.Success).setEmoji("✅");
+            const close = new ButtonBuilder().setCustomId(`buttonCloseSettings-${guild.id}`).setLabel(`Close`).setStyle(ButtonStyle.Danger).setEmoji("❌");
+            const pack = new ButtonBuilder().setCustomId(`buttonChoosePacksSettings-${guild.id}`).setLabel(`Choose Packs`).setStyle(ButtonStyle.Primary);
+            const winstate = new ButtonBuilder().setCustomId(`buttonChooseWinStateSettings-${guild.id}`).setLabel(`Choose Wincondition`).setStyle(ButtonStyle.Primary);
             actionRow.addComponents(pack, winstate, save, close);
         break;
 
         case 'PACKS':
-            const select = new MessageButton().setCustomId(`buttonChoosePack-${guild.id}`).setLabel(`Select`).setStyle("SUCCESS").setEmoji("✅");
-            const backpack = new MessageButton().setCustomId(`buttonSavePack-${guild.id}`).setLabel(`Back to menu`).setStyle(`PRIMARY`).setEmoji(`↩️`);
-            const prevpage = new MessageButton().setCustomId(`buttonPrevPackPage-${guild.id}`).setLabel(`Prev page`).setStyle(`PRIMARY`).setEmoji(`⬅️`);
-            const nextpage = new MessageButton().setCustomId(`buttonNextPackPage-${guild.id}`).setLabel(`Next page`).setStyle(`PRIMARY`).setEmoji(`➡️`);
+            const select = new ButtonBuilder().setCustomId(`buttonChoosePack-${guild.id}`).setLabel(`Select`).setStyle(ButtonStyle.Success).setEmoji("✅");
+            const backpack = new ButtonBuilder().setCustomId(`buttonSavePack-${guild.id}`).setLabel(`Back to menu`).setStyle(ButtonStyle.Primary).setEmoji(`↩️`);
+            const prevpage = new ButtonBuilder().setCustomId(`buttonPrevPackPage-${guild.id}`).setLabel(`Prev page`).setStyle(ButtonStyle.Primary).setEmoji(`⬅️`);
+            const nextpage = new ButtonBuilder().setCustomId(`buttonNextPackPage-${guild.id}`).setLabel(`Next page`).setStyle(ButtonStyle.Primary).setEmoji(`➡️`);
 
             if(selectedPacks.length && selectedPacks.map(p => p.id).includes(packs[currentpage]?.id)) 
-                select.setLabel(`Unselect`).setStyle(`DANGER`).setEmoji("❌");
+                select.setLabel(`Unselect`).setStyle(ButtonStyle.Danger).setEmoji("❌");
 
             if(currentpage === 0) actionRow.addComponents(select, backpack, nextpage);
             else if(currentpage === (packs.length - 1)) actionRow.addComponents(select, backpack, prevpage);
@@ -212,11 +212,11 @@ const generate_components = (state: embed_state, packs: AvailablePack[], selecte
         break;
 
         case 'WINSTATE':
-            const backwin = new MessageButton().setCustomId(`buttonSaveWinState-${guild.id}`).setLabel(`Back to menu`).setStyle(`PRIMARY`).setEmoji(`↩️`);
-            const plusone = new MessageButton().setCustomId(`buttonPlusOneWin-${guild.id}`).setLabel(`+1`).setStyle(`SUCCESS`);
-            const minusone = new MessageButton().setCustomId(`buttonMinusOneWin-${guild.id}`).setLabel(`-1`).setStyle(`DANGER`);
-            const plusfive = new MessageButton().setCustomId(`buttonPlusFiveWin-${guild.id}`).setLabel(`+5`).setStyle(`SUCCESS`);
-            const minusfive = new MessageButton().setCustomId(`buttonMinusFiveWin-${guild.id}`).setLabel(`-5`).setStyle(`DANGER`);
+            const backwin = new ButtonBuilder().setCustomId(`buttonSaveWinState-${guild.id}`).setLabel(`Back to menu`).setStyle(ButtonStyle.Primary).setEmoji(`↩️`);
+            const plusone = new ButtonBuilder().setCustomId(`buttonPlusOneWin-${guild.id}`).setLabel(`+1`).setStyle(ButtonStyle.Success);
+            const minusone = new ButtonBuilder().setCustomId(`buttonMinusOneWin-${guild.id}`).setLabel(`-1`).setStyle(ButtonStyle.Danger);
+            const plusfive = new ButtonBuilder().setCustomId(`buttonPlusFiveWin-${guild.id}`).setLabel(`+5`).setStyle(ButtonStyle.Success);
+            const minusfive = new ButtonBuilder().setCustomId(`buttonMinusFiveWin-${guild.id}`).setLabel(`-5`).setStyle(ButtonStyle.Danger);
             actionRow.addComponents(backwin, minusfive, minusone, plusone, plusfive);
         break;
     }

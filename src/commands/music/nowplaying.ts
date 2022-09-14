@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "Shows the current track playing.";
     usage = "nowplaying";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode=false;
     params = false;
 
@@ -25,14 +25,14 @@ export default class implements Command{
 
         const progressBar = guildQueue.createProgressBar({size: 25, block: "▬", arrow: "🔘", time: true, whitespace: false}) ?? "No progressbar available."
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`🎵 Now playing 🎵`)
             .setDescription(`\n▶️ ${guildQueue.nowPlaying?.name ?? "Unkown Title"} | ${guildQueue.nowPlaying?.duration ?? "Unknown Duration"}\n\n${progressBar}\n\n${guildQueue.songs.length === 1 ? `${guildQueue.songs.length} song remaining.` : `${guildQueue.songs.length} songs remaining.`}`)
-            .setColor("DARK_GREEN")
-            .setFooter(`Requested by: ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown user"}`)
+            .setColor("DarkGreen")
+            .setFooter({text: `Requested by: ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown user"}`})
             .setTimestamp();
 
-        guildQueue.paused ? embed.setColor("DARK_RED").setTitle(`Track currently paused.`) : embed.setColor("DARK_GREEN");
+        guildQueue.paused ? embed.setColor("DarkRed").setTitle(`Track currently paused.`) : embed.setColor("DarkGreen");
         
         message.channel.send({embeds: [embed]});
     }

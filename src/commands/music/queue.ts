@@ -1,5 +1,5 @@
-import { Queue, RepeatMode, Utils } from "discord-music-player";
-import { Message, Permissions, MessageEmbed, MessageButton, MessageActionRow } from "discord.js";
+import { Button, Queue, RepeatMode, Utils } from "discord-music-player";
+import { Message, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "music";
     description = "Displays the current queue.";
     usage = "queue";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode=false;
     params = false;
 
@@ -25,17 +25,18 @@ export default class implements Command{
         let page = 0;
         const embed = generateEmbed(guildQueue, page);
         
-        const nextPageButton = new MessageButton()
+        const nextPageButton = new ButtonBuilder()
             .setCustomId(`QueueNextCommandButton-${message.guild.id}`)
-            .setStyle("PRIMARY")
+            .setStyle(ButtonStyle.Primary)
             .setEmoji("▶️");
 
-        const prevPageButotn = new MessageButton()
+        const prevPageButotn = new ButtonBuilder()
             .setCustomId(`QueuePrevCommandButton-${message.guild.id}`)
-            .setStyle("PRIMARY")
+            .setStyle(ButtonStyle.Primary)
             .setEmoji("◀️");
 
-        const actionRow = new MessageActionRow().addComponents(prevPageButotn, nextPageButton);
+        const actionRow = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(prevPageButotn, nextPageButton);
         const embedMessage = await message.channel.send({embeds: [embed], components: [actionRow]});
         const collector = embedMessage.createMessageComponentCollector({time: 120000});
 
@@ -73,7 +74,7 @@ const generateEmbed = (guildQueue: Queue, page: number) => {
     const songsInMs = guildQueue.songs.map(s => parseFloat(s.duration)).reduce((acc, red) => (acc + red), 0);
     const duration = Utils.msToTime(songsInMs);
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(`🎵 Current Queue 🎵`)
         .setDescription(`
             *Now Playing:*
@@ -82,7 +83,7 @@ const generateEmbed = (guildQueue: Queue, page: number) => {
             ${queueString}\n
             **${guildQueue.songs.length - 1} songs in queue | ${duration}**
         `)
-        .setColor("DARK_BLUE")
-        .setFooter(`Page ${page + 1}/${queueLength}. Song loop: ${songLoop} | Queue loop: ${queueLoop} | Shuffled: ${shuffled}`)
+        .setColor("DarkBlue")
+        .setFooter({text: `Page ${page + 1}/${queueLength}. Song loop: ${songLoop} | Queue loop: ${queueLoop} | Shuffled: ${shuffled}`})
         .setTimestamp();
 }

@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
+import { Message, EmbedBuilder, Collection, GuildMember, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Survivor, Survivor_List, Offering, Offering_List, Perk, Standard_Survivor_Perks, Exception_Overloader, Item_Addons, Item_Addon } from "../../types/dbd.interface";
@@ -12,7 +12,7 @@ export default class implements Command {
     description ="Randomises a survivor setup for Dead by Daylight.";
     usage = "survivor";
     channelWhitelist = ["dbd-bot"];
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     guildWhitelist = ["456094195187449868"];
 
     run = async (client: Modified_Client, message: Message, args: string[]) => { 
@@ -394,9 +394,9 @@ export default class implements Command {
 
         const description = `${survivorItemBorder}${survivorAddonsBorder}${mapOfferingBorder}${survivorPerksBorder}` || "You selected nothing for some reason.";
 
-        const survivorEmbed = new MessageEmbed()
+        const survivorEmbed = new EmbedBuilder()
             .setDescription(description)
-            .setColor("GREEN")
+            .setColor("Green")
             .setTimestamp()
 
         let files = [];

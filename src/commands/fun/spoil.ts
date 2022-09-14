@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command {
     category ="fun";
     description ="Spoils a string, either char by char, word by word or an entire sentence";
     usage =`_spoil <char | word | sentence> <text>`;
-    permission =  Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     guildWhitelist = ["456094195187449868"];
     developerMode = true;
     params = true;

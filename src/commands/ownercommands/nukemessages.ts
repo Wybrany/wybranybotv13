@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions, Snowflake, TextChannel, User } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits, Snowflake, TextChannel, User, ChannelType } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { delayFunction } from "../../utils/utils";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "ownercommands";
     description = "Nukes messages related to a specific user or mentions of that user.";
     usage = "nukemessages <target>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     params = true;
     ownerOnly = true;
 
@@ -22,11 +22,11 @@ export default class implements Command{
 
         let target: any = message.mentions.users.first() || message.guild.members.cache.get(member) || null;
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`Nukeprogress`)
             .setDescription(`Warming up...`)
             .setTimestamp()
-            .setColor(`RANDOM`);
+            .setColor("Random");
 
         let stopped = false;
 
@@ -47,7 +47,7 @@ export default class implements Command{
 
         collector.on('end', async m => {
             if(stopped) return;
-            await nukeMessage.editEmbed({content: `I will now start nuking.`, title: `Nukeprogress`, colorOverride: `RANDOM`});
+            await nukeMessage.editEmbed({content: `I will now start nuking.`, title: `Nukeprogress`, colorOverride: "Random"});
             await delayFunction(1000);
             await NukeFunction(client, nukeMessage, target);
         });
@@ -67,12 +67,12 @@ const returnObject = (m: Message) => ({
 async function NukeFunction(client: Modified_Client, message: Message, target: any){
     if(!client || !message?.guild) return console.error(`No message or guild.`);
     const guild = client.guilds.cache.get(message.guild?.id);
-    const channelIds = guild?.channels.cache.filter(c => c.type === "GUILD_TEXT").map(c => c.id);
+    const channelIds = guild?.channels.cache.filter(c => c.type === ChannelType.GuildText).map(c => c.id);
     if(!channelIds) return console.error(`No channelIds`);
     for(const id of channelIds){
         const channel = guild?.channels.cache.get(id) as TextChannel;
         if(!channel) continue;
-        await message.editEmbed({title: `Nukeprogress`, colorOverride: `RANDOM`, content: `Fetching messages in ${channel.name}.`,});
+        await message.editEmbed({title: `Nukeprogress`, colorOverride: "Random", content: `Fetching messages in ${channel.name}.`,});
         await delayFunction(1000);
 
         const messages = await channel.messages.fetch({limit: 100});
@@ -96,14 +96,14 @@ async function NukeFunction(client: Modified_Client, message: Message, target: a
             }
             newMessages.push(...parsedMessages);
             console.log(newMessages.length)
-            await message.editEmbed({title: `Nukeprogress`, colorOverride: `RANDOM`, content: `Fetching messages in ${channel.name}.\n\nTotal messages: \`${newMessages.length}\``})
+            await message.editEmbed({title: `Nukeprogress`, colorOverride: "Random", content: `Fetching messages in ${channel.name}.\n\nTotal messages: \`${newMessages.length}\``})
         }
         console.log(`${newMessages.map(a => `${a.author.username} - ${a.content}`).join("\n")}`);
-        await message.editEmbed({title: `Nukeprogress`, colorOverride: `RANDOM`, content: `Scanning trough \`${newMessages.length}\` messages...`});
+        await message.editEmbed({title: `Nukeprogress`, colorOverride: "Random", content: `Scanning trough \`${newMessages.length}\` messages...`});
         const messagesContainingOurStuff = newMessages.filter(m => m.author.id === target?.author?.id || m.author.username.includes(target?.author?.username ?? target) || m.content.includes(target?.author?.username ?? target) || m.mentions.users.find(u => u.username.includes(target?.author?.username ?? target) || u.id === target?.author?.id));
         console.log("-------------------------------------------")
         console.log(`${messagesContainingOurStuff.map(a => `${a.author.username} - ${a.content}`).join("\n")}`);
-        await message.editEmbed({title: `Nukeprogress`, colorOverride: `RANDOM`, content: `I have found \`${messagesContainingOurStuff.length}\` messages. Now attempting to delete them...`});
+        await message.editEmbed({title: `Nukeprogress`, colorOverride: "Random", content: `I have found \`${messagesContainingOurStuff.length}\` messages. Now attempting to delete them...`});
         console.log("Done")
         break;
     }

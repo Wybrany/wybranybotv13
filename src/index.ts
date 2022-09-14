@@ -14,14 +14,13 @@ import { MessageCreate } from "./events/MessageCreate";
 import { PlayerEvents } from "./events/Player";
 import { Player } from "discord-music-player";
 
-import { use_better_logging } from "./utils/logs"
 import "./client/Message";
 import "./client/Guild";
 import "./client/GuildMember";
+import { GuildMember, PartialGuildMember, VoiceState } from "discord.js";
 //import "./managers/Mysql";
 
 dotenv.config();
-use_better_logging();
 const discord_token = process.env.TOKEN as string;
 
 if(!discord_token) {
@@ -40,10 +39,10 @@ PlayerEvents(client);
 
 client
     .on("ready", async () => Ready(client))
-    .on("voiceStateUpdate", async (oldState, newState) => await VoicestateUpdate(client, oldState, newState))
+    .on("voiceStateUpdate", async (oldState, newState) => await VoicestateUpdate(client, oldState as VoiceState, newState as VoiceState))
     .on('interactionCreate', async interaction => await InteractionCreate(client, interaction))
     .on('guildMemberAdd', async member => await GuildmemberAdd(client, member))
-    .on('guildMemberUpdate', async (guildMemberOld, guildMemberNew) => await GuildmemberUpdate(client, guildMemberOld, guildMemberNew))
+    .on('guildMemberUpdate', async (guildMemberOld, guildMemberNew) => await GuildmemberUpdate(client, guildMemberOld as GuildMember | PartialGuildMember, guildMemberNew as GuildMember))
     .on('messageDelete', async message => MessageDelete(client, message))
     .on("messageCreate", async message => MessageCreate(client, message))
 

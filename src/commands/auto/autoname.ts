@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Autoname } from "../../managers/Autoname";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "auto";
     description = "Autochanges the users name until stopped.";
     usage = "autoname <@mention> <name>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     params = true;
 

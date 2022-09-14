@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "Play a playlist. You can use Youtube, Spotify or Apple Music.";
     usage = "play <URL>";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -33,7 +33,7 @@ export default class implements Command{
                     searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
                 });
                 if(playlist)
-                    await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
+                    await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "Green"})
             }
             catch(_){
                 searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
@@ -44,7 +44,7 @@ export default class implements Command{
                 searchingMessage.editEmbed({content: `Something went wrong with playing that song, please try again later.`, timed: 5000});
             });
             if(playlist)
-                await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "GREEN"})
+                await searchingMessage.editEmbed({content: `Successfully queued: **${playlist?.name ?? search} | ${playlist?.author ?? "Unknown Author"} with ${playlist?.songs?.length ?? "Unknown number of "} tracks**.`, timed: 5000, title: `Success`, colorOverride: "Green"})
         }
     }
 }

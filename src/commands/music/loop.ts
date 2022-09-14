@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { RepeatMode } from "discord-music-player";
@@ -9,7 +9,7 @@ export default class implements Command{
     category = "music";
     description = "Changes looping state. Toggles between \"No loop\", \"Loop Current Song\" or \"Loop Queue\"";
     usage = "loop";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {

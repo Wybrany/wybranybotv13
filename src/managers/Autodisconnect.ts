@@ -1,7 +1,6 @@
 import { Guild, GuildMember, Role } from "discord.js";
 import Modified_Client from "../client/Client";
 import { Autoclass } from "./Autoclass";
-import { auto_state } from "../types/auto.interface";
 
 export class Autodisconnect extends Autoclass {
     constructor(client: Modified_Client, guild: Guild, target: GuildMember){

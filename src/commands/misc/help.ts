@@ -1,9 +1,8 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions, EmbedField } from "discord.js";
+import { Message, EmbedBuilder, Collection, GuildMember, PermissionFlagsBits, EmbedField, EmbedAuthorOptions } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
 const ownerId = process.env.OWNERID as string;
-const prefix = process.env.PREFIX as string;
 
 interface CategoryCommands {
     category: string;
@@ -27,7 +26,7 @@ export default class implements Command {
     aliases = [];
     category = "misc";
     description = "Returns all available commands, depending on permission, to the user. Alternatively, returning description/usage of a specific command.";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     usage = "help [command]";
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
@@ -88,9 +87,14 @@ function getAllCommands(client: Modified_Client, message: Message){
         const categories = client.categories?.length ? client.categories : [];
         if(!member || !member.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
     
-        const allCommandsEmbed = new MessageEmbed()
-            .setAuthor(`Available commands for: ${member.user.tag}`, member.user.avatarURL() ?? member.user.defaultAvatarURL)
-            .setColor("BLUE")
+        const authorOptions: EmbedAuthorOptions = {
+            name: `Available commands for: ${member.user.tag}`,
+            iconURL: member.user.avatarURL() ?? member.user.defaultAvatarURL
+        }
+
+        const allCommandsEmbed = new EmbedBuilder()
+            .setAuthor(authorOptions)
+            .setColor("Blue")
             .setTimestamp();
     
         const getAvailableCommands = member ? getCommands(client.commands, member) : null;
@@ -98,7 +102,7 @@ function getAllCommands(client: Modified_Client, message: Message){
     
         const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, message.guild.prefix) : null;
     
-        if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("RED");
+        if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("Red");
         else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
     
         return message.channel.send({embeds: [allCommandsEmbed]});
@@ -111,7 +115,7 @@ function getAllCommands(client: Modified_Client, message: Message){
 
 function getCommand(client: Modified_Client, message: Message, input: string){
     if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-    const commandEmbed = new MessageEmbed()
+    const commandEmbed = new EmbedBuilder()
     const member = message.guild?.members.cache.get(message.author.id);
 
     if(!member) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
@@ -121,7 +125,7 @@ function getCommand(client: Modified_Client, message: Message, input: string){
     let info = `No information found for command **${input.toLowerCase()}**`;
 
     if(!cmd) {
-        commandEmbed.setColor("RED").setDescription(info)
+        commandEmbed.setColor("Red").setDescription(info)
         message.channel.send({embeds: [commandEmbed]});
         return;
     }
@@ -132,8 +136,8 @@ function getCommand(client: Modified_Client, message: Message, input: string){
     if(cmd.description) info += `\n**Description**: ${cmd.description}`;
     if(cmd.usage) info += `\n**Usage**: ${message.guild.prefix}${cmd.usage}`
     commandEmbed
-        .addField("**Syntax**", `<> = required\n[] = optional\n| = or`)
-        .setColor("GREEN")
+        .addFields([{name: "**Syntax**", value: `<> = required\n[] = optional\n| = or`}])
+        .setColor("Green")
         .setDescription(info);
 
     return message.channel.send({embeds: [commandEmbed]});

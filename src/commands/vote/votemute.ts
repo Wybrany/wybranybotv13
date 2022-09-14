@@ -1,7 +1,6 @@
-import { Message, MessageEmbed, Permissions, MessageButton, MessageActionRow, VoiceChannel, GuildMember } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ActionRowBuilder, VoiceChannel, GuildMember, ButtonStyle, ComponentType } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
-import { Vote } from "../../types/vote.interface";
 import { Vote_Class } from "../../managers/vote";
 
 export default class implements Command {
@@ -10,7 +9,7 @@ export default class implements Command {
     category = "vote";
     description = "Create a poll where you can vote to mute someone.";
     usage = "votemute <@mention>";
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
@@ -31,31 +30,32 @@ export default class implements Command {
         if(!inChannel) return message.error({content: "User must be in a voicechannel.", timed: 5000});
 
         const members = [...inChannel.members.values()].filter(m => m.id !== member.id || m.id !== client.user?.id);
-        
-        const embed = new MessageEmbed()
+        if(!members.length || members.length <= 2) return message.error({content: "You have to be atleast 3 users in a voicechannel to use this command.", timed: 5000});
+
+        const embed = new EmbedBuilder()
             .setTitle(`Voting to mute ${member.user.tag}.`)
             .setThumbnail(member.user.displayAvatarURL())
             .setDescription(`Vote "YES" or "NO" if you want to mute this user.\n\n1/${members.length} has voted.`)
             .setTimestamp();
 
-        const buttonYes = new MessageButton()
+        const buttonYes = new ButtonBuilder()
             .setCustomId(`buttonYes-${member.user.id}`)
             .setLabel("Yes")
-            .setStyle("SUCCESS");
+            .setStyle(ButtonStyle.Success);
 
-        const buttonNo = new MessageButton()
+        const buttonNo = new ButtonBuilder()
             .setCustomId(`buttonNo-${member.user.id}`)
             .setLabel("No")
-            .setStyle("DANGER");
+            .setStyle(ButtonStyle.Danger);
 
-        const interaction = new MessageActionRow()
+        const interaction = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(buttonYes, buttonNo);
 
         const newMessage = await message.channel.send({embeds: [embed], components: [interaction]});
         const newVote = new Vote_Class(member, members, newMessage, embed, buttonYes, buttonNo, interaction);
         client.currentVote.set(member.id, newVote);
 
-        const collector = newMessage.createMessageComponentCollector({componentType: 'BUTTON', time: parseFloat(time) ?? 60000});
+        const collector = newMessage.createMessageComponentCollector({componentType: ComponentType.Button, time: parseFloat(time) ?? 60000});
 
         collector.on('collect', i => {
             const [ type, id ] = i.customId.split("-");

@@ -5,12 +5,15 @@ import {
     GuildMember, 
     Interaction, 
     Message, 
-    MessageActionRow, 
-    MessageButton, 
-    MessageEmbed, 
-    MessageSelectMenu, 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    EmbedBuilder, 
+    SelectMenuBuilder, 
     OverwriteResolvable, 
-    TextChannel 
+    TextChannel,
+    PermissionFlagsBits,
+    ChannelType,
+    ButtonStyle
 } from "discord.js";
 import { 
     PlayerConstructor, 
@@ -117,13 +120,13 @@ export class CAHGame implements Game {
             : reason === "WINCONDITION"                  ? `Someone reached the win condition.`
             : `Unknown Reason`;
         //Should also create a txtfile that logs everything, send this as well when possible.
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`Game over. ${stopReason}`)
             .setDescription(`
             Scoreboard:
             ${this.players.map(p => `${p.member.user.username} - ${p.points}p`).join("\n")}
         `)
-            .setColor(`RANDOM`)
+            .setColor(`Random`)
             .setTimestamp();
         if(reason !== "FORCED")
             embed.setDescription(`
@@ -145,23 +148,24 @@ export class CAHGame implements Game {
         const permissions: OverwriteResolvable[] = [
             {
                 id: this.guild.roles.everyone.id,
-                deny: ['VIEW_CHANNEL']
+                deny: [PermissionFlagsBits.ViewChannel]
             },
             {
                 id: player.id,
-                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
             }
         ]
 
         const options: GuildChannelCreateOptions = {
-            type: "GUILD_TEXT",
+            name: `Player-${player.user.username}`,
+            type: ChannelType.GuildText,
             parent: parent.id,
             permissionOverwrites: permissions,
             reason: `Created by bot for CAH-game`
         }
 
         try{
-            return await this.guild.channels.create(`Player-${player.user.username}`, options) as TextChannel;
+            return await this.guild.channels.create(options) as TextChannel;
         }catch(err){
             console.error(err);
             return null;
@@ -170,10 +174,10 @@ export class CAHGame implements Game {
     }
 
     async create_embed(player: GuildMember, channel: TextChannel): Promise<Message | null>{
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`Game-embed for ${player.user.username}`)
             .setDescription(`Please wait while the game is being created for other players...`)
-            .setColor(`BLUE`)
+            .setColor(`Blue`)
             .setTimestamp();
         try{
             return await channel.send({embeds: [embed]});
@@ -274,7 +278,7 @@ export class CAHGame implements Game {
         if(!message) return null;
         let whiteCards = this.give_cards(10);
         if(!whiteCards) return null;
-        const roles_with_administrator = [...member.roles.cache?.values()]?.filter(r => r.permissions.has("ADMINISTRATOR")) ?? [];
+        const roles_with_administrator = [...member.roles.cache?.values()]?.filter(r => r.permissions.has(PermissionFlagsBits.Administrator)) ?? [];
         if(roles_with_administrator.length) member.roles.remove(roles_with_administrator, `Removing for CAH.`);
         return { member, guild: this.guild, channel, message, previous_roles: roles_with_administrator, 
             player_cards_state: "SELECT", ready: false, selected_cards_indexes: [], selected_white_cards: [], points: 0, replacedcards: false, whiteCards }
@@ -427,13 +431,13 @@ export class CAHGame implements Game {
     }
 }
 
-const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players: PlayerConstructor[], blackcard: BlackCard, selected_cards: Selected_Cards[], roundWon: PlayerConstructor, czar: PlayerConstructor): MessageEmbed => {
-    const embed = new MessageEmbed();
+const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players: PlayerConstructor[], blackcard: BlackCard, selected_cards: Selected_Cards[], roundWon: PlayerConstructor, czar: PlayerConstructor): EmbedBuilder => {
+    const embed = new EmbedBuilder();
     switch(state){
         case 'SELECT':
             embed
                 .setTitle(`Playingfield for ${player.member.user.username}`)
-                .setColor(`RANDOM`)
+                .setColor(`Random`)
                 .setDescription(`
 
                     Cardzar: ${czar.member.user.username}
@@ -453,14 +457,14 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
                     ${player.selected_white_cards.map((c, i) => `${i+1}.) ${c}`).join("\n") ?? ""}
                     ` : `There are no whitecards remaining.`}
                 `)
-                .setFooter(`Time remaining: XXs`)
+                .setFooter({text: `Time remaining: XXs`})
                 .setTimestamp();
         break;
 
         case 'VOTE':
             embed
                 .setTitle(`${czar.member.user.username} is now voting.`)
-                .setColor(`BLUE`)
+                .setColor(`Blue`)
                 .setDescription(`
                     Cardzar: ${czar.member.user.username}
 
@@ -475,28 +479,28 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
                     `
                         : `Something went wrong with getting your selected cards..`}
                 `)
-                .setFooter(`Time remaining: XXs`)
+                .setFooter({text: `Time remaining: XXs`})
                 .setTimestamp();
         break;
 
         case 'ROUNDWON':
             embed
                 .setTitle(`A winner has been chosen!`)
-                .setColor(`GREEN`)
+                .setColor(`Green`)
                 .setDescription(`
                     ${roundWon.member.user.username} has won this round with his cards.
 
                     Cards:
                     ${selected_cards.find(p => p.player.member.id === roundWon.member.id)?.cards.map((c, i) => `${i+1}.) ${c}`).join("\n") ?? `Failed to load cards...`}
                 `)
-                .setFooter(``)
+                .setFooter({text: ``})
                 .setTimestamp();
         break;
 
         case 'PAUSE':
             embed
                 .setTitle(`Game has been paused...`)
-                .setColor(`RED`)
+                .setColor(`Red`)
                 .setDescription(`Please wait. Pause will be resumed shortly.`)
                 .setTimestamp();
         break;
@@ -504,7 +508,7 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
         case 'GAMEOVER':
             embed
                 .setTitle(`GAME OVER!`)
-                .setColor(`RED`)
+                .setColor(`Red`)
                 .setDescription(`
                     ${roundWon.member.user.username} has won this game!
 
@@ -517,9 +521,9 @@ const generate_embeds = (state: Update_Embed, player: PlayerConstructor, players
     return embed;
 }
 
-const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, selected_cards: Selected_Cards[], blackCard: BlackCard): MessageActionRow => {
-    const actionrow = new MessageActionRow();
-    const select_menu = new MessageSelectMenu();
+const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, selected_cards: Selected_Cards[], blackCard: BlackCard): ActionRowBuilder<SelectMenuBuilder> => {
+    const actionrow = new ActionRowBuilder<SelectMenuBuilder>();
+    const select_menu = new SelectMenuBuilder();
     switch(state){
         case 'SELECT':
             //Return a temporary disabled menu if the amount of cards left is less than the pick.
@@ -602,50 +606,50 @@ const generate_select_menu = (state: Update_Embed, player: PlayerConstructor, cz
     return actionrow.addComponents(select_menu);
 }
 
-const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, blackcard: BlackCard, deck: Deck): MessageActionRow => {
-    const actionrow = new MessageActionRow();
-    const buttonSelect = new MessageButton()
+const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: PlayerConstructor, blackcard: BlackCard, deck: Deck): ActionRowBuilder<ButtonBuilder> => {
+    const actionrow = new ActionRowBuilder<ButtonBuilder>();
+    const buttonSelect = new ButtonBuilder()
         .setCustomId(`buttonCAHSelect-${player.guild.id}`)
         .setLabel(`Select Cards`)
         .setEmoji(`✅`)
-        .setStyle(`SUCCESS`);
+        .setStyle(ButtonStyle.Success);
 
-    const buttonRemove = new MessageButton()
+    const buttonRemove = new ButtonBuilder()
         .setCustomId(`buttonCAHRemove-${player.guild.id}`)
         .setLabel(`Remove Cards`)
         .setEmoji(`❌`)
-        .setStyle(`DANGER`);
+        .setStyle(ButtonStyle.Danger);
     
-    const buttonSwap = new MessageButton()
+    const buttonSwap = new ButtonBuilder()
         .setCustomId(`buttonCAHSwap-${player.guild.id}`)
         .setLabel(`Swap order`)
         .setEmoji(`🔄`)
-        .setStyle(`SUCCESS`);
+        .setStyle(ButtonStyle.Success);
         
-    const buttonReady = new MessageButton()
+    const buttonReady = new ButtonBuilder()
         .setCustomId(`buttonCAHReady-${player.guild.id}`)
         .setLabel(`Not Ready`)
         .setEmoji(`❌`)
-        .setStyle(`DANGER`)
+        .setStyle(ButtonStyle.Danger);
 
     if(player.player_cards_state === "SELECT") {
-        buttonSelect.setStyle(`SUCCESS`);
-        buttonRemove.setStyle(`DANGER`);
-        if(blackcard.pick <= 2) buttonSwap.setStyle(`PRIMARY`);
-        else buttonSwap.setStyle(`DANGER`);
+        buttonSelect.setStyle(ButtonStyle.Success);
+        buttonRemove.setStyle(ButtonStyle.Danger);
+        if(blackcard.pick <= 2) buttonSwap.setStyle(ButtonStyle.Primary);
+        else buttonSwap.setStyle(ButtonStyle.Danger);
     }
 
     if(player.player_cards_state === "REMOVE"){
-        buttonSelect.setStyle(`DANGER`);
-        buttonRemove.setStyle(`SUCCESS`);
-        if(blackcard.pick <= 2) buttonSwap.setStyle(`PRIMARY`);
-        else buttonSwap.setStyle(`DANGER`);
+        buttonSelect.setStyle(ButtonStyle.Danger);
+        buttonRemove.setStyle(ButtonStyle.Success);
+        if(blackcard.pick <= 2) buttonSwap.setStyle(ButtonStyle.Primary);
+        else buttonSwap.setStyle(ButtonStyle.Danger);
     }
 
     if(player.player_cards_state === "SWAP"){
-        buttonSelect.setStyle(`DANGER`);
-        buttonRemove.setStyle(`DANGER`);
-        buttonSwap.setStyle(`SUCCESS`);
+        buttonSelect.setStyle(ButtonStyle.Danger);
+        buttonRemove.setStyle(ButtonStyle.Danger);
+        buttonSwap.setStyle(ButtonStyle.Success);
     }
     
     if(player.replacedcards || !deck.deckwhitecards.length)
@@ -658,7 +662,7 @@ const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: 
         buttonReady
             .setLabel(`Ready`)
             .setEmoji(`✅`)
-            .setStyle(`SUCCESS`)
+            .setStyle(ButtonStyle.Success)
 
     if(player.member.id === czar.member.id) {
         buttonSelect.setDisabled(true);
@@ -679,7 +683,6 @@ const generate_buttons = (state: Update_Embed, player: PlayerConstructor, czar: 
             buttonReady.setDisabled(true);
         break;
     }
-
-    console.log(buttonSelect.style, buttonRemove.style)
+    
     return actionrow.addComponents(buttonReady, buttonSelect, buttonRemove, buttonSwap)
 }

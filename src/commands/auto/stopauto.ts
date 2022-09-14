@@ -1,4 +1,4 @@
-import { Message, Permissions } from "discord.js";
+import { Message, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Autoclass_Interface, Autokick_Interface } from "src/types/auto.interface";
@@ -15,7 +15,7 @@ export default class implements Command{
     category = "auto";
     description = "Stops current autocommand on a user";
     usage = "stop <@mention>";
-    permission = Permissions.FLAGS.ADMINISTRATOR;
+    permission = PermissionFlagsBits.Administrator;
     developerMode = false;
     params = true;
 

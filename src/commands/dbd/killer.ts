@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Collection, GuildMember, Permissions } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { Killer, Killer_List, Offering, Offering_List, Perk, Standard_Killer_Perks, Exception_Overloader } from "../../types/dbd.interface";
@@ -12,7 +12,7 @@ export default class implements Command {
     description ="Randomises a killer setup for Dead by Daylight.";
     usage = "killer [param1 [param2 [param3 [...]]]]";
     channelWhitelist = ["dbd-bot"];
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     guildWhitelist = ["456094195187449868"];
 
     run = async (client: Modified_Client, message: Message, args: string[]) => { 
@@ -331,9 +331,9 @@ export default class implements Command {
         }
 
         const description = `${killerAddonsBorder}${mapOfferingBorder}${killerPerksBorder}` || "You selected nothing for some reason."
-        const killerEmbed = new MessageEmbed()
+        const killerEmbed = new EmbedBuilder()
             .setDescription(description)
-            .setColor("RED")
+            .setColor("Red")
             .setTimestamp()
 
         let files = [];

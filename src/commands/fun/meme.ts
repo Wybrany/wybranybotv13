@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, Permissions } from "discord.js";
+import { Message, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import fetch from "node-fetch";
@@ -20,7 +20,7 @@ export default class implements Command {
     description = "Sends dank memes";
     usage = "meme";
     channelWhitelist = ["media", "memes", "meme", "images", "private"];
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = true;
     guildWhitelist = ["456094195187449868"];
 
@@ -36,7 +36,7 @@ export default class implements Command {
                 
                 const { title, body, url, image } = data.data;
 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor("#0080FF")
                     .setTitle(title)
                     .setImage(image)

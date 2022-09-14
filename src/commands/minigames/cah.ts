@@ -1,9 +1,9 @@
 
 
-import { CategoryChannel, Message, Permissions, TextChannel, VoiceChannel } from "discord.js";
+import { CategoryChannel, ChannelType, Message, PermissionFlagsBits, TextChannel, VoiceChannel } from "discord.js";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
-import { CAH_SETTINGS, embed_state } from "../../managers/Cahsettings";
+import { CAH_SETTINGS } from "../../managers/Cahsettings";
 import { CAHGame } from "../../managers/Cah"
 
 type arg_state = "settings" | "start" | "stop" | "join" | "leave";
@@ -17,7 +17,7 @@ export default class implements Command{
     description = "Starts a CAH round with current members in voicechannel";
     usage = "cah <SETTINGS | START | STOP>";
     channelWhitelist = ["cah-lobby"];
-    permission = Permissions.FLAGS.SEND_MESSAGES;
+    permission = PermissionFlagsBits.SendMessages;
     guildWhitelist = ["456094195187449868", "715123274719297566"];
     developerMode = true;
     params = true;
@@ -25,7 +25,7 @@ export default class implements Command{
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
-        if(!message.guild || message.channel.type !== "GUILD_TEXT" || !client.user || !message.member) 
+        if(!message.guild || message.channel.type !== ChannelType.GuildText || !client.user || !message.member) 
             return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
 
         const voiceChannel = message.member.voice.channel as VoiceChannel | null;
@@ -55,7 +55,7 @@ export default class implements Command{
                 const parentCategory = message.guild.channels.cache.find(c => c.name === "CAH-game") as CategoryChannel | null;
                 if(!parentCategory) return message.error({content: `You need to create a category named **CAH-game** to play.`, timed: 5000});
 
-                if(!message.guild.members.cache.get(client.user.id)?.permissions.has("MANAGE_ROLES"))
+                if(!message.guild.members.cache.get(client.user.id)?.permissions.has(PermissionFlagsBits.ManageRoles))
                 return message.error({content: `I don't have permissions to manage roles. My role also needs to be higher than the players for optimal gameplay.`, timed: 5000});
 
                 const players = [...voiceChannel.members.values()];
