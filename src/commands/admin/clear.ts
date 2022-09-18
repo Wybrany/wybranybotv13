@@ -22,10 +22,16 @@ class CompareDate {
 
 const deleteMessagesAsync = (messages: Collection<string, Message<boolean>>): Promise<boolean> => {
     return new Promise(async resolve => {
+        let success = true;
         for(const [ key, value ] of messages.entries()){
-            await value.delete();
+            try{
+                await value.delete()
+            }
+            catch(_){
+                success = false;
+            }
         }
-        resolve(true);
+        resolve(success);
     })
 }
 
@@ -66,6 +72,7 @@ export default class implements Command {
             if(messages.size) {
                 const done = await deleteMessagesAsync(messages);
                 if(done) deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "Green"});
+                else deleteMessage.editEmbed({title: "Maybe success?", content: `One or more messages could not be deleted. Think I got most of them though :)`, timed: 5000, colorOverride: "Red"})
             }
 
         } catch(e){
