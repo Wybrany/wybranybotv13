@@ -347,6 +347,31 @@ export class Queue {
         return skippedSong;
     }
 
+    skipTo(index: number): Song {
+        if(this.destroyed)
+            throw new DMPError(DMPErrors.QUEUE_DESTROYED);
+        if(!this.connection)
+            throw new DMPError(DMPErrors.NO_VOICE_CONNECTION);
+
+        const skippedSong = this.songs[0];
+        this.moveSong(index, 1);
+        this.skip();
+
+        return skippedSong;
+    }
+
+    replay(): Song {
+        if(this.destroyed)
+            throw new DMPError(DMPErrors.QUEUE_DESTROYED);
+        if(!this.connection)
+            throw new DMPError(DMPErrors.NO_VOICE_CONNECTION);
+        
+        const currentSong = this.songs[0];
+        this.songs.unshift(currentSong);
+        const skippedSong = this.skip();
+        return skippedSong;
+    }
+
     /**
      * Stops playing the Music and cleans the Queue
      * @returns {void}
@@ -382,7 +407,7 @@ export class Queue {
             this.shuffled = true;
         }
         else {
-            const filterPlayedSongs = this.unshuffledSongs.filter(s => this.songs.map(s => s.url).includes(s.url));
+            const filterPlayedSongs = this.unshuffledSongs.filter(us => this.songs.map(s => s.url).includes(us.url));
             this.songs = filterPlayedSongs;
             this.songs.unshift(currentSong!);
             this.unshuffledSongs = [];
@@ -390,6 +415,27 @@ export class Queue {
         }
 
         return this.songs;
+    }
+
+    reshuffle(): Song[] | undefined {
+        if(this.destroyed)
+            throw new DMPError(DMPErrors.QUEUE_DESTROYED);
+        
+        let shuffledSongs: Song[] | undefined = undefined
+
+        if(!this.shuffled){
+            shuffledSongs = this.shuffle();
+        } 
+        else {
+            let currentSong = this.songs.shift();
+            const filterPlayedSongs = this.unshuffledSongs.filter(us => this.songs.map(s => s.url).includes(us.url));
+            this.songs = filterPlayedSongs;
+            this.songs = Utils.shuffle(this.songs);
+            this.songs.unshift(currentSong);
+            this.shuffled = true;
+        }
+
+        return shuffledSongs;
     }
 
     /**
@@ -435,6 +481,19 @@ export class Queue {
             throw new DMPError(DMPErrors.INVALID_SWAP);
         
         [[this.songs[index1], this.songs[index2]] = [this.songs[index2], this.songs[index1]]]
+        return this.songs;
+    }
+
+    moveSong(indexOfSongToMove: number, positionInQueueToMove: number): Song[] | undefined {
+        const [ index1, index2 ] = [ indexOfSongToMove, positionInQueueToMove ]
+        if(this.destroyed)
+            throw new DMPError(DMPErrors.QUEUE_DESTROYED);
+        if(this.songs[index1].isFirst || this.songs[index2].isFirst || this.songs.length < index1 || this.songs.length < index2 || index1 <= 0 || index2 <= 0)
+            throw new DMPError(DMPErrors.INVALID_MOVE);
+        
+        const removedSong = this.songs.splice(index1, 1)[0];
+        this.songs.splice(index2, 0, removedSong);
+
         return this.songs;
     }
 
@@ -573,6 +632,14 @@ export class Queue {
         this.songs.splice(1, 0, song[0]);
         this.connection.stop();
         return this.songs;
+    }
+
+    nextSong(index: number = 1): Song | undefined {
+        if(this.destroyed)
+            throw new DMPError(DMPErrors.QUEUE_DESTROYED);
+
+        const nextSong = this.songs?.[index];
+        return nextSong;
     }
 
     /**

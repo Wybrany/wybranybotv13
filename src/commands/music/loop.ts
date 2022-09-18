@@ -3,6 +3,20 @@ import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 import { RepeatMode } from "../../player/index";
 
+const repeatmodeMap = {
+    "none": 0,
+    "disable": 0,
+    "song": 1,
+    "loop": 1,
+    "queue": 2
+}
+
+const responseMap = {
+    0: "Successfully disabled looping.",
+    1: "Successfully enabled song loop.",
+    2: "Successfully enabled queue loop."
+}
+
 export default class implements Command{
     name = "loop";
     aliases = [];
@@ -20,21 +34,22 @@ export default class implements Command{
 
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
-        switch(guildQueue.repeatMode){
-            case RepeatMode.DISABLED:
-                guildQueue.setRepeatMode(RepeatMode.SONG);
-                message.success({content: `Successfully enabled song loop.`, timed: 5000});
-            break;
 
-            case RepeatMode.SONG:
-                guildQueue.setRepeatMode(RepeatMode.QUEUE);
-                message.success({content: `Successfully enabled queue loop.`, timed: 5000});
-            break;
+        const input = args.join(" ");
 
-            case RepeatMode.QUEUE:
-                guildQueue.setRepeatMode(RepeatMode.DISABLED);
-                message.success({content: `Successfully disabled looping.`, timed: 5000});
-            break;
+        if(input){
+            const repeatMode: RepeatMode = repeatmodeMap?.[input];
+            if(repeatMode || repeatMode === 0) {
+                guildQueue.setRepeatMode(repeatMode);
+                message.success({content: responseMap[repeatMode]});
+                return;
+            }
         }
+
+        guildQueue.repeatMode === RepeatMode.DISABLED ? guildQueue.setRepeatMode(RepeatMode.SONG) 
+            : guildQueue.repeatMode === RepeatMode.SONG ? guildQueue.setRepeatMode(RepeatMode.QUEUE)
+            : guildQueue.setRepeatMode(RepeatMode.DISABLED);
+
+        message.success({content: responseMap[guildQueue.repeatMode], timed: 5000});
     }
 }

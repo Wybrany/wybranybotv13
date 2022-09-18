@@ -22,46 +22,60 @@ export default class implements Command{
         const guildQueue = client.player?.getQueue(message.guild.id);
         if(!guildQueue) return message.error({content: `There are no songs currently playing.`, timed: 5000});
 
-        let page = 0;
-        const embed = generateEmbed(guildQueue, page);
+        const queueLength = Math.ceil(guildQueue.songs.length / 10);
+
+        const embed = generateEmbed(guildQueue, 0);
+        const actionRows = generateActionRow(message, queueLength === 1);
         
-        const nextPageButton = new ButtonBuilder()
-            .setCustomId(`QueueNextCommandButton-${message.guild.id}`)
-            .setStyle(ButtonStyle.Primary)
-            .setEmoji("▶️");
-
-        const prevPageButotn = new ButtonBuilder()
-            .setCustomId(`QueuePrevCommandButton-${message.guild.id}`)
-            .setStyle(ButtonStyle.Primary)
-            .setEmoji("◀️");
-
-        const actionRow = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(prevPageButotn, nextPageButton);
-        const embedMessage = await message.channel.send({embeds: [embed], components: [actionRow]});
-        const collector = embedMessage.createMessageComponentCollector({time: 120000});
-
-        collector.on("collect", i => {
-            const [ button ] = i.customId.split("-");
-            const queueLength = Math.ceil(guildQueue.songs.length / 10);
-            switch(button){
-                case 'QueueNextCommandButton':
-                    if(page >= (queueLength - 1)) page = queueLength - 1;
-                    else page++;
-                break;
-
-                case 'QueuePrevCommandButton':
-                    if(page <= 0) page = 0;
-                    else page--;
-                break;
-            }
-            let embed = generateEmbed(guildQueue, page);
-            embedMessage.edit({embeds: [embed], components: [actionRow]});
-        })
-
-        collector.on("end", async i => {
-            embedMessage.delete().catch(_ => _);
-        });
+        const embedMessage = await message.channel.send({embeds: [embed], components: [actionRows]});
+        startCollector(embedMessage, guildQueue);
     }
+}
+
+const startCollector = (embedMessage: Message, guildQueue: Queue) => {
+    let page = 0;
+    const collector = embedMessage.createMessageComponentCollector({time: 120000});
+
+    collector.on("collect", i => {
+        const [ button ] = i.customId.split("-");
+        const queueLength = Math.ceil(guildQueue.songs.length / 10);
+        switch(button){
+            case 'QueueNextCommandButton':
+                if(page >= (queueLength - 1)) page = queueLength - 1;
+                else page++;
+            break;
+
+            case 'QueuePrevCommandButton':
+                if(page <= 0) page = 0;
+                else page--;
+            break;
+        }
+        const embed = generateEmbed(guildQueue, page);
+        const actionRow = generateActionRow(embedMessage);
+        embedMessage.edit({embeds: [embed], components: [actionRow]});
+    })
+
+    collector.on("end", async i => {
+        embedMessage.delete().catch(_ => _);
+    });
+}
+
+const generateActionRow = (message: Message, disable: boolean = false): ActionRowBuilder<ButtonBuilder> => {
+    const nextPageButton = new ButtonBuilder()
+        .setCustomId(`QueueNextCommandButton-${message.guild.id}`)
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("▶️")
+        .setDisabled(disable);
+
+    const prevPageButotn = new ButtonBuilder()
+        .setCustomId(`QueuePrevCommandButton-${message.guild.id}`)
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("◀️")
+        .setDisabled(disable);
+
+    const actionRow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(prevPageButotn, nextPageButton);
+    return actionRow;
 }
 
 const generateEmbed = (guildQueue: Queue, page: number) => {
@@ -72,20 +86,21 @@ const generateEmbed = (guildQueue: Queue, page: number) => {
     const queueLoop = guildQueue.repeatMode === RepeatMode.QUEUE ? `✅` : `❌`;
     const shuffled = guildQueue.shuffled ? `✅` : `❌`;
 
-    const songsInMs = (songs?.length && songs.length !== 0) && (songs.map(s => s.milliseconds).reduce((acc, red) => (acc + red), 0) ?? 0);
-    const duration = (songs?.length && songs.length !== 0) && Utils.msToTime(songsInMs);
+    const songsInMs = (songs.map(s => s.milliseconds).reduce((acc, red) => (acc + red), 0) ?? 0);
+    const duration = Utils.msToTime(songsInMs);
 
-    const displaySongs = (songs?.length && songs.length !== 0) && `
+    const displaySongs = songsInMs !== 0 ?
+    `
         *Up Next*
         ${queueString}\n
         **${songs.length} songs in queue | ${duration}**
-    `;
+    ` : "";
 
     return new EmbedBuilder()
         .setTitle(`🎵 Current Queue 🎵`)
         .setDescription(`
             *Now Playing:*
-            [${guildQueue.nowPlaying?.name}](${guildQueue.nowPlaying?.url}) | \`${guildQueue.nowPlaying?.duration ?? "Unknown"} - ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown"}\`\n
+            [${guildQueue.nowPlaying?.name}](${guildQueue.nowPlaying?.url}) | \`${guildQueue.nowPlaying?.duration ?? "Unknown"} - ${guildQueue.nowPlaying?.requestedBy?.username ?? "Unknown"}\`
             ${displaySongs}
         `)
         .setColor("DarkBlue")

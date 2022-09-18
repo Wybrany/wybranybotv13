@@ -20,6 +20,15 @@ class CompareDate {
     }
 }
 
+const deleteMessagesAsync = (messages: Collection<string, Message<boolean>>): Promise<boolean> => {
+    return new Promise(async resolve => {
+        for(const [ key, value ] of messages.entries()){
+            await value.delete();
+        }
+        resolve(true);
+    })
+}
+
 export default class implements Command {
     name ="clear";
     aliases = []
@@ -49,9 +58,16 @@ export default class implements Command {
                 newerMessages.set(key, value);
                 messages.delete(key);
             }
-            if(newerMessages.size) await message.channel.bulkDelete(newerMessages);
-            if(messages.size) messages.forEach(async value => await value.delete());
-            deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "Green"});
+            if(newerMessages.size) {
+                await message.channel.bulkDelete(newerMessages);
+                if(!messages.size) 
+                    deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "Green"});
+            }
+            if(messages.size) {
+                const done = await deleteMessagesAsync(messages);
+                if(done) deleteMessage.editEmbed({title: `Success`, content: `I have successfully deleted **${amount - 1}** messages. Thank you for your patience.`, timed: 5000, colorOverride: "Green"});
+            }
+
         } catch(e){
             message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
             console.log(`Clear error: ${e}`);

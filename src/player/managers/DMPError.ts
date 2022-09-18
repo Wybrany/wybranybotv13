@@ -79,7 +79,8 @@ export enum DMPErrors {
     INVALID_SPOTIFY = 'InvalidSpotify',
     INVALID_APPLE = 'InvalidApple',
     UNKNOWN_SONG = 'UnknownSong',
-    INVALID_SWAP = "InvalidSwap"
+    INVALID_SWAP = "InvalidSwap",
+    INVALID_MOVE = "InvalidMove"
 }
 
 /**
@@ -117,7 +118,8 @@ export const DMPErrorMessages = {
     InvalidPlaylist: 'There was no Playlist found with that link.',
     InvalidApple: 'There was no Apple music song with that link',
     UnknownSong: 'There is no song found by that index.',
-    InvalidSwap: 'You can not swap with this song. Either it does not exist or it is first.'
+    InvalidSwap: 'You can not swap with this song. Either it does not exist or it is first.',
+    InvalidMove: 'You can not move this song. Either it does not exist or it is first.'
 }
 
 export { DMPError };

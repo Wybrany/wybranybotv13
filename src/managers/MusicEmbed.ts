@@ -12,7 +12,10 @@ export default class MusicEmbed implements MusicEmbedInterface{
     public selectState: ButtonSelectState = ButtonSelectState.SELECT;
 
     public previousTime: number = 0;
-    public timeout: NodeJS.Timeout | null = null;
+
+    private timeout: NodeJS.Timeout | null = null;
+    private isUpdatingEmbed: boolean = false;
+
 
     constructor(guild: Guild, musicChannel: MusicChannel){
         this.guild = guild;
@@ -164,26 +167,40 @@ export default class MusicEmbed implements MusicEmbedInterface{
             console.error(e);
         }
     }
-    
-    updateEveryTick = (client: Modified_Client, queue: Queue, state: EmbedState) => {
-        if(
-            !queue.isPlaying ||
-            !queue.nowPlaying ||
-            !queue.connection ||
-            !queue.paused 
-        ) {
-            console.log(`Exiting`);
-            if(this.timeout) clearInterval(this.timeout);
+
+    startUpdateEmbed(client: Modified_Client, state: EmbedState, guildQueue: Queue): void {
+        const queue = client.player.getQueue(guildQueue.guild.id);
+        console.log("Here!", !queue , !queue.isPlaying , !queue.nowPlaying , !queue.connection , queue.paused , queue.destroyed)
+        if(!queue || !queue.isPlaying || !queue.nowPlaying || !queue.connection || queue.paused || queue.destroyed){
+            this.stopUpdateEmbed();
             return;
         }
-        console.log(`Here`)
+        if(this.isUpdatingEmbed) return;
+        console.log("Starting to update.");
+        this._updateEveryTick({client, queue, embedstate: state });
+    }
+
+    stopUpdateEmbed(): void {
+        console.log("Stopped updating");
+        if(this.isUpdatingEmbed) this._clearCurrentInterval();
+        return;
+    }
+
+    private _clearCurrentInterval() {
+        clearInterval(this.timeout)
+    } 
+
+    private _updateEveryTick = (options: {client: Modified_Client, queue: Queue, embedstate: EmbedState}): void => {
+        const { client, queue, embedstate } = options;
+
         const { connection } = queue;
         const { milliseconds, seekTime } = queue.nowPlaying;
         const size = 25;
         const currentTime = seekTime + connection!.time;
         
-        this.timeout = setTimeout(() => {
-            console.log(currentTime);
+        if(!this.isUpdatingEmbed) this.isUpdatingEmbed = true;
+        this.timeout = setInterval(async() => {
+            await this.updateEmbed(client, embedstate);
         }, 5000);
     } 
 }

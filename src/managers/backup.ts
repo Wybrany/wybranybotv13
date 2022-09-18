@@ -56,9 +56,8 @@ export const loadfiledata = async (client: Modified_Client) => {
         guild.cahsettings = data?.cahsettings ?? null;
         if(guild.musicChannel && guild.musicChannel.embedid) {
             const channel = (guild.channels.cache.get(guild.musicChannel.channelid) ?? guild.channels.cache.find(c => c.id === guild.musicChannel!.channelid)) as TextChannel | undefined;
-            if(!channel) continue;
             const message = channel.messages.cache.get(guild.musicChannel.embedid) ?? channel.messages.cache.find(m => m.id === guild.musicChannel?.embedid) ?? await channel.messages.fetch(guild.musicChannel.embedid);
-            if(!message){
+            if(!message || !channel){
                 guild.musicChannel = null;
                 continue;
             }

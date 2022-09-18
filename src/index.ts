@@ -4,6 +4,7 @@ import Modified_Client from "./client/Client";
 import { Load_Commands } from "./managers/Command";
 import { dirname, join } from "path";
 
+import { GuildMember, PartialGuildMember, VoiceState } from "discord.js";
 import { Ready } from "./events/Ready";
 import { InteractionCreate } from "./events/InteractionCreate";
 import { GuildmemberAdd } from "./events/GuildmemberAdd";
@@ -17,7 +18,6 @@ import { Player } from "./player/index";
 import "./client/Message";
 import "./client/Guild";
 import "./client/GuildMember";
-import { GuildMember, PartialGuildMember, VoiceState } from "discord.js";
 //import "./managers/Mysql";
 
 dotenv.config();
@@ -35,6 +35,7 @@ Load_Commands(client);
 client.player = new Player(client, {
     leaveOnEmpty: false,
 });
+
 PlayerEvents(client);
 
 client

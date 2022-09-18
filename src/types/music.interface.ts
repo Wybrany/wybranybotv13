@@ -1,6 +1,6 @@
 import { Interaction } from "discord.js";
 import Modified_Client from "../client/Client";
-import { EmbedState, ButtonSelectState, EmbedOptions, ActionRowOptions } from "discord-music-player";
+import { EmbedState, ButtonSelectState, EmbedOptions, ActionRowOptions, Queue } from "../player/index";
 
 export enum QueuePageState {
     FIRST,
@@ -34,4 +34,6 @@ export interface MusicEmbedInterface {
     queue_page(client: Modified_Client, state: QueuePageState, interaction: Interaction): Promise<void>;
     queue_state(client: Modified_Client, state: ButtonSelectState, interaction: Interaction): Promise<void>;
     updateEmbed(client: Modified_Client, state: EmbedState, options?: MusicOptions): Promise<void>;
+    startUpdateEmbed(client: Modified_Client, state: EmbedState, queue: Queue): void;
+    stopUpdateEmbed(): void;
 }

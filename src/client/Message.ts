@@ -84,6 +84,11 @@ Message.prototype.editEmbed = async function(options: MessageSendOptions){
     }
     if(reply) Object.assign(messageOptions, {messageReference: reply})
     const message = await this.edit(messageOptions);
-    if(timed) setTimeout(async() => await message.delete().catch(_ => _), timed);
+    if(timed) setTimeout(async function(){
+        try{
+            await message?.delete();
+        }
+        catch(_){}
+    }, timed)
     return message;
 }

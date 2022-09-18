@@ -55,7 +55,6 @@ class Embed {
         const messageEmbed = new EmbedBuilder()
             .setColor(this.options.colorOverwrite ?? "DarkBlue")
         if(this.options?.timestamp ?? true) messageEmbed.setTimestamp();
-
         switch(this.options.embedState){
             case EmbedState.NOWPLAYING:
                 const progressBarOptions = {...DefaultProgressBarOptions, ...this.options?.progressBarOptions ?? {}}
