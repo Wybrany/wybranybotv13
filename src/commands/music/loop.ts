@@ -23,7 +23,7 @@ export default class implements Command{
     category = "music";
     description = "Changes looping state. Toggles between \"No loop\", \"Loop Current Song\" or \"Loop Queue\"";
     usage = "loop";
-    permission = PermissionFlagsBits.Administrator;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {

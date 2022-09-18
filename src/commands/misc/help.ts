@@ -63,17 +63,40 @@ const filterCommandsByCategory = (commands: Collection<string, Command>, categor
 }
 
 const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] => {
+    const generateName = (name: string, flag?: boolean | undefined): string => `\`${prefix}${name}${flag ? ` ❗` : ``}${new Array(12 - name.length - (flag ? 2 : 0)).fill(" ").join("")}:\``; 
     const Fields: Field[] = [];
     for(const chunk of commands){
         const categoryName = chunk.category.toUpperCase();
         const commands = [...chunk.commands.values()];
-        const generateName = (name: string, flag?: boolean | undefined): string => `\`${prefix}${name}${flag ? ` ❗` : ``}${new Array(12 - name.length - (flag ? 2 : 0)).fill(" ").join("")}:\``; 
-        const commandField = new Field(
-                `**${categoryName}**`, 
-                commands.map(c => `${c.name.length >= 10 ? c.aliases.length ? generateName(c.aliases[0], c.params) : generateName(c.name.substring(0, 10), c.params) : generateName(c.name, c.params)} ${c.description.length >= 50 ? (c.description.substring(0, 50) + "...") : c.description}`).join("\n"),
+        const commandText = commands.
+            map(c => 
+                `${c.name.length >= 10 ? c.aliases.length ? generateName(c.aliases[0], c.params) : generateName(c.name.substring(0, 10), c.params) 
+                : generateName(c.name, c.params)} ${c.description.length >= 50 ? (c.description.substring(0, 50) + "...") : c.description}`)
+        
+        let currentChunk: string[] = [];
+        const chunkCommands: Array<string[]> = [];
+        let textLengthCounter = 0;
+
+        for(const command of commandText) {
+            if(command.length + textLengthCounter >= 1023){
+                chunkCommands.push(currentChunk);
+                currentChunk = [];
+                textLengthCounter = 0;
+            }
+            currentChunk.push(command);
+            textLengthCounter += command.length;
+        }
+        chunkCommands.push(currentChunk);
+
+        chunkCommands.forEach((chunkCommandArray, index, array) => {
+            const part = array.length !== 1 ? ` #${index+1}` : ``;
+            const commandField = new Field(
+                `**${categoryName}${part}**`,
+                chunkCommandArray.join("\n"),
                 false
             );
-        Fields.push(commandField);
+            Fields.push(commandField);
+        })
     }
     return Fields;
 }
@@ -81,7 +104,7 @@ const getChunkBorders = (commands: CategoryCommands[], prefix: string): Field[] 
 //Main functions
 
 function getAllCommands(client: Modified_Client, message: Message){
-    try{
+    //try{
         if(!message.guild) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
         const member = message.guild?.members.cache.get(message.author.id);
         const categories = client.categories?.length ? client.categories : [];
@@ -96,20 +119,19 @@ function getAllCommands(client: Modified_Client, message: Message){
             .setAuthor(authorOptions)
             .setColor("Blue")
             .setTimestamp();
-    
+        
         const getAvailableCommands = member ? getCommands(client.commands, member) : null;
         const getFilteredCommands = getAvailableCommands?.size ? filterCommandsByCategory(getAvailableCommands, categories) : null;
-    
+        
         const fields = getFilteredCommands?.length ? getChunkBorders(getFilteredCommands, message.guild.prefix) : null;
-    
+        
         if(!fields || !fields.length) allCommandsEmbed.setDescription(`No commands are available for you.`).setColor("Red");
-        else allCommandsEmbed.setFields(fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
-    
+        else allCommandsEmbed.addFields(...fields).setDescription(`Commands with ❗ requires additional parameters to work.\nUse ${message.guild.prefix}help <command> to see more information.`)
         return message.channel.send({embeds: [allCommandsEmbed]});
-    }catch(e){
+    /*}catch(e){
         console.error(`Something went wrong.. ${e}`);
         message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-    }
+    }*/
 }
 
 

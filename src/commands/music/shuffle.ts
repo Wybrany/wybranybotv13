@@ -8,7 +8,7 @@ export default class implements Command{
     category = "music";
     description = "This command toggles a shuffle on this queue.";
     usage = "shuffle";
-    permission = PermissionFlagsBits.Administrator;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = false;
     
     run = async (client: Modified_Client, message: Message, args: string[]) => {

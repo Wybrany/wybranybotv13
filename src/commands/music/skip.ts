@@ -1,4 +1,5 @@
 import { Message, PermissionFlagsBits } from "discord.js";
+import { RepeatMode } from "../../player/index";
 import Modified_Client from "../../client/Client";
 import { Command } from "../../types/client.interface";
 
@@ -7,7 +8,7 @@ export default class implements Command{
     aliases = ["s", "next"];
     category = "music";
     description = "Skips the current track to the next track or to a submitted position";
-    usage = "skip";
+    usage = "skip [songnumber]";
     permission = PermissionFlagsBits.SendMessages;
     developerMode = false;
     params = true;
@@ -29,6 +30,8 @@ export default class implements Command{
             if(!Number.isInteger(song1Index) || song1Index > guildQueue.songs.length) 
                 return message.error({content: `You did not submit a valid songnumber.`, timed: 7500});
         }
+
+        if(guildQueue.repeatMode === RepeatMode.SONG) guildQueue.skip();
 
         const nextSong = guildQueue.nextSong(song1Index);
         const nowPlayingText = nextSong ? `\n\nNow playing: **${nextSong}**` : ``;

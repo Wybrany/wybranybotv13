@@ -10,7 +10,7 @@ export default class implements Command{
     category = "music";
     description = "Seeks to a timestamp on a song that\'s current playing";
     usage = "seek <timestamp>, eg 1m20s or 20s";
-    permission = PermissionFlagsBits.Administrator;
+    permission = PermissionFlagsBits.SendMessages;
     developerMode = false;
     params = true;
     

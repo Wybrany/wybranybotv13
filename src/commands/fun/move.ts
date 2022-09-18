@@ -9,7 +9,7 @@ export default class implements Command {
     category = "fun";
     description = "Moves a target across multiple channels.";
     usage = "move <mention> [amount <= 4]";
-    permission = PermissionFlagsBits.ManageChannels;
+    permission = PermissionFlagsBits.Administrator;
     params = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {

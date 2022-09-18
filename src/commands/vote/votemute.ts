@@ -9,7 +9,7 @@ export default class implements Command {
     category = "vote";
     description = "Create a poll where you can vote to mute someone.";
     usage = "votemute <@mention>";
-    permission = PermissionFlagsBits.SendMessages;
+    permission = PermissionFlagsBits.MuteMembers;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         

@@ -86,7 +86,8 @@ const generateEmbed = (guildQueue: Queue, page: number) => {
     const queueLoop = guildQueue.repeatMode === RepeatMode.QUEUE ? `✅` : `❌`;
     const shuffled = guildQueue.shuffled ? `✅` : `❌`;
 
-    const songsInMs = (songs.map(s => s.milliseconds).reduce((acc, red) => (acc + red), 0) ?? 0);
+    const songsWithoutFirst = guildQueue.getQueueFromIndex(1, guildQueue.songs.length);
+    const songsInMs = (songsWithoutFirst.map(s => s.milliseconds).reduce((acc, red) => (acc + red), 0) ?? 0);
     const duration = Utils.msToTime(songsInMs);
 
     const displaySongs = songsInMs !== 0 ?

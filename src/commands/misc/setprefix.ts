@@ -5,7 +5,7 @@ import { savefiledata } from "../../managers/backup";
 
 export default class implements Command{
     name = "setprefix";
-    aliases = ["sp"];
+    aliases = ["prefix"];
     category = "misc";
     description = "Change the current prefix to something else.";
     usage = "settings <category> <value>";
