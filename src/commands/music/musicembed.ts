@@ -13,7 +13,7 @@ export default class implements Command{
     description = "The channel this command is used on will become your music channel.";
     usage = "musicembed";
     permission = PermissionFlagsBits.Administrator;
-    developerMode = false;
+    developerMode = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
         
