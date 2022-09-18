@@ -16,37 +16,38 @@ export default class implements Command{
     developerMode = true;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-        
-        await message.delete();
-        if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-        
-        //If there was a previous musicChannel, delete that message
-        //Because we don't want conflicting buttons, not that it really matter tho but anyways;
-        if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid)){
-            try {
-                const { channelid, embedid } = message.guild.musicChannel;
-                const channel = message.guild.channels.cache.get(channelid) as TextChannel;
-                const prevMessage = channel.messages.cache.get(embedid) ?? await channel.messages.fetch(embedid) ?? null;
-                if(prevMessage) await prevMessage.delete();
+        try{
+            await message.delete();
+            if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+            
+            //If there was a previous musicChannel, delete that message
+            //Because we don't want conflicting buttons, not that it really matter tho but anyways;
+            if(message.guild?.musicChannel && message.guild.channels.cache.has(message.guild?.musicChannel?.channelid)){
+                try {
+                    const { channelid, embedid } = message.guild.musicChannel;
+                    const channel = message.guild.channels.cache.get(channelid) as TextChannel;
+                    const prevMessage = channel.messages.cache.get(embedid) ?? await channel.messages.fetch(embedid) ?? null;
+                    if(prevMessage) await prevMessage.delete();
+                }
+                catch(_){}
             }
-            catch(_){}
-        }
-
-        let guildQueue = client.player?.getQueue(message.guild.id);
-        if(!guildQueue) guildQueue = client.player?.createQueue(message.guild.id);
-        const { embed } = guildQueue!.createMessageEmbed({embedState: guildQueue!.isPlaying ? EmbedState.NOWPLAYING : EmbedState.STOPPED});
-        const { buttons } = guildQueue!.createMessageButtons({currentQueuePage: 0, selectState: ButtonSelectState.SELECT, disabled: guildQueue!.isPlaying ? false : true});
-
-        const newMessage = await message.channel.send({embeds: [embed], components: [...buttons]});
-
-        const newMusicChannel: MusicChannel = {
-            guildid: message.guild.id,
-            channelid: message.channel.id,
-            embedid: newMessage.id
-        }
-        
-        message.guild.musicChannel = newMusicChannel;
-        message.guild.musicEmbed = new MusicEmbed(message.guild, newMusicChannel);
-        savefiledata(client, message.guild.id);
+    
+            let guildQueue = client.player?.getQueue(message.guild.id);
+            if(!guildQueue) guildQueue = client.player?.createQueue(message.guild.id);
+            const { embed } = guildQueue!.createMessageEmbed({embedState: guildQueue!.isPlaying ? EmbedState.NOWPLAYING : EmbedState.STOPPED});
+            const { buttons } = guildQueue!.createMessageButtons({currentQueuePage: 0, selectState: ButtonSelectState.SELECT, disabled: guildQueue!.isPlaying ? false : true});
+    
+            const newMessage = await message.channel.send({embeds: [embed], components: [...buttons]});
+    
+            const newMusicChannel: MusicChannel = {
+                guildid: message.guild.id,
+                channelid: message.channel.id,
+                embedid: newMessage.id
+            }
+            
+            message.guild.musicChannel = newMusicChannel;
+            message.guild.musicEmbed = new MusicEmbed(message.guild, newMusicChannel);
+            savefiledata(client, message.guild.id);
+        }catch(_){}
     }
 }

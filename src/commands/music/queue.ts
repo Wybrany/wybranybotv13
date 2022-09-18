@@ -94,7 +94,7 @@ const generateEmbed = (guildQueue: Queue, page: number) => {
     `
         *Up Next*
         ${queueString}\n
-        **${songs.length} songs in queue | ${duration}**
+        **${songsWithoutFirst.length} songs in queue | ${duration}**
     ` : "";
 
     return new EmbedBuilder()

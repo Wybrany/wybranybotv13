@@ -13,13 +13,15 @@ export default class implements Command{
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
 
-        await message.delete();
-        if(!message.guild || !message.member || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
-
-        if (!message.member.voice.channel) 
-            return message.error({content: "You need to be in a voice channel to summon me.", timed: 5000});
-        
-        const connection = getVoiceConnection(message.guild.id);
-        if(connection) connection.destroy();
+        try{
+            await message.delete();
+            if(!message.guild || !message.member || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
+    
+            if (!message.member.voice.channel) 
+                return message.error({content: "You need to be in a voice channel to summon me.", timed: 5000});
+            
+            const connection = getVoiceConnection(message.guild.id);
+            if(connection) connection.destroy();
+        }catch(_){}
     }
 }

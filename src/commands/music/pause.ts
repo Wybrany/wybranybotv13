@@ -13,7 +13,7 @@ export default class implements Command{
     params = false;
 
     run = async (client: Modified_Client, message: Message, args: string[]) => {
-
+        try{
         await message.delete();
         if(!message.guild || !client.user) return message.error({content: `Something went wrong. Please try again later.`, timed: 5000});
         
@@ -24,5 +24,7 @@ export default class implements Command{
 
         guildQueue.setPaused(true);
         message.success({content: `Successfully paused the current track.`, timed: 5000});
+        }
+        catch(_){}
     }
 }
