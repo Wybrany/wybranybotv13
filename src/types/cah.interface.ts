@@ -76,7 +76,7 @@ export interface Game {
     check_if_all_selected: () => void;
 
     player_join: (member: GuildMember) => Promise<PlayerConstructor | null>;
-    player_leave: (member: GuildMember) => void;
+    player_leave: (member: GuildMember) => Promise<boolean>;
 
     update_embed: (state: Update_Embed, player: PlayerConstructor) => Promise<void>;
 }

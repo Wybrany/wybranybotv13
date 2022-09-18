@@ -1,4 +1,4 @@
-import { Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
 import { type } from "os";
 import Modified_Client from "src/client/Client";
 
@@ -10,10 +10,10 @@ export enum VoteButtons {
 export interface Vote {
     target: GuildMember;
     members: GuildMember[];
-    embed: MessageEmbed;
-    buttonYes: MessageButton;
-    buttonNo: MessageButton;
-    interaction: MessageActionRow;
+    embed: EmbedBuilder;
+    buttonYes: ButtonBuilder;
+    buttonNo: ButtonBuilder;
+    interaction: ActionRowBuilder;
     message: Message;
 
     currentVotes: CurrentVotes[];
