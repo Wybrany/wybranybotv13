@@ -36,7 +36,7 @@ client.player = new Player(client, {
     leaveOnEmpty: false,
 });
 
-PlayerEvents(client);
+//PlayerEvents(client);
 
 client
     .on("ready", async () => Ready(client))
