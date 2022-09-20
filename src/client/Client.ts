@@ -30,6 +30,8 @@ export default class extends Client {
                 GatewayIntentBits.GuildMessages, 
                 GatewayIntentBits.GuildVoiceStates,
                 GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildInvites,
                 GatewayIntentBits.MessageContent
             ],
             partials: [

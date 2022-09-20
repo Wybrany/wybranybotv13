@@ -9,11 +9,13 @@ import { Ready } from "./events/Ready";
 import { InteractionCreate } from "./events/InteractionCreate";
 import { GuildmemberAdd } from "./events/GuildmemberAdd";
 import { GuildmemberUpdate } from "./events/GuildmemberUpdate";
+import { GuildmemberRemove } from "./events/GuildmemberRemove";
 import { VoicestateUpdate } from "./events/VoicestateUpdate";
 import { MessageDelete } from "./events/MessageDelete";
 import { MessageCreate } from "./events/MessageCreate";
-import { PlayerEvents } from "./events/Player";
 import { Player } from "./player/index";
+
+//import { PlayerEvents } from "./events/Player";
 
 import "./client/Message";
 import "./client/Guild";
@@ -39,12 +41,13 @@ client.player = new Player(client, {
 //PlayerEvents(client);
 
 client
-    .on("ready", async () => Ready(client))
-    .on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState) => await VoicestateUpdate(client, oldState, newState))
+    .on('ready', async () => Ready(client))
+    .on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => await VoicestateUpdate(client, oldState, newState))
     .on('interactionCreate', async interaction => await InteractionCreate(client, interaction))
     .on('guildMemberAdd', async member => await GuildmemberAdd(client, member))
     .on('guildMemberUpdate', async (guildMemberOld: GuildMember | PartialGuildMember, guildMemberNew: GuildMember) => await GuildmemberUpdate(client, guildMemberOld, guildMemberNew))
+    .on('guildMemberRemove', async (guildmember: GuildMember | PartialGuildMember) => await GuildmemberRemove(client, guildmember))
     .on('messageDelete', async message => MessageDelete(client, message))
-    .on("messageCreate", async message => MessageCreate(client, message))
+    .on('messageCreate', async message => MessageCreate(client, message))
 
     .login(discord_token);

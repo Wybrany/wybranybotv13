@@ -4,6 +4,7 @@ import { join } from "path";
 import { Guildsettings } from "../types/guildsettings.interface";
 import MusicEmbed from "./MusicEmbed";
 import { Snowflake, TextChannel } from "discord.js";
+import { LeavingMemberProperties, MemberLeaveGuild } from "./MemberLeaveGuild";
 
 const backupPath = join(process.cwd(), "./backup");
 
@@ -17,11 +18,12 @@ export const savefiledata = (client: Modified_Client, guildid: Snowflake) => {
         }
         const guild = client.guilds.cache.get(guildid);
         if(!guild) return console.error(`Can't find guild when saving.`);
-        const newData = {
+        const newData: Guildsettings = {
             guildid: guildid,
             prefix: guild?.prefix ?? null,
             musicChannel: guild?.musicChannel ?? null,
-            cahsettings: guild.cahsettings ?? null
+            cahsettings: guild.cahsettings ?? null,
+            leavingMembers: guild.memberLeave?.leavingMembersToBackup ?? null            
         }
         const filePath = join(guildFolderPath, "guilddata.json");
         writeFileSync(filePath, JSON.stringify(newData, null, "\t"));
@@ -59,9 +61,23 @@ export const loadfiledata = async (client: Modified_Client) => {
             const message = channel.messages.cache.get(guild.musicChannel.embedid) ?? channel.messages.cache.find(m => m.id === guild.musicChannel?.embedid) ?? await channel.messages.fetch(guild.musicChannel.embedid);
             if(!message || !channel){
                 guild.musicChannel = null;
-                continue;
             }
-            guild.musicEmbed = new MusicEmbed(guild, guild.musicChannel);
+            else guild.musicEmbed = new MusicEmbed(guild, guild.musicChannel);
+        }
+        guild.memberLeave = new MemberLeaveGuild(client, guild);
+        if(data?.leavingMembers && data?.leavingMembers.length) {
+            for(const member of data.leavingMembers){
+                const { executor, giveBackRoles, oldRoles, reason, targetId, targetName} = member;
+                const newMemberOptions: LeavingMemberProperties = {
+                    executor: guild.members.cache.get(executor) || guild.members.cache.find(m => m.id === executor) || await guild.members.fetch({user: executor}),
+                    oldRoles: guild.roles.cache.filter(role => oldRoles.includes(role.id)),
+                    giveBackRoles,
+                    reason,
+                    targetId,
+                    targetName
+                }
+                guild.memberLeave.addMemberFromBackup(newMemberOptions);
+            }
         }
     }
     console.log(`Successfully loaded some guilddata.`);
